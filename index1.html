@@ -25,8 +25,6 @@
         font-family: "Inter", sans-serif;
         background-color: #f8f9fa;
       }
-
-      /* Tab Transitions */
       .tab-content {
         display: none;
         opacity: 0;
@@ -36,14 +34,12 @@
         display: block;
         opacity: 1;
       }
-
-      /* Modals */
       .modal-overlay {
-        background-color: rgba(0, 0, 0, 0.4);
+        background-color: rgba(0, 0, 0, 0.3);
         backdrop-filter: blur(3px);
       }
 
-      /* Custom Scrollbars */
+      /* Custom scrollbar for tables */
       .table-container::-webkit-scrollbar {
         height: 6px;
         width: 6px;
@@ -59,7 +55,7 @@
         background: #cbd5e1;
       }
 
-      /* Utility Classes */
+      /* Hide scrollbar for horizontal tabs */
       .no-scrollbar::-webkit-scrollbar {
         display: none;
       }
@@ -67,19 +63,16 @@
         -ms-overflow-style: none;
         scrollbar-width: none;
       }
-      .pb-safe {
-        padding-bottom: env(safe-area-inset-bottom);
-      }
     </style>
   </head>
   <body
-    class="text-gray-800 min-h-screen relative flex flex-col overflow-x-hidden max-[484px]:pb-16 min-[485px]:pb-0"
+    class="text-gray-800 min-h-screen relative flex flex-col overflow-x-hidden"
   >
     <!-- ============================================== -->
-    <!-- HEADER / NAVBAR SECTION (STICKY TOP) -->
+    <!-- HEADER / NAVBAR SECTION -->
     <!-- ============================================== -->
     <nav
-      class="bg-white/90 backdrop-blur-md shadow-sm border-b border-gray-200/50 w-full z-[50] sticky top-0"
+      class="bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-200/50 w-full z-40 relative"
     >
       <div class="max-w-5xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-4">
         <div class="flex flex-row items-center gap-2 sm:gap-5 w-full">
@@ -127,94 +120,53 @@
     </nav>
 
     <!-- ============================================== -->
-    <!-- DYNAMIC TABS NAVIGATION (BOTTOM ON MOBILE, STICKY ON DESKTOP) -->
+    <!-- TABS NAVIGATION (STICKY & MINIMALIST) -->
     <!-- ============================================== -->
     <div
-      class="z-[45] w-full transition-all max-[484px]:fixed max-[484px]:bottom-0 max-[484px]:left-0 max-[484px]:right-0 max-[484px]:bg-white max-[484px]:border-t max-[484px]:border-gray-200 max-[484px]:shadow-[0_-4px_15px_rgba(0,0,0,0.06)] pb-safe min-[485px]:sticky min-[485px]:top-[65px] sm:top-[89px] min-[485px]:bg-[#f8f9fa]/95 min-[485px]:backdrop-blur-md min-[485px]:border-t-0 min-[485px]:border-b min-[485px]:border-gray-200/50 min-[485px]:shadow-sm min-[485px]:pt-3"
+      class="sticky top-0 z-30 w-full bg-[#f8f9fa]/90 backdrop-blur-md border-b border-gray-200/50 shadow-sm pt-2 sm:pt-3"
     >
-      <div
-        class="max-w-4xl mx-auto px-0 min-[485px]:px-6 h-14 min-[485px]:h-auto"
-      >
-        <div class="flex flex-row items-center justify-between w-full h-full">
-          <!-- Navigation Items -->
+      <div class="max-w-4xl mx-auto px-4 sm:px-6">
+        <div
+          class="flex flex-col-reverse sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4 w-full"
+        >
+          <!-- Left: Tabs -->
           <div
-            class="flex flex-row justify-around min-[485px]:justify-start items-center w-full h-full min-[485px]:gap-6"
+            class="flex overflow-x-auto no-scrollbar justify-start gap-4 md:gap-6 w-full sm:w-auto flex-1"
           >
             <button
               onclick="switchTab('pre-deployment')"
               id="btn-pre-deployment"
-              class="tab-btn flex flex-col items-center justify-center w-full min-[485px]:w-auto h-full min-[485px]:py-3 max-[484px]:border-t-2 min-[485px]:border-t-0 min-[485px]:border-b-2 text-red-800 border-red-800 transition-colors"
+              class="tab-btn shrink-0 py-2.5 sm:py-3 text-[11px] sm:text-xs md:text-sm font-semibold border-b-2 border-red-800 text-red-800 transition-colors whitespace-nowrap"
             >
-              <i
-                data-lucide="clipboard-list"
-                class="w-6 h-6 min-[485px]:hidden"
-              ></i>
-              <span
-                class="max-[484px]:hidden font-semibold text-sm whitespace-nowrap"
-                >Pre-Deployment</span
-              >
+              Pre-Deployment
             </button>
-
             <button
               onclick="switchTab('during-training')"
               id="btn-during-training"
-              class="tab-btn flex flex-col items-center justify-center w-full min-[485px]:w-auto h-full min-[485px]:py-3 max-[484px]:border-t-2 min-[485px]:border-t-0 min-[485px]:border-b-2 text-gray-500 border-transparent hover:text-gray-800 transition-colors"
+              class="tab-btn shrink-0 py-2.5 sm:py-3 text-[11px] sm:text-xs md:text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300 transition-colors whitespace-nowrap"
             >
-              <i data-lucide="clock" class="w-6 h-6 min-[485px]:hidden"></i>
-              <span
-                class="max-[484px]:hidden font-semibold text-sm whitespace-nowrap"
-                >During Training</span
-              >
+              During Training
             </button>
-
             <button
               onclick="switchTab('post-training')"
               id="btn-post-training"
-              class="tab-btn flex flex-col items-center justify-center w-full min-[485px]:w-auto h-full min-[485px]:py-3 max-[484px]:border-t-2 min-[485px]:border-t-0 min-[485px]:border-b-2 text-gray-500 border-transparent hover:text-gray-800 transition-colors"
+              class="tab-btn shrink-0 py-2.5 sm:py-3 text-[11px] sm:text-xs md:text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300 transition-colors whitespace-nowrap"
             >
-              <i
-                data-lucide="graduation-cap"
-                class="w-6 h-6 min-[485px]:hidden"
-              ></i>
-              <span
-                class="max-[484px]:hidden font-semibold text-sm whitespace-nowrap"
-                >Post-Training</span
-              >
+              Post-Training
             </button>
-
-            <!-- Mobile-Only Forms Repository Button -->
-            <a
-              href="#"
-              data-link="downloadForms"
-              target="_blank"
-              class="min-[485px]:hidden flex flex-col items-center justify-center w-full h-full text-red-800 hover:text-red-900 transition-colors border-t-2 border-transparent"
-            >
-              <svg
-                viewBox="0 0 87.3 58.7"
-                class="w-6 h-6 fill-current"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M29.3 8L14.6 33.3l14.7 25.4L58 8H29.3z"
-                  opacity="0.6"
-                />
-                <path d="M58 58.7l14.6-25.4h-58L0 58.7h58" opacity="0.8" />
-                <path d="M58 0l14.7 25.4L87.3 33.3 58 0" opacity="1.0" />
-              </svg>
-            </a>
           </div>
 
-          <!-- Desktop-Only Forms Repository Button -->
-          <div class="hidden min-[485px]:flex shrink-0 mb-1 sm:mb-0">
+          <!-- Right: Forms Repository Button -->
+          <div class="w-full sm:w-auto shrink-0 mb-1 sm:mb-0">
             <a
               href="#"
               data-link="downloadForms"
               target="_blank"
-              class="inline-flex items-center justify-center gap-1.5 bg-red-800/10 hover:bg-red-800/20 text-red-800 font-semibold py-1.5 px-3 md:py-2 md:px-4 rounded-md transition-all text-xs border border-red-800/10 whitespace-nowrap"
+              class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 bg-red-800/10 hover:bg-red-800/20 text-red-800 font-semibold py-2 sm:py-1.5 px-3 md:py-2 md:px-4 rounded-md transition-all text-[11px] sm:text-[10px] md:text-xs border border-red-800/10 whitespace-nowrap"
             >
               <svg
                 viewBox="0 0 87.3 58.7"
-                class="w-4 h-4 fill-current"
+                class="w-4 h-4 md:w-4 md:h-4 fill-current"
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
@@ -224,8 +176,7 @@
                 <path d="M58 58.7l14.6-25.4h-58L0 58.7h58" opacity="0.8" />
                 <path d="M58 0l14.7 25.4L87.3 33.3 58 0" opacity="1.0" />
               </svg>
-              <span class="max-[574px]:hidden">Forms Repository</span>
-              <span class="min-[575px]:hidden">Forms</span>
+              Forms Repository
             </a>
           </div>
         </div>
@@ -235,12 +186,12 @@
     <!-- ============================================== -->
     <!-- MAIN CONTENT AREA -->
     <!-- ============================================== -->
-    <main class="w-full flex-grow flex flex-col items-center pt-6 md:pt-8 pb-8">
-      <div class="max-w-4xl w-full px-4 sm:px-6">
+    <main class="w-full flex-grow flex flex-col items-center">
+      <div class="max-w-4xl w-full px-4 sm:px-6 py-6 sm:py-8">
         <!-- ============================================== -->
         <!-- TAB 1: PRE-DEPLOYMENT -->
         <!-- ============================================== -->
-        <section
+        <div
           id="tab-pre-deployment"
           class="tab-content active space-y-3 sm:space-y-2"
         >
@@ -787,12 +738,12 @@
               </div>
             </div>
           </div>
-        </section>
+        </div>
 
         <!-- ============================================== -->
         <!-- TAB 2: DURING TRAINING -->
         <!-- ============================================== -->
-        <section id="tab-during-training" class="tab-content space-y-3">
+        <div id="tab-during-training" class="tab-content space-y-3">
           <div
             class="bg-white/80 rounded-lg p-4 sm:p-5 shadow-sm border border-gray-200/50 flex flex-col sm:flex-row gap-3 sm:gap-4 items-start sm:items-center hover:border-blue-200 transition-colors"
           >
@@ -915,12 +866,12 @@
               </p>
             </div>
           </div>
-        </section>
+        </div>
 
         <!-- ============================================== -->
         <!-- TAB 3: POST-TRAINING -->
         <!-- ============================================== -->
-        <section id="tab-post-training" class="tab-content">
+        <div id="tab-post-training" class="tab-content">
           <div
             class="bg-white/90 rounded-lg p-5 sm:p-6 shadow-sm border border-gray-200/80 border-t-2 border-t-gray-400"
           >
@@ -1071,7 +1022,7 @@
               </div>
             </div>
           </div>
-        </section>
+        </div>
       </div>
     </main>
 
@@ -1079,7 +1030,7 @@
     <!-- FOOTER -->
     <!-- ============================================== -->
     <footer
-      class="mt-auto border-t border-gray-200 bg-white/50 backdrop-blur-sm relative z-40"
+      class="mt-auto border-t border-gray-200 bg-white/50 backdrop-blur-sm"
     >
       <div
         class="max-w-4xl mx-auto px-4 sm:px-6 py-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500"
@@ -1090,7 +1041,7 @@
           </p>
           <p>
             Created by
-            <span class="font-semibold text-gray-700">"Ino Amador"</span>
+            <span class="font-semibold text-gray-700">"@madzamador"</span>
           </p>
         </div>
         <button
@@ -1103,13 +1054,11 @@
     </footer>
 
     <!-- ============================================== -->
-    <!-- MODALS SECTION -->
-    <!-- ============================================== -->
-
     <!-- STUDENT HTE MODAL (VIEW PARTNERS) -->
+    <!-- ============================================== -->
     <div
       id="hte-view-modal"
-      class="modal-overlay fixed inset-0 z-[60] hidden flex items-center justify-center p-3 sm:p-4"
+      class="modal-overlay fixed inset-0 z-50 hidden flex items-center justify-center p-3 sm:p-4"
     >
       <div
         class="bg-white rounded-xl shadow-2xl w-full max-w-4xl relative max-h-[85vh] flex flex-col border border-gray-200"
@@ -1177,10 +1126,14 @@
       </div>
     </div>
 
-    <!-- LOGIN MODAL -->
+    <!-- ============================================== -->
+    <!-- ADMIN MODALS (LOGIN & DASHBOARD) -->
+    <!-- ============================================== -->
+
+    <!-- Login Modal -->
     <div
       id="login-modal"
-      class="modal-overlay fixed inset-0 z-[60] hidden flex items-center justify-center p-4"
+      class="modal-overlay fixed inset-0 z-50 hidden flex items-center justify-center p-4"
     >
       <div
         class="bg-white rounded-xl shadow-2xl p-6 sm:p-8 w-full max-w-sm relative border border-gray-200"
@@ -1231,10 +1184,10 @@
       </div>
     </div>
 
-    <!-- ADMIN DASHBOARD MODAL -->
+    <!-- Admin Dashboard Modal -->
     <div
       id="admin-modal"
-      class="modal-overlay fixed inset-0 z-[60] hidden flex items-center justify-center p-2 sm:p-4"
+      class="modal-overlay fixed inset-0 z-50 hidden flex items-center justify-center p-2 sm:p-4"
     >
       <div
         class="bg-white rounded-xl shadow-2xl w-full max-w-5xl relative max-h-[95vh] flex flex-col border border-gray-200"
@@ -1291,7 +1244,6 @@
             </h4>
 
             <div class="grid lg:grid-cols-3 gap-4 mb-5">
-              <!-- Manual Entry -->
               <div
                 class="lg:col-span-2 bg-gray-50 p-3 sm:p-4 rounded border border-gray-200"
               >
@@ -1300,53 +1252,46 @@
                 >
                   Add Single Establishment
                 </h5>
-                <form
-                  id="form-hte-manual"
-                  onsubmit="event.preventDefault(); addHteManual();"
+                <div class="grid sm:grid-cols-2 gap-2 mb-3">
+                  <input
+                    type="text"
+                    id="hte-name"
+                    placeholder="Name of HTE"
+                    class="text-[11px] sm:text-xs px-2.5 py-1.5 border border-gray-300 rounded focus:outline-none focus:border-gray-500"
+                  />
+                  <input
+                    type="text"
+                    id="hte-address"
+                    placeholder="Address"
+                    class="text-[11px] sm:text-xs px-2.5 py-1.5 border border-gray-300 rounded focus:outline-none focus:border-gray-500"
+                  />
+                  <input
+                    type="text"
+                    id="hte-contact"
+                    placeholder="Contact #"
+                    class="text-[11px] sm:text-xs px-2.5 py-1.5 border border-gray-300 rounded focus:outline-none focus:border-gray-500"
+                  />
+                  <input
+                    type="email"
+                    id="hte-email"
+                    placeholder="Email"
+                    class="text-[11px] sm:text-xs px-2.5 py-1.5 border border-gray-300 rounded focus:outline-none focus:border-gray-500"
+                  />
+                  <input
+                    type="text"
+                    id="hte-person"
+                    placeholder="Contact Person"
+                    class="text-[11px] sm:text-xs px-2.5 py-1.5 border border-gray-300 rounded focus:outline-none focus:border-gray-500 sm:col-span-2"
+                  />
+                </div>
+                <button
+                  onclick="addHteManual()"
+                  class="w-full bg-white hover:bg-gray-100 text-gray-800 border border-gray-300 py-1.5 rounded text-[11px] sm:text-xs font-medium transition-colors"
                 >
-                  <div class="grid sm:grid-cols-2 gap-2 mb-3">
-                    <input
-                      type="text"
-                      id="hte-name"
-                      placeholder="Name of HTE"
-                      required
-                      class="text-[11px] sm:text-xs px-2.5 py-1.5 border border-gray-300 rounded focus:outline-none focus:border-gray-500"
-                    />
-                    <input
-                      type="text"
-                      id="hte-address"
-                      placeholder="Address"
-                      class="text-[11px] sm:text-xs px-2.5 py-1.5 border border-gray-300 rounded focus:outline-none focus:border-gray-500"
-                    />
-                    <input
-                      type="text"
-                      id="hte-contact"
-                      placeholder="Contact #"
-                      class="text-[11px] sm:text-xs px-2.5 py-1.5 border border-gray-300 rounded focus:outline-none focus:border-gray-500"
-                    />
-                    <input
-                      type="email"
-                      id="hte-email"
-                      placeholder="Email"
-                      class="text-[11px] sm:text-xs px-2.5 py-1.5 border border-gray-300 rounded focus:outline-none focus:border-gray-500"
-                    />
-                    <input
-                      type="text"
-                      id="hte-person"
-                      placeholder="Contact Person"
-                      class="text-[11px] sm:text-xs px-2.5 py-1.5 border border-gray-300 rounded focus:outline-none focus:border-gray-500 sm:col-span-2"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    class="w-full bg-white hover:bg-gray-100 text-gray-800 border border-gray-300 py-1.5 rounded text-[11px] sm:text-xs font-medium transition-colors"
-                  >
-                    Add to Database
-                  </button>
-                </form>
+                  Add to Database
+                </button>
               </div>
 
-              <!-- CSV Upload -->
               <div
                 class="bg-gray-50 p-3 sm:p-4 rounded border border-gray-200 flex flex-col justify-center"
               >
@@ -1373,7 +1318,6 @@
               </div>
             </div>
 
-            <!-- Admin HTE Table -->
             <div
               class="overflow-x-auto table-container border border-gray-200 rounded max-h-48"
             >
@@ -1423,10 +1367,7 @@
     <!-- JAVASCRIPT LOGIC -->
     <!-- ============================================== -->
     <script>
-      // --- 1. STATE & CONSTANTS ---
-      const SHEETDB_API_URL = "YOUR_SHEETDB_API_URL_HERE"; // <-- PASTE YOUR SHEETDB API URL HERE
-      let hteList = [];
-
+      // --- 1. LINK MANAGEMENT CONFIGURATION ---
       const defaultLinks = {
         downloadForms:
           "https://drive.google.com/drive/folders/18BuvGcVRE6OvLxLcm77it5SV_XKeehpA?usp=sharing",
@@ -1469,54 +1410,29 @@
       let appLinks =
         JSON.parse(localStorage.getItem("sitLinks")) || defaultLinks;
 
-      // --- 2. DOM ELEMENT CACHE ---
-      const DOM = {
-        modals: [
-          document.getElementById("login-modal"),
-          document.getElementById("admin-modal"),
-          document.getElementById("hte-view-modal"),
-        ],
-        loginUser: document.getElementById("login-user"),
-        loginPass: document.getElementById("login-pass"),
-        loginError: document.getElementById("login-error"),
-        adminForms: document.getElementById("admin-forms"),
-        viewTbody: document.getElementById("hte-view-tbody"),
-        emptyState: document.getElementById("hte-view-empty"),
-        adminTbody: document.getElementById("admin-hte-tbody"),
-        csvUpload: document.getElementById("hte-csv-upload"),
-        manualForm: document.getElementById("form-hte-manual"),
-      };
-
-      // --- 3. LINK MANAGEMENT ---
       function applyLinksToDOM() {
         document.querySelectorAll("[data-link]").forEach((element) => {
           const key = element.getAttribute("data-link");
           if (appLinks[key] && appLinks[key] !== "#") {
             element.href = appLinks[key];
-            // Clears the fallback onclick event if a real link exists
-            element.onclick = null;
-          } else if (!appLinks[key] || appLinks[key] === "#") {
+            element.style.display = "inline-flex";
+          } else if (appLinks[key] === "#") {
             element.href = "#";
             element.onclick = (e) => {
-              e.preventDefault();
-              alert("This link has not been provided by the Admin yet.");
+              if (element.getAttribute("href") === "#") {
+                e.preventDefault();
+                alert("This link has not been provided by the Admin yet.");
+              }
             };
           }
         });
       }
+      applyLinksToDOM();
 
-      function saveLinks() {
-        Object.keys(defaultLinks).forEach((key) => {
-          const inputEl = document.getElementById(`input-${key}`);
-          if (inputEl) appLinks[key] = inputEl.value.trim() || "#";
-        });
+      // --- 2. HTE DATABASE CONFIGURATION (SHEETDB) ---
+      const SHEETDB_API_URL = "YOUR_SHEETDB_API_URL_HERE"; // <-- PASTE YOUR SHEETDB API URL HERE
+      let hteList = [];
 
-        localStorage.setItem("sitLinks", JSON.stringify(appLinks));
-        applyLinksToDOM();
-        alert("Links configured successfully.");
-      }
-
-      // --- 4. HTE DATABASE (SHEETDB LOGIC) ---
       function isApiConfigured() {
         return (
           SHEETDB_API_URL !== "YOUR_SHEETDB_API_URL_HERE" &&
@@ -1526,11 +1442,13 @@
 
       async function loadHteData() {
         try {
-          if (DOM.viewTbody)
-            DOM.viewTbody.innerHTML =
+          const viewTbody = document.getElementById("hte-view-tbody");
+          const adminTbody = document.getElementById("admin-hte-tbody");
+          if (viewTbody)
+            viewTbody.innerHTML =
               '<tr><td colspan="5" class="text-center py-6 text-gray-400 text-[11px] sm:text-xs">Loading database...</td></tr>';
-          if (DOM.adminTbody)
-            DOM.adminTbody.innerHTML =
+          if (adminTbody)
+            adminTbody.innerHTML =
               '<tr><td colspan="6" class="text-center py-6 text-gray-400 text-[11px] sm:text-xs">Loading...</td></tr>';
 
           if (!isApiConfigured()) {
@@ -1551,78 +1469,102 @@
         }
       }
 
-      function generateHteRowHTML(hte, isAdmin = false) {
-        const emailHtml = hte.email
-          ? `
-                <div class="flex items-center gap-1.5">
-                    <span class="max-w-[100px] sm:max-w-[120px] truncate" title="${hte.email}">${hte.email}</span>
-                    <a href="mailto:${hte.email}" class="inline-flex items-center text-gray-400 hover:text-gray-800"><i data-lucide="mail" class="w-3 h-3"></i></a>
-                </div>
-            `
-          : "";
-
-        const actionHtml = isAdmin
-          ? `
-                <td class="px-2 sm:px-3 py-2 text-center">
-                    <button onclick="deleteHte('${hte.id}')" class="text-gray-400 hover:text-red-600 transition-colors p-1"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
-                </td>
-            `
-          : "";
-
-        return `
-                <tr class="hover:bg-gray-50 transition-colors">
-                    <td class="px-2 sm:px-4 py-2 sm:py-2.5 font-medium text-gray-800">${
-                      hte.name || ""
-                    }</td>
-                    <td class="px-2 sm:px-4 py-2 sm:py-2.5">${
-                      hte.address || ""
-                    }</td>
-                    <td class="px-2 sm:px-4 py-2 sm:py-2.5 whitespace-nowrap">${
-                      hte.contact || ""
-                    }</td>
-                    <td class="px-2 sm:px-4 py-2 sm:py-2.5">${emailHtml}</td>
-                    <td class="px-2 sm:px-4 py-2 sm:py-2.5 whitespace-nowrap">${
-                      hte.person || ""
-                    }</td>
-                    ${actionHtml}
-                </tr>
-            `;
-      }
-
       function renderHteTables() {
+        const viewTbody = document.getElementById("hte-view-tbody");
+        const emptyState = document.getElementById("hte-view-empty");
+
         if (hteList.length === 0) {
-          if (DOM.viewTbody) DOM.viewTbody.innerHTML = "";
-          if (DOM.emptyState) DOM.emptyState.classList.remove("hidden");
+          if (viewTbody) viewTbody.innerHTML = "";
+          if (emptyState) emptyState.classList.remove("hidden");
         } else {
-          if (DOM.emptyState) DOM.emptyState.classList.add("hidden");
-          if (DOM.viewTbody) {
-            DOM.viewTbody.innerHTML = hteList
-              .map((hte) => generateHteRowHTML(hte, false))
+          if (emptyState) emptyState.classList.add("hidden");
+          if (viewTbody) {
+            viewTbody.innerHTML = hteList
+              .map(
+                (hte) => `
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-2 sm:px-4 py-2 sm:py-2.5 font-medium text-gray-800">${
+                              hte.name || ""
+                            }</td>
+                            <td class="px-2 sm:px-4 py-2 sm:py-2.5">${
+                              hte.address || ""
+                            }</td>
+                            <td class="px-2 sm:px-4 py-2 sm:py-2.5 whitespace-nowrap">${
+                              hte.contact || ""
+                            }</td>
+                            <td class="px-2 sm:px-4 py-2 sm:py-2.5">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="max-w-[100px] sm:max-w-[120px] truncate" title="${
+                                      hte.email || ""
+                                    }">${hte.email || ""}</span>
+                                    ${
+                                      hte.email
+                                        ? `<a href="mailto:${hte.email}" class="inline-flex items-center text-gray-400 hover:text-gray-800"><i data-lucide="mail" class="w-3 h-3"></i></a>`
+                                        : ""
+                                    }
+                                </div>
+                            </td>
+                            <td class="px-2 sm:px-4 py-2 sm:py-2.5 whitespace-nowrap">${
+                              hte.person || ""
+                            }</td>
+                        </tr>
+                    `
+              )
               .join("");
           }
         }
 
-        if (DOM.adminTbody) {
-          DOM.adminTbody.innerHTML = hteList
-            .map((hte) => generateHteRowHTML(hte, true))
+        const adminTbody = document.getElementById("admin-hte-tbody");
+        if (adminTbody) {
+          adminTbody.innerHTML = hteList
+            .map(
+              (hte) => `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-2 sm:px-3 py-2 font-medium">${
+                          hte.name || ""
+                        }</td>
+                        <td class="px-2 sm:px-3 py-2">${hte.address || ""}</td>
+                        <td class="px-2 sm:px-3 py-2">${hte.contact || ""}</td>
+                        <td class="px-2 sm:px-3 py-2">${hte.email || ""}</td>
+                        <td class="px-2 sm:px-3 py-2">${hte.person || ""}</td>
+                        <td class="px-2 sm:px-3 py-2 text-center">
+                            <button onclick="deleteHte('${
+                              hte.id
+                            }')" class="text-gray-400 hover:text-red-600 transition-colors p-1"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                        </td>
+                    </tr>
+                `
+            )
             .join("");
         }
         lucide.createIcons();
       }
 
       async function addHteManual() {
+        const name = document.getElementById("hte-name").value.trim();
+        const address = document.getElementById("hte-address").value.trim();
+        const contact = document.getElementById("hte-contact").value.trim();
+        const email = document.getElementById("hte-email").value.trim();
+        const person = document.getElementById("hte-person").value.trim();
+
+        if (!name) return alert("Name of HTE is required!");
+
         const newHte = {
           id: "HTE-" + Date.now(),
-          name: document.getElementById("hte-name").value.trim(),
-          address: document.getElementById("hte-address").value.trim(),
-          contact: document.getElementById("hte-contact").value.trim(),
-          email: document.getElementById("hte-email").value.trim(),
-          person: document.getElementById("hte-person").value.trim(),
+          name,
+          address,
+          contact,
+          email,
+          person,
         };
 
         hteList.unshift(newHte);
         renderHteTables();
-        if (DOM.manualForm) DOM.manualForm.reset(); // Clean reset of form
+        document
+          .querySelectorAll(
+            "#hte-name, #hte-address, #hte-contact, #hte-email, #hte-person"
+          )
+          .forEach((i) => (i.value = ""));
 
         if (isApiConfigured()) {
           try {
@@ -1641,14 +1583,16 @@
       }
 
       async function processCsvUpload() {
-        const file = DOM.csvUpload.files[0];
+        const fileInput = document.getElementById("hte-csv-upload");
+        const file = fileInput.files[0];
         if (!file) return alert("Please select a CSV file first.");
 
         const reader = new FileReader();
         reader.onload = async function (e) {
-          const lines = e.target.result.split("\n");
-          let newEntries = [];
+          const text = e.target.result;
+          const lines = text.split("\n");
 
+          let newEntries = [];
           for (let i = 1; i < lines.length; i++) {
             if (!lines[i].trim()) continue;
 
@@ -1667,8 +1611,8 @@
             }
           }
 
-          DOM.csvUpload.value = "";
-          if (newEntries.length === 0) return alert("No valid entries found.");
+          fileInput.value = "";
+          if (newEntries.length === 0) return alert("No valid entries.");
 
           hteList = [...newEntries, ...hteList];
           renderHteTables();
@@ -1710,71 +1654,62 @@
         }
       }
 
-      // --- 5. TAB & MODAL UI LOGIC ---
+      function openHteModal() {
+        document.getElementById("hte-view-modal").classList.remove("hidden");
+        renderHteTables();
+      }
+
+      // --- 3. TAB NAVIGATION LOGIC ---
       function switchTab(tabId) {
         document
           .querySelectorAll(".tab-content")
           .forEach((t) => t.classList.remove("active"));
         document.querySelectorAll(".tab-btn").forEach((btn) => {
-          btn.classList.remove(
-            "text-red-800",
-            "min-[485px]:border-red-800",
-            "max-[484px]:bg-red-50"
-          );
-          btn.classList.add("text-gray-500", "min-[485px]:border-transparent");
+          btn.classList.remove("border-red-800", "text-red-800");
+          btn.classList.add("border-transparent", "text-gray-500");
         });
 
         document.getElementById("tab-" + tabId).classList.add("active");
 
         const activeBtn = document.getElementById("btn-" + tabId);
-        activeBtn.classList.remove(
-          "text-gray-500",
-          "min-[485px]:border-transparent"
-        );
-        activeBtn.classList.add(
-          "text-red-800",
-          "min-[485px]:border-red-800",
-          "max-[484px]:bg-red-50"
-        );
+        activeBtn.classList.remove("border-transparent", "text-gray-500");
+        activeBtn.classList.add("border-red-800", "text-red-800");
+      }
+
+      // --- 4. ADMIN MODAL LOGIC ---
+      function openLoginModal() {
+        document.getElementById("login-modal").classList.remove("hidden");
+        document.getElementById("login-error").classList.add("hidden");
+        document.getElementById("login-pass").value = "";
       }
 
       function closeModals() {
-        DOM.modals.forEach((modal) => {
-          if (modal) modal.classList.add("hidden");
-        });
-      }
-
-      function openLoginModal() {
-        DOM.modals[0].classList.remove("hidden"); // Login Modal
-        DOM.loginError.classList.add("hidden");
-        DOM.loginPass.value = "";
-      }
-
-      function openHteModal() {
-        DOM.modals[2].classList.remove("hidden"); // HTE View Modal
-        renderHteTables();
+        document.getElementById("login-modal").classList.add("hidden");
+        document.getElementById("admin-modal").classList.add("hidden");
+        document.getElementById("hte-view-modal").classList.add("hidden");
       }
 
       function attemptLogin() {
-        const user = DOM.loginUser.value;
-        const pass = DOM.loginPass.value;
+        const user = document.getElementById("login-user").value;
+        const pass = document.getElementById("login-pass").value;
 
-        // SECURITY NOTE: Hardcoding credentials here is not secure for production.
         if (user === "madzamador" && pass === "S3cr3t3d08") {
-          closeModals();
+          document.getElementById("login-modal").classList.add("hidden");
           openAdminDashboard();
         } else {
-          DOM.loginError.classList.remove("hidden");
+          document.getElementById("login-error").classList.remove("hidden");
         }
       }
 
       function openAdminDashboard() {
-        DOM.adminForms.innerHTML = "";
+        const adminForms = document.getElementById("admin-forms");
+        adminForms.innerHTML = "";
+
         Object.keys(defaultLinks).forEach((key) => {
           const val = appLinks[key] || "";
           const label = linkLabels[key] || key;
 
-          DOM.adminForms.innerHTML += `
+          adminForms.innerHTML += `
                     <div>
                         <label class="block text-[10px] font-semibold text-gray-500 mb-1 uppercase">${label}</label>
                         <input type="text" id="input-${key}" value="${val}" class="w-full px-2.5 py-1.5 border border-gray-300 rounded focus:outline-none focus:border-gray-500 text-[11px] sm:text-xs text-gray-700" placeholder="https://...">
@@ -1783,11 +1718,21 @@
         });
 
         renderHteTables();
-        DOM.modals[1].classList.remove("hidden"); // Admin Modal
+        document.getElementById("admin-modal").classList.remove("hidden");
+      }
+
+      function saveLinks() {
+        Object.keys(defaultLinks).forEach((key) => {
+          const inputVal = document.getElementById(`input-${key}`).value;
+          appLinks[key] = inputVal.trim() || "#";
+        });
+
+        localStorage.setItem("sitLinks", JSON.stringify(appLinks));
+        applyLinksToDOM();
+        alert("Links configured.");
       }
 
       // --- INIT ---
-      applyLinksToDOM();
       lucide.createIcons();
       loadHteData();
     </script>
