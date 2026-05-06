@@ -6,7 +6,7 @@
     <title>SIT Process Flow - TUP</title>
 
     <!-- Tab Logo / Favicon -->
-    <link rel="icon" type="image/png" href="assets/ched_logo.png" />
+    <link rel="icon" type="image/png" href="assets/tup_logo.png" />
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -1583,41 +1583,44 @@
       }
 
       function generateHteRowHTML(hte, isAdmin = false) {
+        // Improved Email Link: Entire text and icon are now a clickable button
         const emailHtml = hte.email
           ? `
-                      <div class="flex items-center gap-1.5">
-                          <span class="max-w-[100px] sm:max-w-[120px] truncate" title="${hte.email}">${hte.email}</span>
-                          <a href="mailto:${hte.email}" class="inline-flex items-center text-gray-400 hover:text-gray-800"><i data-lucide="mail" class="w-3 h-3"></i></a>
-                      </div>
-                  `
-          : "";
+                <a href="mailto:${hte.email.trim()}" class="flex items-center gap-1.5 text-gray-600 hover:text-red-800 transition-colors group cursor-pointer w-full">
+                    <span class="max-w-[100px] sm:max-w-[140px] truncate group-hover:underline font-medium" title="Email ${
+                      hte.email
+                    }">${hte.email}</span>
+                    <i data-lucide="mail" class="w-3.5 h-3.5 text-gray-400 group-hover:text-red-800 shrink-0"></i>
+                </a>
+            `
+          : '<span class="text-gray-400 text-xs italic">No email provided</span>';
 
         const actionHtml = isAdmin
           ? `
-                      <td class="px-2 sm:px-3 py-2 text-center">
-                          <button onclick="deleteHte('${hte.id}')" class="text-gray-400 hover:text-red-600 transition-colors p-1"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
-                      </td>
-                  `
+                <td class="px-2 sm:px-3 py-2 text-center">
+                    <button onclick="deleteHte('${hte.id}')" class="text-gray-400 hover:text-red-600 transition-colors p-1" title="Delete Partner"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                </td>
+            `
           : "";
 
         return `
-                      <tr class="hover:bg-gray-50 transition-colors">
-                          <td class="px-2 sm:px-4 py-2 sm:py-2.5 font-medium text-gray-800">${
-                            hte.name || ""
-                          }</td>
-                          <td class="px-2 sm:px-4 py-2 sm:py-2.5">${
-                            hte.address || ""
-                          }</td>
-                          <td class="px-2 sm:px-4 py-2 sm:py-2.5 whitespace-nowrap">${
-                            hte.contact || ""
-                          }</td>
-                          <td class="px-2 sm:px-4 py-2 sm:py-2.5">${emailHtml}</td>
-                          <td class="px-2 sm:px-4 py-2 sm:py-2.5 whitespace-nowrap">${
-                            hte.person || ""
-                          }</td>
-                          ${actionHtml}
-                      </tr>
-                  `;
+                <tr class="hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0">
+                    <td class="px-2 sm:px-4 py-2 sm:py-3 font-semibold text-gray-800">${
+                      hte.name || ""
+                    }</td>
+                    <td class="px-2 sm:px-4 py-2 sm:py-3 text-gray-600">${
+                      hte.address || ""
+                    }</td>
+                    <td class="px-2 sm:px-4 py-2 sm:py-3 text-gray-600 whitespace-nowrap">${
+                      hte.contact || ""
+                    }</td>
+                    <td class="px-2 sm:px-4 py-2 sm:py-3">${emailHtml}</td>
+                    <td class="px-2 sm:px-4 py-2 sm:py-3 text-gray-600 whitespace-nowrap">${
+                      hte.person || ""
+                    }</td>
+                    ${actionHtml}
+                </tr>
+            `;
       }
 
       function renderHteTables() {
