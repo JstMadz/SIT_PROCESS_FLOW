@@ -1585,7 +1585,7 @@
       function generateHteRowHTML(hte, isAdmin = false) {
         const emailHtml = hte.email
           ? `
-                <a href="mailto:${hte.email.trim()}" class="flex items-center gap-1.5 text-gray-600 hover:text-red-800 transition-colors group cursor-pointer w-full">
+                <a href="mailto:${hte.email.trim()}" target="_top" class="flex items-center gap-1.5 text-gray-600 hover:text-red-800 transition-colors group cursor-pointer w-full">
                     <span class="max-w-[100px] sm:max-w-[140px] truncate group-hover:underline font-medium" title="Email ${
                       hte.email
                     }">${hte.email}</span>
