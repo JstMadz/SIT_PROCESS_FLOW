@@ -1119,7 +1119,7 @@
       </div>
     </main>
 
-    <!-- ============================================== -->
+<!-- ============================================== -->
     <!-- FOOTER -->
     <!-- ============================================== -->
     <footer
@@ -1128,21 +1128,21 @@
       <div
         class="max-w-4xl mx-auto px-4 sm:px-6 py-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500"
       >
-        <div class="text-center md:text-left">
+        <div class="text-center md:text-left w-full">
           <p class="font-medium text-gray-600 mb-0.5">
             © TUP Industrial Relations and Job Placement Office
           </p>
           <p>
             Created by
-            <span class="font-semibold text-gray-700">"@madzamador"</span>
+            <span 
+              id="secret-admin-trigger" 
+              class="font-semibold text-gray-700 cursor-default select-none transition-colors duration-300"
+              onclick="handleSecretClick()"
+            >
+              "Ino Amador"
+            </span>
           </p>
         </div>
-        <button
-          onclick="openLoginModal()"
-          class="w-full md:w-auto justify-center text-gray-400 hover:text-gray-800 transition-colors flex items-center gap-1.5 font-medium px-4 py-2 md:px-3 md:py-1.5 rounded border border-gray-200 md:border-transparent hover:border-gray-200 hover:bg-white shadow-sm md:shadow-none"
-        >
-          <i data-lucide="lock" class="w-3.5 h-3.5"></i> Admin Access
-        </button>
       </div>
     </footer>
 
