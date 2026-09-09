@@ -191,6 +191,7 @@ async function deleteHte(id) {
 
     // Update UI
     hteList = hteList.filter((hte) => hte.id !== id);
+    selectedHteIds.delete(id);
     renderHteTables();
     showToast(
       "Partner Removed",
@@ -202,5 +203,41 @@ async function deleteHte(id) {
     showToast("Deletion Error", "Failed: " + error.message, "error");
   } finally {
     console.log("--- TRACE END ---");
+  }
+}
+
+async function updateHte(id, updates) {
+  if (!auth.currentUser) throw new Error("Unauthenticated: No user logged in.");
+  await db.collection("htes").doc(id).update(updates);
+}
+
+async function deleteHtes(ids) {
+  if (!ids.length) return;
+  try {
+    if (!auth.currentUser)
+      throw new Error("Unauthenticated: No user logged in.");
+
+    for (let start = 0; start < ids.length; start += 500) {
+      const batch = db.batch();
+      ids.slice(start, start + 500).forEach((id) => {
+        batch.delete(db.collection("htes").doc(id));
+      });
+      await batch.commit();
+    }
+
+    const deletedIds = new Set(ids);
+    hteList = hteList.filter((hte) => !deletedIds.has(hte.id));
+    ids.forEach((id) => selectedHteIds.delete(id));
+    currentPageAdmin = 1;
+    currentPageStudent = 1;
+    renderHteTables();
+    showToast(
+      "Partners Removed",
+      `${ids.length} HTE partner${ids.length === 1 ? "" : "s"} deleted from the database.`,
+      "success",
+    );
+  } catch (error) {
+    console.error("Bulk delete HTE Error Trace:", error);
+    showToast("Deletion Error", "Failed: " + error.message, "error");
   }
 }

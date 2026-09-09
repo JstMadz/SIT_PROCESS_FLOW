@@ -17,6 +17,7 @@ const DOM = {
   adminTbody: document.getElementById("admin-hte-tbody"),
   csvUpload: document.getElementById("hte-csv-upload"),
   manualForm: document.getElementById("form-hte-manual"),
+  editForm: document.getElementById("form-hte-edit"),
 };
 
 // Initialize the application

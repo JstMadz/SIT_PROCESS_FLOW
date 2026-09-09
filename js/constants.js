@@ -5,6 +5,10 @@ let hteList = [];
 let currentPageStudent = 1;
 let currentPageAdmin = 1;
 const itemsPerPage = 10;
+let hteSearchTerm = "";
+let hteSortField = "name";
+let hteSortDirection = "asc";
+const selectedHteIds = new Set();
 
 // Default links to forms and resources
 const defaultLinks = {
@@ -72,21 +76,21 @@ function applyLinksToDOM() {
 }
 
 // --- HIDDEN SECURITY INTERFACE ---
-      let adminClickCount = 0;
-      let adminClickTimer = null;
+let adminClickCount = 0;
+let adminClickTimer = null;
 
-      function handleSecretClick() {
-        adminClickCount++;
-        
-        // Reset the counter if the user takes too long between clicks (2 seconds)
-        clearTimeout(adminClickTimer);
-        adminClickTimer = setTimeout(() => {
-          adminClickCount = 0;
-        }, 2000);
+function handleSecretClick() {
+  adminClickCount++;
 
-        // Secret threshold reached
-        if (adminClickCount === 5) {
-          adminClickCount = 0; // Reset counter immediately
-          openLoginModal();
-        }
-      }
+  // Reset the counter if the user takes too long between clicks (2 seconds)
+  clearTimeout(adminClickTimer);
+  adminClickTimer = setTimeout(() => {
+    adminClickCount = 0;
+  }, 2000);
+
+  // Secret threshold reached
+  if (adminClickCount === 5) {
+    adminClickCount = 0; // Reset counter immediately
+    openLoginModal();
+  }
+}
