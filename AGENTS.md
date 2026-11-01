@@ -13,11 +13,12 @@ A guide for TUP Manila College of Science students doing their **Supervised Indu
 - Deploy: static hosting of the repo root; Firebase project `tup-sit-app`.
 
 ## 3. Project memory
-- `implementation_plan.md`: backlog. Read before working. Create `walkthrough.md` on first change and add a dated entry after every change.
+- `implementation_plan.md`: backlog. Read before working.
+- `walkthrough.md`: dated log. **Add an entry at the top after every change.**
 - Work on `develop`, never directly on `main`.
 
 ## 4. Domain rules (non-negotiable)
-1. **Login protection (standing rule):** 15 idle minutes → 30-second in-app "Are you still there?" countdown → sign-out; sign-in throttling via Firebase Auth (`auth/too-many-requests` shown in plain words); a show/hide eye on the password field. Today `js/modules/session.js` signs out after 2 minutes with no warning: see the backlog P1 and `~/.claude/skills/dev-playbook/references/patterns.md` §13.
+1. **Login protection (standing rule):** 15 idle minutes → 30-second in-app "Are you still there?" countdown → sign-out (`js/modules/session.js`, started for every signed-in session, including one Firebase restores on reload; a session reopened after 15+ idle minutes is signed out); sign-in throttling is Firebase Auth's (`auth/too-many-requests` shown in plain words, `LOGIN_ERROR_MESSAGES` in `js/firebase/auth.js`); a show/hide eye on the password. Recipe: `~/.claude/skills/dev-playbook/references/patterns.md` §13.
 2. Only signed-in admins may write; students never need an account. Writes are enforced by **Firestore security rules in the Firebase console**, not by hiding buttons.
 3. In-app modals and plain-language messages (no `alert`/`confirm`).
 

@@ -104,8 +104,26 @@ function openLoginModal() {
     DOM.loginError.classList.add("hidden");
     DOM.loginPass.value = "";
     DOM.loginUser.value = "";
+    setLoginPasswordVisible(false);
     document.getElementById("btn-login-submit").innerHTML = "Login";
   }
+}
+
+// Show/hide the login password, so an admin can check what they typed
+// before signing in (a wrong password counts towards Firebase's lock).
+function setLoginPasswordVisible(visible) {
+  const button = document.getElementById("btn-toggle-password");
+  const label = visible ? "Hide password" : "Show password";
+  DOM.loginPass.type = visible ? "text" : "password";
+  button.setAttribute("aria-pressed", String(visible));
+  button.setAttribute("aria-label", label);
+  button.title = label;
+  button.innerHTML = `<i data-lucide="${visible ? "eye-off" : "eye"}" class="w-4 h-4"></i>`;
+  lucide.createIcons();
+}
+
+function toggleLoginPassword() {
+  setLoginPasswordVisible(DOM.loginPass.type === "password");
 }
 
 function openHteModal() {

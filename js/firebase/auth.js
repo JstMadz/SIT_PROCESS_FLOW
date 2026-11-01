@@ -1,6 +1,18 @@
 // Firebase Authentication
 // Handles user login, logout, and auth state management
 
+// Plain-language sign-in errors. Firebase Auth throttles repeated wrong passwords
+// itself (auth/too-many-requests); that is this app's server-side rate limit.
+const LOGIN_ERROR_MESSAGES = {
+  "auth/invalid-credential": "Wrong email or password.",
+  "auth/user-not-found": "Wrong email or password.",
+  "auth/wrong-password": "Wrong email or password.",
+  "auth/invalid-email": "That email address is not valid.",
+  "auth/user-disabled": "This account has been disabled.",
+  "auth/too-many-requests": "Too many wrong attempts. Sign-in is paused for a while; try again later.",
+  "auth/network-request-failed": "Could not reach the sign-in service. Check your internet connection.",
+};
+
 async function attemptLogin() {
   const email = DOM.loginUser.value.trim();
   const pass = DOM.loginPass.value;
@@ -29,34 +41,31 @@ async function attemptLogin() {
       "Welcome to the Admin Dashboard.",
       "success",
     );
-    startInactivityTracking();
   } catch (error) {
     console.error("Login Error:", error);
-    DOM.loginError.innerText = "Invalid credentials. Try again.";
+    DOM.loginError.innerText = LOGIN_ERROR_MESSAGES[error.code] || "Sign-in failed. Try again.";
     DOM.loginError.classList.remove("hidden");
     loginBtn.innerHTML = "Login";
   }
 }
 
-async function logoutAdmin() {
+// reason: shown instead of the usual message (e.g. the idle log-out)
+async function logoutAdmin(reason) {
   if (auth) {
     await auth.signOut();
     closeModals();
     stopInactivityTracking();
     showToast(
       "Logged Out",
-      "You have been securely signed out of the system.",
-      "info",
+      reason || "You have been securely signed out of the system.",
+      reason ? "warning" : "info",
     );
   }
 }
 
 function setupAuthStateListener() {
   auth.onAuthStateChanged((user) => {
-    if (user) {
-      console.log("Admin session active.");
-    } else {
-      console.log("Admin session inactive.");
-    }
+    if (user) startInactivityTracking();
+    else stopInactivityTracking();
   });
 }
