@@ -73,52 +73,6 @@
       </div>
     </div>
 
-  </head>
-  <body
-    class="text-gray-800 min-h-screen relative flex flex-col overflow-x-hidden max-[484px]:pb-16 min-[485px]:pb-0"
-  >
-    <!-- TOAST NOTIFICATION CONTAINER -->
-    <div
-      id="toast-container"
-      class="fixed top-4 right-4 sm:top-6 sm:right-6 z-[100] flex flex-col gap-3 pointer-events-none"
-    ></div>
-
-    <!-- CUSTOM CONFIRMATION MODAL -->
-    <div
-      id="confirm-modal"
-      class="modal-overlay fixed inset-0 z-[110] hidden flex items-center justify-center p-4"
-    >
-      <div
-        class="bg-white rounded-xl shadow-2xl p-6 sm:p-7 w-full max-w-sm relative border border-gray-200 text-center transform scale-100 transition-transform"
-      >
-        <div
-          class="w-12 h-12 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-100"
-        >
-          <i data-lucide="alert-triangle" class="w-6 h-6"></i>
-        </div>
-        <h3 id="confirm-title" class="text-lg font-bold text-gray-900 mb-2">
-          Are you sure?
-        </h3>
-        <p id="confirm-message" class="text-sm text-gray-500 mb-6">
-          This action cannot be undone.
-        </p>
-        <div class="flex gap-3 justify-center">
-          <button
-            onclick="closeConfirm()"
-            class="px-4 py-2 rounded font-medium text-sm text-gray-600 bg-white border border-gray-300 hover:bg-gray-50 transition-colors w-full"
-          >
-            Cancel
-          </button>
-          <button
-            onclick="executeConfirm()"
-            class="px-4 py-2 rounded font-medium text-sm text-white bg-red-600 hover:bg-red-700 transition-colors w-full flex items-center justify-center gap-2"
-          >
-            <span id="confirm-btn-text">Delete</span>
-          </button>
-        </div>
-      </div>
-    </div>
-
     <!-- ============================================== -->
     <!-- HEADER / NAVBAR SECTION (STICKY TOP) -->
     <!-- ============================================== -->
