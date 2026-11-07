@@ -4,6 +4,9 @@
 
 ## Backlog
 
+Security (audit 2026-11-07):
+- [ ] Owner: review the Firebase rules and sign-up settings against the 7-door checklist. Details are in the private vault note `02_Areas/Security.md`.
+
 ### P1: Security
 - [x] (2026-11-01) **Login protection to the standing rule** (done; see walkthrough). Rule (owner, 2026-11-01; `~/.claude/skills/dev-playbook/references/patterns.md` §13): log out after 15 idle minutes with a 30-second in-app "Are you still there?" countdown; server-side rate limit of 3 wrong passwords → 30-minute lockout. Today `js/modules/session.js` logs out after **2 minutes** (`INACTIVITY_LIMIT`) with no warning → 15 minutes with a 30-second in-app countdown (Stay signed in / Log out now), measured from timestamps, then the normal sign-out with a message. Sign-in throttling is Firebase Auth's; show `auth/too-many-requests` in plain language.
 
