@@ -1,5 +1,9 @@
 # SIT_PROCESS_FLOW: walkthrough
 
+## 2026-11-08 — Full security audit added to the backlog
+
+- On hold at the owner's request; the backlog lists what this repo needs before it can run. Nothing else changed.
+
 ## 2026-11-01: Login protection to the standing rule
 
 The standing rule for every app with a login: log out after 15 idle minutes with a 30-second in-app "Are you still there?" countdown, throttle wrong passwords on the server, and put a show/hide eye on the password field.

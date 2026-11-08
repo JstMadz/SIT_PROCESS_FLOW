@@ -5,6 +5,7 @@
 ## Backlog
 
 Security (audit 2026-11-07):
+- [ ] **Full security audit (on hold, owner 2026-11-08):** 7 doors plus extra checks A to G, not run yet. Setup and tools are listed in the owner's private notes.
 - [ ] Owner: review the Firebase rules and sign-up settings against the 7-door checklist. Details are in the private vault note `02_Areas/Security.md`.
 - [ ] Carry out the data-access plan in the same vault note, once the owner has answered its three questions.
 
