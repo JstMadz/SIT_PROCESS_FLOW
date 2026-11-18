@@ -16,3 +16,7 @@ Security (audit 2026-11-07):
 - [ ] Check (and copy into the repo, e.g. `firestore.rules`) the Firestore security rules in the Firebase console: writes to `htes` and `settings/app_links` must require a signed-in admin. The app only hides the admin screens; the rules are the real protection.
 - [ ] Pin lucide to an exact version: `index.html` loads `https://unpkg.com/lucide@latest`, so a new lucide release can change or break every icon without a code change.
 - [ ] Let Enter submit the admin login (it's a `div` with an `onclick` button, not a `<form>`).
+
+## Privacy
+
+- [ ] **Data Privacy Act check (owner rule 2026-11-18), under the Data Privacy Act of 2012 (Republic Act No. 10173), a Philippine law:** run P1–P9 from `~/.claude/skills/dev-playbook/references/data-privacy.md`; start with P1, P2, P4. Cross-repo plan and register: vault `02_Areas/Data Privacy.md`.
