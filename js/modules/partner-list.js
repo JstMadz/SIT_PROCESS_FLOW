@@ -1,9 +1,9 @@
-// Partner companies list for students: search, sort, "show more", and rows
-// that open in place to show who to contact.
+// Partner companies table for students: filter, sort by company or city
+// (click the heading again to reverse), "show more", email and copy.
 
 const PARTNER_BATCH = 20;
 let partnerSearch = "";
-let partnerSort = "name";
+let partnerSort = { field: "name", direction: "asc" };
 let partnersShown = PARTNER_BATCH;
 
 function openHteModal() {
@@ -28,22 +28,14 @@ function clearPartnerSearch() {
 }
 
 function setPartnerSort(field) {
-  partnerSort = field;
-  setSegValue(document.getElementById("partner-sort"), (button) => button.dataset.sort === field);
+  const reverse = partnerSort.field === field && partnerSort.direction === "asc";
+  partnerSort = { field, direction: reverse ? "desc" : "asc" };
   renderPartnerList();
 }
 
 function showMorePartners() {
   partnersShown += PARTNER_BATCH;
   renderPartnerList();
-}
-
-function togglePartnerRow(button) {
-  const open = button.getAttribute("aria-expanded") !== "true";
-  const panel = document.getElementById(button.getAttribute("aria-controls"));
-  button.setAttribute("aria-expanded", String(open));
-  panel.classList.toggle("open", open);
-  panel.inert = !open;
 }
 
 function copyPartnerEmail(button) {
@@ -54,42 +46,40 @@ function copyPartnerEmail(button) {
     .catch(() => showToast("Could not copy", "Select the email address and copy it yourself.", "warning"));
 }
 
-function partnerDetailsHTML(hte) {
-  const email = hte.email ? hte.email.trim() : "";
-  const rows = [
-    ["Contact person", escapeHteHtml(hte.person)],
-    ["Phone", escapeHteHtml(hte.contact)],
-    [
-      "Email",
-      email &&
-        `<a href="mailto:${encodeURIComponent(email)}">${escapeHteHtml(email)}</a>` +
-          `<button type="button" class="link-btn" data-email="${escapeHteHtml(email)}" onclick="copyPartnerEmail(this)">Copy</button>`,
-    ],
-    ["Address", escapeHteHtml(hte.address)],
-  ].filter(([, value]) => value);
+function partnerCellHTML(label, value, extraClass = "") {
+  const empty = !value;
+  return `<td data-label="${label}" class="${extraClass}${empty ? " empty" : ""}">${empty ? '<span class="none">—</span>' : value}</td>`;
+}
 
-  if (!rows.length) {
-    return '<p class="details text-secondary">No contact details yet. Ask your SIT coordinator.</p>';
-  }
-  return `<dl class="details">${rows.map(([label, value]) => `<div><dt>${label}</dt><dd>${value}</dd></div>`).join("")}</dl>`;
+function partnerEmailHTML(rawEmail) {
+  const email = (rawEmail || "").trim();
+  if (!email) return "";
+  const safe = escapeHteHtml(email);
+  return `<div class="email-cell">
+      <a href="mailto:${encodeURI(email)}">${safe}</a>
+      <button type="button" class="icon-btn" data-email="${safe}" onclick="copyPartnerEmail(this)" aria-label="Copy email address ${safe}" title="Copy email address">${icon("copy")}</button>
+    </div>`;
 }
 
 function partnerRowHTML(hte) {
-  const panelId = `partner-${escapeHteHtml(hte.id)}`;
-  const address = escapeHteHtml(hte.address);
-  const person = escapeHteHtml(hte.person);
   return `
-    <li>
-      <button type="button" class="row" aria-expanded="false" aria-controls="${panelId}" onclick="togglePartnerRow(this)">
-        <span class="row-main">
-          <span class="row-title">${escapeHteHtml(hte.name)}</span>
-          ${address ? `<span class="row-sub">${address}</span>` : ""}
-        </span>
-        ${person ? `<span class="row-meta">${person}</span>` : ""}
-        ${icon("chevron", "chevron")}
-      </button>
-      <div class="row-detail" id="${panelId}" inert><div>${partnerDetailsHTML(hte)}</div></div>
-    </li>`;
+    <tr>
+      <td class="company">${escapeHteHtml(hte.name)}</td>
+      ${partnerCellHTML("City / address", escapeHteHtml(hte.address))}
+      ${partnerCellHTML("Contact person", escapeHteHtml(hte.person))}
+      ${partnerCellHTML("Phone", escapeHteHtml(hte.contact))}
+      ${partnerCellHTML("Email", partnerEmailHTML(hte.email))}
+    </tr>`;
+}
+
+function renderPartnerSortHeadings() {
+  document.querySelectorAll("#partner-table th[data-sort]").forEach((th) => {
+    const active = th.dataset.sort === partnerSort.field;
+    const ascending = partnerSort.direction === "asc";
+    if (active) th.setAttribute("aria-sort", ascending ? "ascending" : "descending");
+    else th.removeAttribute("aria-sort");
+    th.querySelector(".sort-mark").innerHTML = active ? icon(ascending ? "arrowUp" : "arrowDown") : "";
+  });
 }
 
 function partnerStateHTML(visibleCount) {
@@ -102,21 +92,21 @@ function partnerStateHTML(visibleCount) {
   }
   if (!visibleCount) {
     return `<strong>No company matches “${escapeHteHtml(partnerSearch.trim())}”</strong>Try a shorter word or check the spelling.
-      <div class="mt-4"><button type="button" class="btn btn-secondary" onclick="clearPartnerSearch()">Clear search</button></div>`;
+      <div class="mt-4"><button type="button" class="btn btn-secondary" onclick="clearPartnerSearch()">Clear filter</button></div>`;
   }
   return "";
 }
 
 function renderPartnerList() {
-  const visible = getVisibleHtes(partnerSearch, partnerSort);
+  const visible = getVisibleHtes(partnerSearch, partnerSort.field, partnerSort.direction);
   const shown = visible.slice(0, partnersShown);
-  const list = document.getElementById("partner-list");
   const state = document.getElementById("partner-state");
   const more = document.getElementById("partner-more");
   const stateHTML = partnerStateHTML(visible.length);
 
-  list.innerHTML = shown.map(partnerRowHTML).join("");
-  list.classList.toggle("hidden", !shown.length);
+  document.getElementById("partner-list").innerHTML = shown.map(partnerRowHTML).join("");
+  document.querySelector(".partner-wrap").classList.toggle("hidden", !shown.length);
+  renderPartnerSortHeadings();
   state.innerHTML = stateHTML;
   state.classList.toggle("hidden", !stateHTML);
 

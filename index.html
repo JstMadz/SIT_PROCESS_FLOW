@@ -22,6 +22,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <link rel="stylesheet" href="css/tokens.css" />
     <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/partner-table.css" />
   </head>
   <body class="flex flex-col">
     <div id="toast-container" class="fixed top-4 right-4 z-[130] flex flex-col gap-3 pointer-events-none" aria-live="polite"></div>
@@ -140,12 +141,9 @@
                 <h2 class="card-title">HTE Selection &amp; Validation</h2>
                 <p>Select a Host Training Establishment (HTE) through one of two methods:</p>
                 <div class="grid-12" style="gap: 12px">
-                  <div class="well span-6 flex flex-col">
+                  <div class="well span-6">
                     <h3 class="well-title">Option A: Partner HTE</h3>
-                    <p class="text-secondary" style="font-size: 14px">Choose from companies with an existing MOA.</p>
-                    <div class="mt-auto pt-3">
-                      <button type="button" class="btn btn-secondary w-full" onclick="openHteModal()">View partner companies</button>
-                    </div>
+                    <p class="text-secondary" style="font-size: 14px">Choose from companies with an existing MOA. Open the list with <strong>View partner companies</strong> at the top of this phase.</p>
                   </div>
                   <div class="well span-6">
                     <h3 class="well-title">Option B: Personal Choice</h3>
@@ -379,25 +377,33 @@
         <div class="sheet-head">
           <div>
             <h2 id="partner-title" class="sheet-title">Partner companies</h2>
-            <p class="text-secondary mt-1" style="font-size: 14px">Host Training Establishments (HTEs) with an existing MOA with TUP. Tap a company to see who to contact.</p>
+            <p class="text-secondary mt-1" style="font-size: 14px">Host Training Establishments (HTEs) with an existing MOA with TUP. Tap an email address to write to the company from your email app.</p>
           </div>
           <button type="button" class="icon-btn" onclick="closeModals()" aria-label="Close partner list"><i data-icon="x"></i></button>
         </div>
         <div class="sheet-tools">
           <label class="search-box">
-            <span class="sr-only">Search partner companies</span>
+            <span class="sr-only">Filter partner companies</span>
             <i data-icon="search"></i>
-            <input id="partner-search" type="search" class="field" placeholder="Search name, city or contact" autocomplete="off" oninput="setPartnerSearch(this.value)" />
+            <input id="partner-search" type="search" class="field" placeholder="Filter by company or city" autocomplete="off" oninput="setPartnerSearch(this.value)" />
           </label>
-          <div class="seg" id="partner-sort" role="group" aria-label="Sort companies">
-            <span class="seg-pill" aria-hidden="true"></span>
-            <button type="button" aria-pressed="true" data-sort="name" onclick="setPartnerSort('name')">A to Z</button>
-            <button type="button" aria-pressed="false" data-sort="address" onclick="setPartnerSort('address')">By city</button>
-          </div>
         </div>
         <div class="sheet-body">
           <p id="partner-count" class="micro mb-3" aria-live="polite"></p>
-          <ul id="partner-list" class="group-list"></ul>
+          <div class="partner-wrap">
+            <table id="partner-table" class="partner-table">
+              <thead>
+                <tr>
+                  <th scope="col" data-sort="name"><button type="button" class="sort-btn" onclick="setPartnerSort('name')">Company<span class="sort-mark"></span></button></th>
+                  <th scope="col" data-sort="address"><button type="button" class="sort-btn" onclick="setPartnerSort('address')">City / address<span class="sort-mark"></span></button></th>
+                  <th scope="col">Contact person</th>
+                  <th scope="col">Phone</th>
+                  <th scope="col">Email</th>
+                </tr>
+              </thead>
+              <tbody id="partner-list"></tbody>
+            </table>
+          </div>
           <div id="partner-state" class="list-state hidden"></div>
           <div class="flex justify-center mt-4">
             <button type="button" id="partner-more" class="btn btn-secondary hidden" onclick="showMorePartners()"></button>

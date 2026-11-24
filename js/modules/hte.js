@@ -16,7 +16,7 @@ function escapeHteHtml(value) {
   );
 }
 
-function getVisibleHtes(searchTerm, sortField) {
+function getVisibleHtes(searchTerm, sortField, direction = "asc") {
   const search = searchTerm.trim().toLowerCase();
   return hteList
     .filter((hte) => {
@@ -26,8 +26,10 @@ function getVisibleHtes(searchTerm, sortField) {
         .toLowerCase()
         .includes(search);
     })
-    .sort((left, right) =>
-      String(left[sortField] || "").toLowerCase().localeCompare(String(right[sortField] || "").toLowerCase()),
+    .sort(
+      (left, right) =>
+        String(left[sortField] || "").toLowerCase().localeCompare(String(right[sortField] || "").toLowerCase()) *
+        (direction === "asc" ? 1 : -1),
     );
 }
 

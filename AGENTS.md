@@ -20,12 +20,12 @@ A guide for TUP Manila College of Science students doing their **Supervised Indu
 ## 4. Domain rules (non-negotiable)
 1. **Login protection (standing rule):** 15 idle minutes → 30-second in-app "Are you still there?" countdown → sign-out (`js/modules/session.js`, started for every signed-in session, including one Firebase restores on reload; a session reopened after 15+ idle minutes is signed out); sign-in throttling is Firebase Auth's (`auth/too-many-requests` shown in plain words, `LOGIN_ERROR_MESSAGES` in `js/firebase/auth.js`); a show/hide eye on the password. Recipe: `~/.claude/skills/dev-playbook/references/patterns.md` §13.
 2. Only signed-in admins may write; students never need an account. Writes are enforced by **Firestore security rules in the Firebase console**, not by hiding buttons.
-3. In-app modals and plain-language messages (no `alert`/`confirm`).
+3. In-app modals and plain-language messages (no `alert`/`confirm`). Modals are locked (owner, 2026-11-24): only their own ×, Cancel or answer buttons close them; no backdrop click or Escape.
 
 ## 5. Key files
 - `config/firebase-config.js`: Firebase project settings (the web API key is public by design; access is controlled by Auth + Firestore rules).
 - `js/firebase/auth.js` (sign-in/out), `js/firebase/database.js` (Firestore: `htes` collection, `settings/app_links` document).
-- `js/modules/`: `session.js` (inactivity sign-out), `partner-list.js` (students' partner companies: search, sort, show more, rows that open in place), `hte.js` (shared search/sort, admin list, CSV upload), `theme.js` (light/dark), `tabs.js`, `ui.js` (icons, toasts, modals, segmented controls); `js/main.js` wires them; `js/constants.js`.
+- `js/modules/`: `session.js` (inactivity sign-out), `partner-list.js` (students' partner companies table: filter, sort by company/city, show more, mailto + copy; styles in `css/partner-table.css`), `hte.js` (shared search/sort, admin list, CSV upload), `theme.js` (light/dark), `tabs.js`, `ui.js` (icons, toasts, modals, segmented controls); `js/main.js` wires them; `js/constants.js`.
 - `docs/project-overview.html`: the project's one overview page (process flow, PAWIM guide, architecture, data). Published at https://claude.ai/artifact/UtHgXkr5wctDeYeKzMZawt; republish to the same URL when a feature, process, stack or data shape changes.
 - `oldVersions/`: earlier pages kept for reference; not served from the main page.
 

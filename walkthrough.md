@@ -1,5 +1,17 @@
 # SIT_PROCESS_FLOW: walkthrough
 
+## 2026-11-24 (later) — Partner companies as a table; locked dialogs
+
+Owner asked for a table of partners, no redundant buttons, a copy icon, sorting and filtering by company and city, emails that open the user's mail app, and dialogs that close only from their own buttons.
+
+- **Table** (`js/modules/partner-list.js`, styles in new `css/partner-table.css`): Company, City / address, Contact person, Phone, Email, all visible; "—" for a missing value; headings stay visible while scrolling. Click Company or City to sort, again to reverse (`aria-sort`, arrow icon). Filter box above. Narrower than 40rem (container query) each company becomes a card with labels, and the two sort headings stay as a sort bar. "Show 20 more" kept.
+- **Email:** the address is a `mailto:` link, so it opens the default mail app on desktop or phone (if one is set up); a copy icon (labelled "Copy email address …") replaces the word Copy.
+- **Removed:** the second "View partner companies" button (Step 3, Option A now points to the one at the top of the phase) and the A to Z / By city switch (the headings sort now). Rows no longer open in place.
+- **Locked dialogs** (`js/modules/ui.js`): clicking outside and Escape no longer close any dialog; only ×, Cancel, Close or the dialog's answer buttons do. Tab stays inside the top dialog.
+- `getVisibleHtes` takes a sort direction (admin list stays A to Z).
+
+Verified with Playwright and Firebase stubbed: 62/62 checks (new: 5 columns, sort and reverse, sort by city, mailto link, copy icon, dash for missing, Escape/outside click/Tab stay inside for the partner list, confirm and idle dialogs, one View partner companies button). Screenshots at 1440 px light/dark, 390 px and 344 px; no sideways scroll, no page errors. Overview artifact republished (System workflow row).
+
 ## 2026-11-24 — Calm-luxury redesign and a new partner companies list
 
 Owner asked for the site in the latest house design and a friendlier list of partner companies.

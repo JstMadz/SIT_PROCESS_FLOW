@@ -20,7 +20,7 @@ function initializeApp() {
   initializeFirebase();
   renderIcons();
   setupTheme();
-  setupModalDismissal();
+  setupModalLock();
   syncAllSegPills();
   window.addEventListener("resize", syncAllSegPills);
 

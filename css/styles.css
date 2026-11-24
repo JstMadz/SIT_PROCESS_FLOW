@@ -335,7 +335,7 @@ input[type="file"].field::file-selector-button {
   box-shadow: var(--shadow-modal), var(--inner-highlight);
   animation: sheet-in 0.28s var(--spring);
 }
-.sheet-lg { max-width: 880px; height: min(820px, calc(100dvh - 32px)); }
+.sheet-lg { max-width: 1100px; height: min(820px, calc(100dvh - 32px)); }
 .sheet-xl { max-width: 1100px; height: calc(100dvh - 32px); }
 .sheet-pad { padding: 28px; }
 .sheet-head { display: flex; align-items: flex-start; gap: 12px; padding: 24px 24px 16px; }
@@ -393,26 +393,10 @@ input[type="file"].field::file-selector-button {
   font: inherit;
   text-align: left;
 }
-button.row { cursor: pointer; transition: background-color 0.2s; }
-button.row:hover { background: var(--well); }
 .row-main { flex: 1; min-width: 0; }
 .row-title { display: block; font-weight: 500; color: var(--ink); overflow-wrap: anywhere; }
 .row-sub { display: block; font-size: 13px; color: var(--ink-2); overflow-wrap: anywhere; }
-.row-meta { flex: none; font-size: 13px; color: var(--muted); max-width: 40%; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-@media (max-width: 519px) { .row-meta { display: none; } }
-.chevron { color: var(--icon); transition: transform 0.28s var(--spring); }
-[aria-expanded="true"] .chevron { transform: rotate(90deg); }
-.row-detail { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.28s var(--spring); }
-.row-detail.open { grid-template-rows: 1fr; }
-.row-detail > div { overflow: hidden; }
-.details { margin: 0; padding: 0 18px 16px; display: grid; gap: 10px; }
-.details > div { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 12px; align-items: baseline; }
-@media (max-width: 519px) { .details > div { grid-template-columns: minmax(0, 1fr); gap: 2px; } }
-.details dt { font-size: 13px; color: var(--muted); }
-.details dd { margin: 0; color: var(--ink); overflow-wrap: anywhere; }
-.details a { color: var(--accent-text); text-decoration: none; font-weight: 500; }
-.details a:hover { text-decoration: underline; }
-.link-btn { border: 0; background: none; padding: 0 0 0 10px; font: inherit; font-size: 13px; color: var(--ink-2); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+
 .list-state { padding: 40px 16px; text-align: center; color: var(--ink-2); }
 .list-state strong { display: block; margin-bottom: 4px; color: var(--ink); font-size: 16px; font-weight: 600; }
 .check { width: 18px; height: 18px; flex: none; }

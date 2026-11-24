@@ -8,7 +8,9 @@ const ICON_PATHS = {
   eyeOff: '<path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/>',
   sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
   moon: '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
-  chevron: '<path d="m9 18 6-6-6-6"/>',
+  copy: '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+  arrowUp: '<path d="m5 12 7-7 7 7"/><path d="M12 19V5"/>',
+  arrowDown: '<path d="M12 5v14"/><path d="m19 12-7 7-7-7"/>',
 };
 
 function icon(name, extraClass = "") {
@@ -85,25 +87,34 @@ function closeModals() {
   modalOpener = null;
 }
 
-// Escape or a click on the backdrop closes the top dialog. The idle warning
-// stays until the admin answers it.
-function closeTopModal() {
-  const open = (id) => !document.getElementById(id).classList.contains("hidden");
-  if (open("idle-modal")) return;
-  if (open("confirm-modal")) closeConfirm();
-  else if (open("hte-edit-modal")) closeHteEditModal();
-  else closeModals();
+// Dialogs are locked (owner, 2026-11-24): a click outside or Escape does
+// nothing; only the dialog's own close, cancel or answer buttons close it.
+// Tab stays inside the top dialog, so the page behind can't be reached.
+function topOpenModal() {
+  const open = [...document.querySelectorAll(".modal-overlay:not(.hidden)")];
+  return open.sort((a, b) => getComputedStyle(b).zIndex - getComputedStyle(a).zIndex)[0];
 }
 
-function setupModalDismissal() {
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") closeTopModal();
-  });
-  document.querySelectorAll(".modal-overlay").forEach((overlay) => {
-    overlay.addEventListener("click", (event) => {
-      if (event.target === overlay) closeTopModal();
-    });
-  });
+function trapFocus(event) {
+  if (event.key !== "Tab") return;
+  const modal = topOpenModal();
+  if (!modal) return;
+  const focusable = [...modal.querySelectorAll("a[href], button:not([disabled]), input:not([type=hidden]), select, textarea")]
+    .filter((el) => el.offsetParent !== null);
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  const outside = !modal.contains(document.activeElement);
+  if (event.shiftKey && (outside || document.activeElement === first)) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && (outside || document.activeElement === last)) {
+    event.preventDefault();
+    first.focus();
+  }
+}
+
+function setupModalLock() {
+  document.addEventListener("keydown", trapFocus);
 }
 
 // --- CONFIRMATION DIALOG ---
