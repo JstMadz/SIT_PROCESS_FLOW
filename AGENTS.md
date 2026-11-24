@@ -26,6 +26,7 @@ A guide for TUP Manila College of Science students doing their **Supervised Indu
 - `config/firebase-config.js`: Firebase project settings (the web API key is public by design; access is controlled by Auth + Firestore rules).
 - `js/firebase/auth.js` (sign-in/out), `js/firebase/database.js` (Firestore: `htes` collection, `settings/app_links` document).
 - `js/modules/`: `session.js` (inactivity sign-out), `partner-list.js` (students' partner companies: search, sort, show more, rows that open in place), `hte.js` (shared search/sort, admin list, CSV upload), `theme.js` (light/dark), `tabs.js`, `ui.js` (icons, toasts, modals, segmented controls); `js/main.js` wires them; `js/constants.js`.
+- `docs/project-overview.html`: the project's one overview page (process flow, PAWIM guide, architecture, data). Published at https://claude.ai/artifact/UtHgXkr5wctDeYeKzMZawt; republish to the same URL when a feature, process, stack or data shape changes.
 - `oldVersions/`: earlier pages kept for reference; not served from the main page.
 
 ## 6. Gotchas specific to this repo

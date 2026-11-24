@@ -1,0 +1,225 @@
+<meta charset="utf-8">
+<title>SIT Process Flow</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+  /* Layout: one reading column of cards on the calm canvas; tables and the flow scroll inside their own box. */
+  :root {
+    --bg: #f5f5f7; --card: #ffffff; --ink: #1d1d1f; --ink-2: #636368; --muted: #6e6e73;
+    --line: rgba(0,0,0,.07); --accent: #9e1b32; --accent-text: #9e1b32; --lane0: rgba(118,118,128,.05); --lane1: transparent;
+    --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --bg: #0b0b0e; --card: #1c1c1e; --ink: #f5f5f7; --ink-2: #98989d; --muted: #8e8e93;
+    --line: rgba(255,255,255,.09); --accent: #d70015; --accent-text: #ff7782; --lane0: rgba(118,118,128,.12); color-scheme: dark; } }
+  :root[data-theme="dark"] {
+    --bg: #0b0b0e; --card: #1c1c1e; --ink: #f5f5f7; --ink-2: #98989d; --muted: #8e8e93;
+    --line: rgba(255,255,255,.09); --accent: #d70015; --accent-text: #ff7782; --lane0: rgba(118,118,128,.12); color-scheme: dark; }
+  body { background: var(--bg); color: var(--ink); font: 15px/1.55 var(--font); letter-spacing: -.01em; font-variant-numeric: tabular-nums;
+    padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 32px 48px; }
+  .wrap { max-width: 1040px; margin: 0 auto; display: grid; gap: 20px; }
+  header { padding: 8px 4px 4px; }
+  .eyebrow { font-size: 12px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); margin: 0; }
+  h1 { font-size: 32px; font-weight: 600; letter-spacing: -.025em; line-height: 1.15; margin: 6px 0 8px; text-wrap: balance; }
+  h2 { font-size: 20px; font-weight: 600; letter-spacing: -.015em; margin: 0 0 12px; }
+  h3 { font-size: 15px; font-weight: 600; margin: 20px 0 6px; }
+  p { margin: 0 0 10px; max-width: 70ch; color: var(--ink-2); }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 24px; min-width: 0;
+    box-shadow: 0 8px 30px -6px rgba(0,0,0,.04); }
+  .lede { font-size: 17px; color: var(--ink-2); max-width: 65ch; }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .tag { font-size: 13px; padding: 3px 10px; border-radius: 999px; background: rgba(158,27,50,.08); color: var(--accent-text); }
+  .scroll { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { text-align: left; vertical-align: top; padding: 9px 12px 9px 0; border-top: 1px solid var(--line); }
+  th { font-size: 12px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; border-top: 0; }
+  td { color: var(--ink-2); } td:first-child { color: var(--ink); white-space: nowrap; }
+  figure { margin: 0; } figcaption { font-size: 13px; color: var(--muted); margin-top: 10px; }
+  figure svg { display: block; min-width: 760px; width: 100%; height: auto; color: var(--ink); --card: var(--card); }
+  code { font: 13px ui-monospace, SFMono-Regular, Menlo, monospace; }
+  ul { margin: 0; padding-left: 20px; color: var(--ink-2); } li { margin: 4px 0; }
+  .note { font-size: 13px; color: var(--muted); }
+  .sign { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 12px; }
+  .sign div { border-top: 1px solid var(--ink-2); padding-top: 6px; font-size: 13px; color: var(--muted); margin-top: 36px; }
+  @media (max-width: 520px) { section { padding: 20px; } h1 { font-size: 26px; } }
+  @media print { .no-print { display: none; } section { box-shadow: none; border: 0; padding: 0; } body { background: #fff; } }
+</style>
+
+<div class="wrap">
+  <header class="no-print">
+    <p class="eyebrow">Project overview · TUP College of Science</p>
+    <h1>SIT Process Flow</h1>
+    <p class="lede">A one-page guide for Computer Studies students doing their Supervised Industrial Training (SIT): what to do before, during and after training, the forms for each step, and the list of partner companies.</p>
+    <div class="tags"><span class="tag">Static site, Firebase-hosted data (PaaS)</span><span class="tag">Information portal with a small admin editor</span><span class="tag">Active</span></div>
+  </header>
+
+  <section class="no-print">
+    <h2>1. What the app is for</h2>
+    <p>Students used to ask the coordinator for the same steps and form links again and again. This page puts the whole SIT process in order, with each form's link beside the step that needs it, and a searchable list of Host Training Establishments (HTEs) that already have an MOA with TUP.</p>
+    <p><strong>Students</strong> only read; they need no account. <strong>SIT staff</strong> sign in as admin to change the form links and to add, edit or remove partner companies. Admin sign-in logs out after 15 idle minutes, with a 30-second warning first.</p>
+  </section>
+
+  <section>
+    <h2>2. Process flow</h2>
+    <figure>
+      <div class="scroll"><svg viewBox="0 0 890 814" role="img" aria-label="Swimlane flow of the SIT process: the student, the company, the SIT coordinator and the signatories, from submitting documents to handing in the final output." font-size="12" fill="none">
+<defs><marker id="ah" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 8 4 0 8z" fill="currentColor"/></marker></defs>
+<rect x="120" y="0" width="190" height="814" style="fill:var(--lane0)"/>
+<text x="215.0" y="30" text-anchor="middle" font-weight="600" fill="currentColor">Student</text>
+<rect x="310" y="0" width="190" height="814" style="fill:var(--lane1)"/>
+<text x="405.0" y="30" text-anchor="middle" font-weight="600" fill="currentColor">Company (HTE)</text>
+<rect x="500" y="0" width="190" height="814" style="fill:var(--lane0)"/>
+<text x="595.0" y="30" text-anchor="middle" font-weight="600" fill="currentColor">SIT Coordinator</text>
+<rect x="690" y="0" width="190" height="814" style="fill:var(--lane1)"/>
+<text x="785.0" y="30" text-anchor="middle" font-weight="600" fill="currentColor">Signatories</text>
+<line x1="0" x2="890" y1="56" y2="56" stroke="currentColor" stroke-opacity=".25" stroke-dasharray="4 4"/>
+<text x="8" y="74" font-size="11" font-weight="600" style="fill:var(--muted)">Pre-deployment</text>
+<line x1="0" x2="890" y1="584" y2="584" stroke="currentColor" stroke-opacity=".25" stroke-dasharray="4 4"/>
+<text x="8" y="602" font-size="11" font-weight="600" style="fill:var(--muted)">During training</text>
+<line x1="0" x2="890" y1="716" y2="716" stroke="currentColor" stroke-opacity=".25" stroke-dasharray="4 4"/>
+<text x="8" y="734" font-size="11" font-weight="600" style="fill:var(--muted)">Post-training</text>
+<path d="M215.0 94.0 V100.0 H785.0 V106.0" stroke="currentColor" stroke-opacity=".55" marker-end="url(#ah)"/>
+<path d="M785.0 138.0 V144.0 H595.0 V150.0" stroke="currentColor" stroke-opacity=".55" marker-end="url(#ah)"/>
+<path d="M595.0 182.0 V188.0 H215.0 V194.0" stroke="currentColor" stroke-opacity=".55" marker-end="url(#ah)"/>
+<path d="M215.0 226.0 V232.0 H595.0 V238.0" stroke="currentColor" stroke-opacity=".55" marker-end="url(#ah)"/>
+<path d="M595.0 270.0 V282.0" stroke="currentColor" stroke-opacity=".55" marker-end="url(#ah)"/>
+<path d="M595.0 314.0 V320.0 H215.0 V326.0" stroke="currentColor" stroke-opacity=".55" marker-end="url(#ah)"/>
+<path d="M215.0 358.0 V364.0 H405.0 V370.0" stroke="currentColor" stroke-opacity=".55" marker-end="url(#ah)"/>
+<path d="M405.0 402.0 V408.0 H595.0 V414.0" stroke="currentColor" stroke-opacity=".55" marker-end="url(#ah)"/>
+<path d="M595.0 446.0 V452.0 H215.0 V458.0" stroke="currentColor" stroke-opacity=".55" marker-end="url(#ah)"/>
+<path d="M215.0 490.0 V496.0 H595.0 V502.0" stroke="currentColor" stroke-opacity=".55" marker-end="url(#ah)"/>
+<path d="M595.0 534.0 V540.0 H405.0 V546.0" stroke="currentColor" stroke-opacity=".55" marker-end="url(#ah)"/>
+<path d="M405.0 578.0 V584.0 H215.0 V590.0" stroke="currentColor" stroke-opacity=".55" marker-end="url(#ah)"/>
+<path d="M215.0 622.0 V628.0 H405.0 V634.0" stroke="currentColor" stroke-opacity=".55" marker-end="url(#ah)"/>
+<path d="M405.0 666.0 V678.0" stroke="currentColor" stroke-opacity=".55" marker-end="url(#ah)"/>
+<path d="M405.0 710.0 V716.0 H215.0 V722.0" stroke="currentColor" stroke-opacity=".55" marker-end="url(#ah)"/>
+<path d="M215.0 754.0 V760.0 H595.0 V766.0" stroke="currentColor" stroke-opacity=".55" marker-end="url(#ah)"/>
+<rect x="131.0" y="62.0" width="168" height="32" rx="9" stroke="currentColor" stroke-opacity="0.3" style="fill:var(--card)"/>
+<text x="215.0" y="82.0" text-anchor="middle" fill="currentColor">1 Submit 2 envelopes</text>
+<rect x="701.0" y="106.0" width="168" height="32" rx="9" stroke="currentColor" stroke-opacity="0.3" style="fill:var(--card)"/>
+<text x="785.0" y="126.0" text-anchor="middle" fill="currentColor">2 Sign documents</text>
+<rect x="511.0" y="150.0" width="168" height="32" rx="9" stroke="currentColor" stroke-opacity="0.3" style="fill:var(--card)"/>
+<text x="595.0" y="170.0" text-anchor="middle" fill="currentColor">2 Return original</text>
+<rect x="131.0" y="194.0" width="168" height="32" rx="9" stroke="currentColor" stroke-opacity="0.3" style="fill:var(--card)"/>
+<text x="215.0" y="214.0" text-anchor="middle" fill="currentColor">3 Choose a company</text>
+<rect x="511.0" y="238.0" width="168" height="32" rx="9" stroke-opacity="1" stroke-dasharray="4 3" style="fill:var(--card);stroke:var(--accent)"/>
+<text x="595.0" y="258.0" text-anchor="middle" fill="currentColor">3B Check own choice</text>
+<rect x="511.0" y="282.0" width="168" height="32" rx="9" stroke="currentColor" stroke-opacity="0.3" style="fill:var(--card)"/>
+<text x="595.0" y="302.0" text-anchor="middle" fill="currentColor">4 Recommendation</text>
+<rect x="131.0" y="326.0" width="168" height="32" rx="9" stroke="currentColor" stroke-opacity="0.3" style="fill:var(--card)"/>
+<text x="215.0" y="346.0" text-anchor="middle" fill="currentColor">4 Send application</text>
+<rect x="321.0" y="370.0" width="168" height="32" rx="9" stroke="currentColor" stroke-opacity="0.3" style="fill:var(--card)"/>
+<text x="405.0" y="390.0" text-anchor="middle" fill="currentColor">5 Accept, training plan</text>
+<rect x="511.0" y="414.0" width="168" height="32" rx="9" stroke="currentColor" stroke-opacity="0.3" style="fill:var(--card)"/>
+<text x="595.0" y="434.0" text-anchor="middle" fill="currentColor">6 Endorsement letter</text>
+<rect x="131.0" y="458.0" width="168" height="32" rx="9" stroke="currentColor" stroke-opacity="0.3" style="fill:var(--card)"/>
+<text x="215.0" y="478.0" text-anchor="middle" fill="currentColor">7 Monitoring form</text>
+<rect x="511.0" y="502.0" width="168" height="32" rx="9" stroke="currentColor" stroke-opacity="0.3" style="fill:var(--card)"/>
+<text x="595.0" y="522.0" text-anchor="middle" fill="currentColor">8 MOA: TUP signs</text>
+<rect x="321.0" y="546.0" width="168" height="32" rx="9" stroke="currentColor" stroke-opacity="0.3" style="fill:var(--card)"/>
+<text x="405.0" y="566.0" text-anchor="middle" fill="currentColor">8 MOA: company signs</text>
+<rect x="131.0" y="590.0" width="168" height="32" rx="9" stroke="currentColor" stroke-opacity="0.3" style="fill:var(--card)"/>
+<text x="215.0" y="610.0" text-anchor="middle" fill="currentColor">D1–3 486 h, daily, OT</text>
+<rect x="321.0" y="634.0" width="168" height="32" rx="9" stroke="currentColor" stroke-opacity="0.3" style="fill:var(--card)"/>
+<text x="405.0" y="654.0" text-anchor="middle" fill="currentColor">D4 Grade at 364.5 h</text>
+<rect x="321.0" y="678.0" width="168" height="32" rx="9" stroke="currentColor" stroke-opacity="0.3" style="fill:var(--card)"/>
+<text x="405.0" y="698.0" text-anchor="middle" fill="currentColor">D5 Certificate</text>
+<rect x="131.0" y="722.0" width="168" height="32" rx="9" stroke="currentColor" stroke-opacity="0.3" style="fill:var(--card)"/>
+<text x="215.0" y="742.0" text-anchor="middle" fill="currentColor">P Submit clear book</text>
+<rect x="511.0" y="766.0" width="168" height="32" rx="9" stroke="currentColor" stroke-opacity="0.3" style="fill:var(--card)"/>
+<text x="595.0" y="786.0" text-anchor="middle" fill="currentColor">P Receive final output</text>
+</svg>
+</div>
+      <figcaption>Who does what, top to bottom. Step numbers match the guide below and the page. The dashed box (3B) happens only when the student picks a company that is not on the partner list.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>3. Process guide (PAWIM)</h2>
+    <p class="note">Procedures and Work Instructions Manual format (GQMC MC 2016-1; ISO 9001:2015 clause 7.5). Fields marked “to be set” are for the process owner to fill in.</p>
+    <div class="scroll"><table>
+      <tr><th>Document code</th><th>Revision</th><th>Effective date</th><th>Process owner</th><th>App version</th></tr>
+      <tr><td>To be set</td><td>0</td><td>To be set</td><td>SIT Coordinator, Computer Studies Department, with the IRJP Office</td><td>develop, 24 Nov 2026</td></tr>
+    </table></div>
+    <h3>Purpose</h3><p>To guide students through the SIT requirements in order, so documents reach the right signatories and every trainee finishes with a complete final output.</p>
+    <h3>Scope</h3><p>BSCS, BSIS and BSIT students of the Computer Studies Department, from submitting the application documents to handing in the final output after 486 training hours.</p>
+    <h3>References</h3><ul><li>The SIT forms in the department's Forms repository (linked on the page)</li><li>ISO 9001:2015, clause 7.5 Documented information</li><li>Republic Act No. 9470 (National Archives of the Philippines Act of 2007) for record retention</li></ul>
+    <h3>Definitions</h3>
+    <div class="scroll"><table>
+      <tr><td>SIT</td><td>Supervised Industrial Training, the required on-the-job training</td></tr>
+      <tr><td>HTE</td><td>Host Training Establishment: the company where the student trains</td></tr>
+      <tr><td>MOA</td><td>Memorandum of Agreement between TUP and the HTE</td></tr>
+      <tr><td>IRJP</td><td>Industrial Relations and Job Placement Office</td></tr>
+      <tr><td>DTR</td><td>Daily Time Record</td></tr>
+    </table></div>
+    <h3>Responsibilities</h3>
+    <div class="scroll"><table>
+      <tr><td>Student</td><td>Completes and submits the documents, applies to the company, fills the forms on time, renders 486 hours, submits the final output.</td></tr>
+      <tr><td>SIT Coordinator</td><td>Checks documents, validates a company the student chose, issues recommendation and endorsement letters, handles MOA signing, receives the final output, keeps the page's links and partner list current.</td></tr>
+      <tr><td>Department Head, IRJP Director</td><td>Sign the application documents.</td></tr>
+      <tr><td>Company (HTE)</td><td>Accepts the trainee, gives the training plan, signs the MOA and training agreement, evaluates the trainee, issues the certificate of completion.</td></tr>
+    </table></div>
+    <h3>Procedure</h3>
+    <div class="scroll"><table>
+      <tr><th>Step</th><th>Activity</th><th>Responsible</th><th>Input</th><th>Output / control</th></tr>
+      <tr><td>1</td><td>Submit documents in two long brown envelopes (original and duplicate)</td><td>Student</td><td>Application form, waiver, parent's ID, medical clearance, NBI clearance</td><td>Complete envelopes</td></tr>
+      <tr><td>2</td><td>Sign; return the original envelope, keep the duplicate</td><td>Coordinator, Dept Head, IRJP Director</td><td>Envelopes</td><td>Signed documents; duplicate on file</td></tr>
+      <tr><td>3</td><td>Choose a partner HTE, or a company of one's own (3B: coordinator validates it first)</td><td>Student; Coordinator for 3B</td><td>Partner list</td><td>Chosen company</td></tr>
+      <tr><td>4</td><td>Request a recommendation letter, then send letter, CV and letter of intent to the company</td><td>Student, Coordinator</td><td>Request form (GForm)</td><td>Signed recommendation letter; application sent</td></tr>
+      <tr><td>5</td><td>Secure the acceptance letter and training plan</td><td>Company</td><td>Application</td><td>Acceptance letter, training plan</td></tr>
+      <tr><td>6</td><td>Request endorsement; return a received copy of the letter</td><td>Student, Coordinator</td><td>Endorsement form (GForm)</td><td>Signed endorsement letter; received copy on file</td></tr>
+      <tr><td>7</td><td>Fill the acceptance monitoring form</td><td>Student</td><td>Acceptance letter</td><td>Tracking record</td></tr>
+      <tr><td>8</td><td>MOA and training agreement: 5 copies, TUP signs, company signs, notarized (new or expired MOA only)</td><td>Coordinator, Company</td><td>MOA and agreement templates</td><td>Notarized MOA</td></tr>
+      <tr><td>D1–D3</td><td>Render 486 hours; daily work activity form; overtime form filed before OT</td><td>Student</td><td>Daily and OT forms</td><td>DTR, daily activities</td></tr>
+      <tr><td>D4–D5</td><td>Evaluation at 364.5 hours (75%); certificate after 486 hours</td><td>Company</td><td>Trainee evaluation form</td><td>Rated evaluation, certificate of completion</td></tr>
+      <tr><td>P</td><td>Submit the final output in a long yellow clear book; HTE evaluation GForms</td><td>Student → Coordinator</td><td>Narrative report, DTR, pictures, evaluations, certificate</td><td>Final output received</td></tr>
+    </table></div>
+    <h3>Records</h3><p>Application envelope (duplicate), recommendation and endorsement letters, MOA, monitoring and evaluation responses, final output. Retention: to be set from TUP's records disposition schedule (RA 9470).</p>
+    <h3>ISO 9001:2015 clauses met</h3><p>7.5 Documented information (one controlled guide and form set); 8.1 Operational planning and control (steps in order with owners); 8.2.1 Communication with customers (students and companies get the same instructions).</p>
+    <h3>Revision history</h3>
+    <div class="scroll"><table><tr><th>Rev.</th><th>Date</th><th>Change</th></tr><tr><td>0</td><td>24 Nov 2026</td><td>First issue of this guide</td></tr></table></div>
+    <div class="sign"><div>Prepared by</div><div>Reviewed by</div><div>Approved by</div></div>
+  </section>
+
+  <section class="no-print">
+    <h2>4. System workflow</h2>
+    <div class="scroll"><table>
+      <tr><th>When</th><th>What happens</th><th>Code</th></tr>
+      <tr><td>Page opens</td><td>Theme set before first paint; form links and the partner list are read once from Firestore</td><td><code>index.html</code>, <code>js/firebase/database.js</code></td></tr>
+      <tr><td>Student browses</td><td>Phase switcher, step cards; a link with no address yet shows “link not available” instead of opening</td><td><code>js/modules/tabs.js</code>, <code>js/constants.js</code></td></tr>
+      <tr><td>Student opens partner list</td><td>Search, A to Z or by city, 20 at a time, rows open to show contact details, copy email</td><td><code>js/modules/partner-list.js</code></td></tr>
+      <tr><td>Admin signs in</td><td>Firebase Auth; idle log-out after 15 minutes with a 30-second warning</td><td><code>js/firebase/auth.js</code>, <code>js/modules/session.js</code></td></tr>
+      <tr><td>Admin edits</td><td>Save links, add, edit, delete or upload companies (CSV/TSV); writes go to Firestore and the lists redraw</td><td><code>js/modules/hte.js</code>, <code>js/firebase/database.js</code></td></tr>
+    </table></div>
+  </section>
+
+  <section class="no-print">
+    <h2>5. Architecture</h2>
+    <ul>
+      <li><strong>Static page</strong> (HTML, CSS, plain JavaScript): all screens; no build step, served as files.</li>
+      <li><strong>Firebase Authentication</strong>: admin sign-in only; students never sign in.</li>
+      <li><strong>Cloud Firestore</strong>: the partner list and the form links. Who may write is decided by Firestore security rules in the Firebase console, not by the page.</li>
+      <li><strong>Google Drive and Google Forms</strong>: hold the forms themselves; the page only links to them.</li>
+    </ul>
+  </section>
+
+  <section class="no-print">
+    <h2>6. Tech stack</h2>
+    <div class="scroll"><table>
+      <tr><td>HTML, CSS, JavaScript</td><td>The page, its design tokens (light and dark) and behaviour</td></tr>
+      <tr><td>Tailwind CSS (CDN)</td><td>Layout utilities only</td></tr>
+      <tr><td>Firebase compat SDK 10.8</td><td>Auth and Firestore from the browser</td></tr>
+      <tr><td>Static hosting</td><td>Serves the repo root</td></tr>
+      <tr><td>Playwright (testing only)</td><td>Browser walk-throughs with Firebase stubbed</td></tr>
+    </table></div>
+  </section>
+
+  <section class="no-print">
+    <h2>7. Data model</h2>
+    <p>Two Firestore locations with no links between them.</p>
+    <div class="scroll"><table>
+      <tr><th>Collection / document</th><th>Fields</th><th>Notes</th></tr>
+      <tr><td><code>htes/{auto id}</code></td><td><code>name</code> (required), <code>address</code>, <code>contact</code>, <code>email</code>, <code>person</code> (strings); <code>createdAt</code> (server timestamp)</td><td>Read by everyone, newest first; written by admins</td></tr>
+      <tr><td><code>settings/app_links</code></td><td>One string per form, e.g. <code>appForm</code>, <code>endorsementForm</code>, <code>downloadForms</code> (16 in all); <code>#</code> means not set</td><td>Read by everyone; written by admins</td></tr>
+    </table></div>
+  </section>
+</div>

@@ -11,6 +11,8 @@ Owner asked for the site in the latest house design and a friendlier list of par
 - **Admin:** split into Form links / Partner companies; add form on the grid; list rows with checkbox, name, address · person, Edit and Delete words; empty link fields instead of "#"; sign-in is a form, so Enter works; link values are now HTML-escaped in the form.
 - Also: `.gitignore` added and `.DS_Store` untracked (separate commit); `loadHteData` keeps a load state instead of writing table rows; `target=_blank` links get `rel="noopener noreferrer"`.
 
+- Project overview page added: `docs/project-overview.html`, published at https://claude.ai/artifact/UtHgXkr5wctDeYeKzMZawt (swimlane flow, PAWIM guide with owner fields “to be set”, workflow, architecture, stack, Firestore data).
+
 Verified with Playwright (Chromium) and Firebase stubbed: 55/55 checks (tabs, missing-link toast, search by city and person, no-match and clear, show more to the end, sort, open/close row, copy email, Escape/backdrop, escaped names, theme switch and memory, sign-in wrong/locked/right with Enter and eye, admin add/search/edit/bulk delete/confirm/Escape, idle warning ignores Escape, save links, sign out, empty and failing database, 1,500 companies search in 29 ms, phone full-screen sheet with no keyboard pop). Screenshots at 1440 px light/dark, 390 px and 344 px: no sideways scroll, no page errors.
 
 ## 2026-11-08 — Full security audit added to the backlog
