@@ -21,6 +21,7 @@ Security (audit 2026-11-07):
 - [ ] Owner/admin: about 30 partner addresses have their parts joined with no space (street, barangay and city run together, e.g. "Building1184 Quezon AvenueBarangay PaligsahanQuezon City"; also some "N/A" in the middle). Fix with Edit in the admin list, or re-upload a cleaned CSV. Find them by searching for words stuck together.
 
 ### Design
+- [ ] **Waiting for owner approval (2026-11-24): corporate theme.** Mockup: https://claude.ai/artifact/LZMA5BDV1NxhuZSLpxN2SC. Plain cardinal #9E1B32, white and light gray #F0F1F3; cardinal top band with logos; solid white sidebar with words only (no icons, no glass, no red wash; active phase filled cardinal); Light/Dark as words in the sidebar foot; 8 px corners; numbered partner list (No. column, numbers follow the current sort and filter); icons only in the phone tab bar. Open questions in the mockup reply: collapse-to-rail on desktop, copy icon beside emails.
 - [x] (2026-11-24) Calm-luxury redesign of the whole site and a new partner companies list (see walkthrough).
 - [ ] Owner: decide whether this redesign needs the research brief (`docs/RESEARCH.md`, layouts-and-research §3); skipped as a restyle with no new features.
 - [ ] House rule (SKILL.md §2 Code): no inline `onclick`; the page still wires every control with inline handlers (old pattern, kept in the redesign). Move to `addEventListener` in a `Refactor` commit.
