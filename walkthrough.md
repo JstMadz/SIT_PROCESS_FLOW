@@ -1,6 +1,8 @@
 # SIT_PROCESS_FLOW: walkthrough
 
-## 2026-11-25 (later) — Contact numbers for admins only
+## 2026-11-25 (later) — Contact numbers for admins only (pushed: develop and main)
+
+Pre-merge check over `origin/main..develop`: one-caller abstractions none found (the search-fields parameter has two callers); duplicate logic none found; special cases none found; oversized files: `index.html` 560 lines (markup only, already in the backlog).
 
 Owner: students should not see the HTE contact numbers (Data Privacy Act of 2012, Republic Act No. 10173); only admins.
 
