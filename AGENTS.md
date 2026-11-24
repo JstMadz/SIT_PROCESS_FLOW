@@ -25,7 +25,7 @@ A guide for TUP Manila College of Science students doing their **Supervised Indu
 ## 5. Key files
 - `config/firebase-config.js`: Firebase project settings (the web API key is public by design; access is controlled by Auth + Firestore rules).
 - `js/firebase/auth.js` (sign-in/out), `js/firebase/database.js` (Firestore: `htes` collection, `settings/app_links` document).
-- `js/modules/`: `session.js` (inactivity sign-out), `partner-list.js` (students' partner companies table: filter, sort by company/city, show more, mailto + copy; styles in `css/partner-table.css`), `hte.js` (shared search/sort, admin list, CSV upload), `theme.js` (light/dark), `tabs.js`, `ui.js` (icons, toasts, modals, segmented controls); `js/main.js` wires them; `js/constants.js`.
+- `js/modules/`: `session.js` (inactivity sign-out), `partner-list.js` (students' partner companies table: filter, sort by company/city, show more, mailto + copy; styles in `css/partner-table.css`), `hte.js` (shared search/sort, admin list, CSV upload), `sidebar.js` (glass sidebar: phases and steps, menu search, rail; styles in `css/sidebar.css` with the phone tab bar), `theme.js` (light/dark), `tabs.js` (phase switch for sidebar and tab bar), `ui.js` (icons, toasts, modals, segmented controls); `js/main.js` wires them; `js/constants.js`.
 - `docs/project-overview.html`: the project's one overview page (process flow, PAWIM guide, architecture, data). Published at https://claude.ai/artifact/UtHgXkr5wctDeYeKzMZawt; republish to the same URL when a feature, process, stack or data shape changes.
 - `oldVersions/`: earlier pages kept for reference; not served from the main page.
 

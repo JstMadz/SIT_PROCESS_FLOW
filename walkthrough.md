@@ -1,5 +1,15 @@
 # SIT_PROCESS_FLOW: walkthrough
 
+## 2026-11-24 (night) — Glass sidebar like bidDocsBuilder; floating tab bar on phones
+
+Owner asked for bidDocsBuilder's left sidebar, with the creator's name and the theme switch at its foot unaffected by scrolling, and icons on phones.
+
+- **Desktop sidebar** (`js/modules/sidebar.js`, `css/sidebar.css`; design from bidDocsBuilder `Sidebar.tsx` / calm-luxury-ui.md §6): floating glass panel over the cardinal/gray wash; TUP, CHED and College of Science logos with the title; "Search the menu" (finds phases and steps, opens the group of a matching step); Pre-Deployment and During Training open to their steps (built from the page's own step cards, so the menu can't drift from the content), click a step to jump to it; Post-Training; Forms repository. A pill slides to the current phase or step. Edge handle or Ctrl+\ (⌘\ on a Mac) collapses to a 76 px icon rail with names on hover, remembered (`sit-process-flow:sidebar-rail`, applied before first paint); clicking a rail icon reopens the sidebar on that phase. The foot ("Created by", still the 5-click admin door, and the theme button) is fixed with the sidebar, so scrolling never moves it.
+- **Phones (under 768 px):** a slim glass top bar (logo, title, theme) and a floating bottom tab bar with an icon and the full name for each phase plus Forms Repository. Bottom placement and icon-with-label follow Apple's tab bar and Material's navigation bar guidance for 3–5 main sections (thumb reach; icon-only tabs are harder to recognise). "Created by" moves to the page footer on phones.
+- Removed: the top bar with the phase switcher and the summary card with its step list (the sidebar does both). Phase titles are now a plain heading above the steps; the steps use the full width.
+
+Verified with Playwright and Firebase stubbed: 75/75 checks (new: step link scrolls to the step, pill position, foot stays put while scrolling, menu search, Ctrl+\ rail and its memory after reload, rail icon reopens, tab bar hidden on desktop, phone tab bar switches phase, icons and full names, floats at the bottom while scrolling, creator name still opens sign-in on phones). Screenshots 1440 px light/dark (open and rail), 390 and 344 px; no sideways scroll, no page errors. Overview artifact republished.
+
 ## 2026-11-24 (evening) — Full phase names on phones, partner button back in Option A, phone cards
 
 - **Phase names:** phones showed "Before / During / After", which aren't SIT terms. The switcher now shows Pre-Deployment, During Training and Post-Training at every width (13 px, two lines allowed under 520 px); the phase headings use the same spelling.

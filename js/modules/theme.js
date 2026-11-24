@@ -23,11 +23,12 @@ function applyTheme(dark) {
 }
 
 function updateThemeButton() {
-  const button = document.getElementById("btn-theme");
   const label = isDarkTheme() ? "Switch to light mode" : "Switch to dark mode";
-  button.innerHTML = icon(isDarkTheme() ? "sun" : "moon");
-  button.setAttribute("aria-label", label);
-  button.title = label;
+  document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
+    button.innerHTML = icon(isDarkTheme() ? "sun" : "moon");
+    button.setAttribute("aria-label", label);
+    button.title = label;
+  });
 }
 
 function toggleTheme(event) {

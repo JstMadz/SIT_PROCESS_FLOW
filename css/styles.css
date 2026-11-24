@@ -14,10 +14,7 @@ body {
   letter-spacing: -0.01em;
   font-variant-numeric: tabular-nums;
   color: var(--ink);
-  background:
-    radial-gradient(60rem 30rem at 0% -10%, var(--accent-tint), transparent 70%),
-    var(--canvas);
-  background-attachment: fixed;
+  background: var(--canvas);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -51,35 +48,6 @@ a { color: inherit; }
   .grid-12 > .lg-span-4 { grid-column: span 4; }
   .grid-12 > .lg-span-8 { grid-column: span 8; }
 }
-
-/* ---------- Top bar ---------- */
-.topbar {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  background: var(--glass);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border-bottom: 1px solid var(--separator);
-}
-.topbar-inner {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px var(--page-pad);
-}
-.logos { display: flex; gap: 6px; flex: none; }
-.logos img { width: 36px; height: 36px; object-fit: contain; }
-.logos img.round { border-radius: 50%; object-fit: cover; }
-.brand { min-width: 0; flex: 1; }
-.brand-title { margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 15px; font-weight: 600; letter-spacing: -0.015em; line-height: 1.2; }
-.brand-sub { margin: 0; font-size: 12px; color: var(--ink-2); line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-@media (min-width: 640px) {
-  .logos img { width: 44px; height: 44px; }
-  .brand-title { font-size: 17px; }
-  .brand-sub { font-size: 13px; }
-}
-.phase-bar { padding: 4px var(--page-pad) 12px; }
 
 /* ---------- Segmented control ---------- */
 .seg {
@@ -118,18 +86,6 @@ a { color: inherit; }
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), var(--inner-highlight);
   transition: transform 0.28s var(--spring), width 0.28s var(--spring);
 }
-.seg-wide { display: grid; width: 100%; }
-@media (max-width: 519px) {
-  .seg-wide button { padding: 4px 6px; font-size: 13px; line-height: 1.2; white-space: normal; }
-}
-@media (min-width: 640px) { .seg-wide { display: inline-grid; width: auto; } }
-.label-short { display: none; }
-@media (max-width: 519px) {
-  .label-long { display: none; }
-  .label-short { display: inline; }
-  .logo-extra { display: none; }
-}
-
 /* ---------- Buttons ---------- */
 .btn {
   display: inline-flex;
@@ -255,24 +211,9 @@ input[type="file"].field::file-selector-button {
 }
 .step-kicker { display: block; margin-bottom: 4px; }
 @media (min-width: 520px) { .step-kicker { display: none; } }
-.step-card { scroll-margin-top: 136px; }
-
-/* Phase overview (left column on wide screens) */
-.overview { position: sticky; top: 129px; }
-.toc { list-style: none; margin: 16px 0 0; padding: 0; counter-reset: toc; }
-.toc a {
-  display: flex;
-  gap: 12px;
-  padding: 8px 10px;
-  margin: 0 -10px;
-  border-radius: 10px;
-  color: var(--ink-2);
-  text-decoration: none;
-  font-size: 14px;
-}
-.toc a:hover { background: var(--well); color: var(--ink); }
-.toc a::before { counter-increment: toc; content: counter(toc); min-width: 16px; color: var(--muted); }
-@media (max-width: 959px) { .toc { display: none; } .overview { position: static; } }
+.step-card { scroll-margin-top: 24px; }
+.step-card:focus { outline: none; }
+@media (max-width: 767px) { .step-card { scroll-margin-top: 80px; } }
 
 /* Plain checklists with hairlines that start at the text */
 .checklist { list-style: none; margin: 0; padding: 0; }
@@ -310,7 +251,7 @@ input[type="file"].field::file-selector-button {
   font-weight: 500;
 }
 
-.footer { padding: 24px var(--page-pad) 32px; font-size: 13px; color: var(--muted); }
+.footer { padding: 32px 0 8px; font-size: 13px; color: var(--muted); }
 .footer p { margin: 0; }
 
 /* ---------- Modals ---------- */

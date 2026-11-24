@@ -20,6 +20,7 @@ function initializeApp() {
   initializeFirebase();
   renderIcons();
   setupTheme();
+  setupSidebar();
   setupModalLock();
   syncAllSegPills();
   window.addEventListener("resize", syncAllSegPills);

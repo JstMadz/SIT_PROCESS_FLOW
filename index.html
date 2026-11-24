@@ -6,13 +6,14 @@
     <title>SIT Process Flow - TUP</title>
     <link rel="icon" type="image/png" href="assets/tup_logo.png" />
 
-    <!-- Theme before first paint, so dark mode doesn't flash white (js/modules/theme.js) -->
+    <!-- Theme and collapsed sidebar before first paint, so nothing flashes (theme.js, sidebar.js) -->
     <script>
       (function () {
         var stored = null;
         try { stored = localStorage.getItem("sit-process-flow:theme"); } catch (e) {}
         var dark = stored ? stored === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
         document.documentElement.dataset.theme = dark ? "dark" : "light";
+        try { if (localStorage.getItem("sit-process-flow:sidebar-rail") === "1") document.documentElement.classList.add("rail"); } catch (e) {}
       })();
     </script>
 
@@ -23,69 +24,64 @@
     <link rel="stylesheet" href="css/tokens.css" />
     <link rel="stylesheet" href="css/styles.css" />
     <link rel="stylesheet" href="css/partner-table.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
   </head>
-  <body class="flex flex-col">
+  <body>
+    <div class="wash" aria-hidden="true"></div>
     <div id="toast-container" class="fixed top-4 right-4 z-[130] flex flex-col gap-3 pointer-events-none" aria-live="polite"></div>
 
-    <!-- ============ TOP BAR ============ -->
-    <header class="topbar">
-      <div class="topbar-inner">
-        <div class="logos">
+    <!-- ============ SIDEBAR (desktop) — js/modules/sidebar.js ============ -->
+    <aside id="sidebar" class="sidebar" aria-label="Main menu">
+      <div class="side-brand">
+        <div class="side-logos">
           <img src="assets/tup_logo.png" alt="TUP logo" />
-          <img src="assets/ched_logo.png" alt="CHED logo" class="logo-extra" />
-          <img src="assets/cos_logo.png" alt="College of Science logo" class="round logo-extra" />
+          <img src="assets/ched_logo.png" alt="CHED logo" class="side-extra" />
+          <img src="assets/cos_logo.png" alt="College of Science logo" class="round side-extra" />
         </div>
-        <div class="brand">
-          <p class="brand-title"><span class="label-long">Supervised Industrial Training</span><span class="label-short">SIT Process Flow</span></p>
-          <p class="brand-sub">College of Science · Computer Studies Department</p>
+        <div class="side-brand-text">
+          <p class="side-title">SIT Process Flow</p>
+          <p class="side-subtitle">College of Science · Computer Studies Department</p>
         </div>
-        <a href="#" data-link="downloadForms" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm">
-          <span class="label-long">Forms repository</span><span class="label-short">Forms</span>
-        </a>
-        <button type="button" id="btn-theme" class="icon-btn" onclick="toggleTheme(event)" aria-label="Switch to dark mode" title="Switch to dark mode"></button>
       </div>
-      <nav class="phase-bar" aria-label="Training phase">
-        <div class="seg seg-wide" id="phase-seg">
-          <span class="seg-pill" aria-hidden="true"></span>
-          <button type="button" id="btn-pre-deployment" class="tab-btn" aria-pressed="true" onclick="switchTab('pre-deployment')">
-            Pre-Deployment
-          </button>
-          <button type="button" id="btn-during-training" class="tab-btn" aria-pressed="false" onclick="switchTab('during-training')">
-            During Training
-          </button>
-          <button type="button" id="btn-post-training" class="tab-btn" aria-pressed="false" onclick="switchTab('post-training')">
-            Post-Training
-          </button>
-        </div>
+      <input type="search" id="menu-search" class="field side-search" placeholder="Search the menu" aria-label="Search the menu" autocomplete="off" oninput="filterMenu(this.value)" />
+      <nav class="side-nav" aria-label="Main">
+        <ul id="side-list" class="side-list"></ul>
       </nav>
-    </header>
+      <div class="side-foot">
+        <p class="side-credit">Created by <span class="select-none" onclick="handleSecretClick()">"Ino Amador"</span></p>
+        <button type="button" class="icon-btn" data-theme-toggle onclick="toggleTheme(event)"></button>
+      </div>
+      <button type="button" id="side-handle" class="side-handle" onclick="toggleRail()"><span></span></button>
+    </aside>
 
-    <main class="flex-grow" style="padding: 8px var(--page-pad) 24px">
+    <!-- ============ PHONE BARS ============ -->
+    <header class="mobile-bar">
+      <img src="assets/tup_logo.png" alt="TUP logo" />
+      <div class="min-w-0 flex-1">
+        <p class="side-title">SIT Process Flow</p>
+        <p class="side-subtitle">College of Science · Computer Studies Department</p>
+      </div>
+      <button type="button" class="icon-btn" data-theme-toggle onclick="toggleTheme(event)"></button>
+    </header>
+    <nav class="tabbar" aria-label="Training phase">
+      <button type="button" data-tab="pre-deployment" aria-current="page" onclick="switchTab('pre-deployment')"><i data-icon="clipboard"></i><span>Pre-Deployment</span></button>
+      <button type="button" data-tab="during-training" onclick="switchTab('during-training')"><i data-icon="clock"></i><span>During Training</span></button>
+      <button type="button" data-tab="post-training" onclick="switchTab('post-training')"><i data-icon="graduation"></i><span>Post-Training</span></button>
+      <a href="#" data-link="downloadForms" target="_blank" rel="noopener noreferrer"><i data-icon="folder"></i><span>Forms Repository</span></a>
+    </nav>
+
+    <main class="page">
       <!-- ============ PRE-DEPLOYMENT ============ -->
       <section id="tab-pre-deployment" class="tab-content active" aria-labelledby="title-pre">
-        <div class="grid-12">
-          <aside class="lg-span-4">
-            <div class="card overview">
-              <p class="micro">Phase 1 of 3</p>
-              <h1 id="title-pre" class="page-title mt-1">Pre-Deployment</h1>
-              <p class="text-secondary mt-3">Eight steps, from handing in your documents to signing the MOA. Do them in order.</p>
-              <ol class="toc" aria-label="Steps">
-                <li><a href="#pre-1">Document Submission &amp; Checklist</a></li>
-                <li><a href="#pre-2">Verification &amp; Return</a></li>
-                <li><a href="#pre-3">HTE Selection &amp; Validation</a></li>
-                <li><a href="#pre-4">Application Process</a></li>
-                <li><a href="#pre-5">Company Acceptance</a></li>
-                <li><a href="#pre-6">University Endorsement</a></li>
-                <li><a href="#pre-7">Acceptance Monitoring</a></li>
-                <li><a href="#pre-8">MOA &amp; Training Agreement</a></li>
-              </ol>
-            </div>
-          </aside>
-
-          <ol class="steps lg-span-8">
+        <header class="phase-head">
+          <p class="micro">Phase 1 of 3</p>
+          <h1 id="title-pre" class="page-title mt-1">Pre-Deployment</h1>
+          <p class="text-secondary mt-2">Eight steps, from handing in your documents to signing the MOA. Do them in order.</p>
+        </header>
+        <ol class="steps">
             <li class="step">
               <span class="step-num">1</span>
-              <article id="pre-1" class="card step-card prose">
+              <article id="pre-1" tabindex="-1" class="card step-card prose">
                 <span class="micro step-kicker">Step 1</span>
                 <h2 class="card-title">Document Submission &amp; Checklist</h2>
                 <p>Accomplish and submit the following documents in two (2) long brown envelopes.</p>
@@ -120,7 +116,7 @@
 
             <li class="step">
               <span class="step-num">2</span>
-              <article id="pre-2" class="card step-card prose">
+              <article id="pre-2" tabindex="-1" class="card step-card prose">
                 <span class="micro step-kicker">Step 2</span>
                 <h2 class="card-title">Verification &amp; Return</h2>
                 <p>Once signed by your SIT Coordinator, Department Head, and Director of the IRJP:</p>
@@ -133,7 +129,7 @@
 
             <li class="step">
               <span class="step-num">3</span>
-              <article id="pre-3" class="card step-card prose">
+              <article id="pre-3" tabindex="-1" class="card step-card prose">
                 <span class="micro step-kicker">Step 3</span>
                 <h2 class="card-title">HTE Selection &amp; Validation</h2>
                 <p>Select a Host Training Establishment (HTE) through one of two methods:</p>
@@ -155,7 +151,7 @@
 
             <li class="step">
               <span class="step-num">4</span>
-              <article id="pre-4" class="card step-card prose">
+              <article id="pre-4" tabindex="-1" class="card step-card prose">
                 <span class="micro step-kicker">Step 4</span>
                 <h2 class="card-title">Application Process</h2>
                 <p>If a suitable company is found:</p>
@@ -180,7 +176,7 @@
 
             <li class="step">
               <span class="step-num">5</span>
-              <article id="pre-5" class="card step-card prose">
+              <article id="pre-5" tabindex="-1" class="card step-card prose">
                 <span class="micro step-kicker">Step 5</span>
                 <h2 class="card-title">Company Acceptance</h2>
                 <p>Upon acceptance, secure the following:</p>
@@ -196,7 +192,7 @@
 
             <li class="step">
               <span class="step-num">6</span>
-              <article id="pre-6" class="card step-card prose">
+              <article id="pre-6" tabindex="-1" class="card step-card prose">
                 <span class="micro step-kicker">Step 6</span>
                 <h2 class="card-title">University Endorsement</h2>
                 <ul class="checklist">
@@ -212,7 +208,7 @@
 
             <li class="step">
               <span class="step-num">7</span>
-              <article id="pre-7" class="card step-card prose">
+              <article id="pre-7" tabindex="-1" class="card step-card prose">
                 <span class="micro step-kicker">Step 7</span>
                 <h2 class="card-title">Acceptance Monitoring</h2>
                 <p>Fill out this form strictly for tracking purposes once accepted.</p>
@@ -224,7 +220,7 @@
 
             <li class="step">
               <span class="step-num">8</span>
-              <article id="pre-8" class="card step-card prose">
+              <article id="pre-8" tabindex="-1" class="card step-card prose">
                 <span class="micro step-kicker">Step 8</span>
                 <h2 class="card-title">MOA &amp; Training Agreement</h2>
                 <p><span class="pill">Required for new partners, companies without MOA, or expired MOAs</span></p>
@@ -240,31 +236,19 @@
               </article>
             </li>
           </ol>
-        </div>
       </section>
 
       <!-- ============ DURING TRAINING ============ -->
       <section id="tab-during-training" class="tab-content" aria-labelledby="title-during">
-        <div class="grid-12">
-          <aside class="lg-span-4">
-            <div class="card overview">
-              <p class="micro">Phase 2 of 3</p>
-              <h1 id="title-during" class="page-title mt-1">During Training</h1>
-              <p class="text-secondary mt-3">What to keep up with while you render your hours at the company.</p>
-              <ol class="toc" aria-label="Steps">
-                <li><a href="#during-1">Training Hours Requirement</a></li>
-                <li><a href="#during-2">Daily Work Activity</a></li>
-                <li><a href="#during-3">Overtime (OT) Guidelines</a></li>
-                <li><a href="#during-4">Evaluation Grade Request</a></li>
-                <li><a href="#during-5">Certificate of Completion</a></li>
-              </ol>
-            </div>
-          </aside>
-
-          <ol class="steps lg-span-8">
+        <header class="phase-head">
+          <p class="micro">Phase 2 of 3</p>
+          <h1 id="title-during" class="page-title mt-1">During Training</h1>
+          <p class="text-secondary mt-2">What to keep up with while you render your hours at the company.</p>
+        </header>
+        <ol class="steps">
             <li class="step">
               <span class="step-num">1</span>
-              <article id="during-1" class="card step-card prose">
+              <article id="during-1" tabindex="-1" class="card step-card prose">
                 <span class="micro step-kicker">Step 1</span>
                 <h2 class="card-title">Training Hours Requirement</h2>
                 <p>BSCS, BSIS, and BSIT students must render a total of <strong>486 hours</strong>.</p>
@@ -272,7 +256,7 @@
             </li>
             <li class="step">
               <span class="step-num">2</span>
-              <article id="during-2" class="card step-card prose">
+              <article id="during-2" tabindex="-1" class="card step-card prose">
                 <span class="micro step-kicker">Step 2</span>
                 <h2 class="card-title">Daily Work Activity</h2>
                 <p>Accomplish form daily. Taking pictures of tasks is encouraged if allowed.</p>
@@ -283,7 +267,7 @@
             </li>
             <li class="step">
               <span class="step-num">3</span>
-              <article id="during-3" class="card step-card prose">
+              <article id="during-3" tabindex="-1" class="card step-card prose">
                 <span class="micro step-kicker">Step 3</span>
                 <h2 class="card-title">Overtime (OT) Guidelines</h2>
                 <p>Must file and sign a request using the form <strong>before</strong> actual OT rendering.</p>
@@ -294,7 +278,7 @@
             </li>
             <li class="step">
               <span class="step-num">4</span>
-              <article id="during-4" class="card step-card prose">
+              <article id="during-4" tabindex="-1" class="card step-card prose">
                 <span class="micro step-kicker">Step 4</span>
                 <h2 class="card-title">Evaluation Grade Request</h2>
                 <p>Request from HTE upon rendering 75% (<strong>364.5 hours</strong>) to submit to coordinator.</p>
@@ -305,29 +289,23 @@
             </li>
             <li class="step">
               <span class="step-num">5</span>
-              <article id="during-5" class="card step-card prose">
+              <article id="during-5" tabindex="-1" class="card step-card prose">
                 <span class="micro step-kicker">Step 5</span>
                 <h2 class="card-title">Certificate of Completion</h2>
                 <p>The student/trainee shall request a Certificate of Completion signed by the supervisor or authorized signatories upon or after rendering the total required 486 hours.</p>
               </article>
             </li>
           </ol>
-        </div>
       </section>
 
       <!-- ============ POST-TRAINING ============ -->
       <section id="tab-post-training" class="tab-content" aria-labelledby="title-post">
-        <div class="grid-12">
-          <aside class="lg-span-4">
-            <div class="card overview">
-              <p class="micro">Phase 3 of 3</p>
-              <h1 id="title-post" class="page-title mt-1">Post-Training</h1>
-              <p class="text-secondary mt-3">What to hand in when you finish your hours.</p>
-            </div>
-          </aside>
-
-          <div class="lg-span-8">
-            <article class="card prose">
+        <header class="phase-head">
+          <p class="micro">Phase 3 of 3</p>
+          <h1 id="title-post" class="page-title mt-1">Post-Training</h1>
+          <p class="text-secondary mt-2">What to hand in when you finish your hours.</p>
+        </header>
+        <article id="post-1" tabindex="-1" class="card step-card prose">
               <h2 class="card-title">Final Output Submission</h2>
               <p>Compile all final documents in a <strong>Long/Legal Yellow Clear Book</strong>.</p>
               <div class="grid-12" style="gap: 0 20px">
@@ -361,15 +339,12 @@
                 </div>
               </div>
             </article>
-          </div>
-        </div>
       </section>
+      <footer class="footer">
+        <p>© TUP Industrial Relations and Job Placement Office</p>
+        <p class="footer-credit">Created by <span class="select-none" onclick="handleSecretClick()">"Ino Amador"</span></p>
+      </footer>
     </main>
-
-    <footer class="footer">
-      <p>© TUP Industrial Relations and Job Placement Office</p>
-      <p>Created by <span id="secret-admin-trigger" class="select-none" onclick="handleSecretClick()">"Ino Amador"</span></p>
-    </footer>
 
     <!-- ============ PARTNER COMPANIES (students) — js/modules/partner-list.js ============ -->
     <div id="hte-view-modal" class="modal-overlay modal-full z-[60] hidden" role="dialog" aria-modal="true" aria-labelledby="partner-title">
@@ -575,6 +550,7 @@
     <script src="js/firebase/auth.js"></script>
     <script src="js/modules/ui.js"></script>
     <script src="js/modules/theme.js"></script>
+    <script src="js/modules/sidebar.js"></script>
     <script src="js/modules/tabs.js"></script>
     <script src="js/modules/partner-list.js"></script>
     <script src="js/modules/hte.js"></script>
