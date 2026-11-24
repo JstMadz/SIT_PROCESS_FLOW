@@ -1,5 +1,14 @@
 # SIT_PROCESS_FLOW: walkthrough
 
+## 2026-11-24 (evening) — Full phase names on phones, partner button back in Option A, phone cards
+
+- **Phase names:** phones showed "Before / During / After", which aren't SIT terms. The switcher now shows Pre-Deployment, During Training and Post-Training at every width (13 px, two lines allowed under 520 px); the phase headings use the same spelling.
+- **Partner list button:** back under Step 3, Option A, as the original design had it (now the phase's one primary button); removed from the phase summary card.
+- **Phone cards:** reproduced on the live list (143 companies) at 390 and 344 px. "Achieve Without Borders, Inc." squeezed its address and email into a narrow column beside a 112 px label, and the email broke mid-word. Labels now sit above each value at full width, and words only break when they can't fit (`overflow-wrap: break-word`).
+- **Not a display bug:** about 30 stored addresses have their parts joined with no space (e.g. "Building1184 Quezon AvenueBarangay PaligsahanQuezon City"); the source sheet joined street, barangay and city before upload. Logged in the backlog; an admin can fix each one with Edit.
+
+Verified: 62/62 browser checks; live-data screenshots at 344 and 390 px (Makati filter, Step 3, phase bar); no sideways scroll.
+
 ## 2026-11-24 (later) — Partner companies as a table; locked dialogs (pushed: develop and main at 8a0221d)
 
 Owner asked for a table of partners, no redundant buttons, a copy icon, sorting and filtering by company and city, emails that open the user's mail app, and dialogs that close only from their own buttons.

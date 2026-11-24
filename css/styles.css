@@ -119,6 +119,9 @@ a { color: inherit; }
   transition: transform 0.28s var(--spring), width 0.28s var(--spring);
 }
 .seg-wide { display: grid; width: 100%; }
+@media (max-width: 519px) {
+  .seg-wide button { padding: 4px 6px; font-size: 13px; line-height: 1.2; white-space: normal; }
+}
 @media (min-width: 640px) { .seg-wide { display: inline-grid; width: auto; } }
 .label-short { display: none; }
 @media (max-width: 519px) {

@@ -48,13 +48,13 @@
         <div class="seg seg-wide" id="phase-seg">
           <span class="seg-pill" aria-hidden="true"></span>
           <button type="button" id="btn-pre-deployment" class="tab-btn" aria-pressed="true" onclick="switchTab('pre-deployment')">
-            <span class="label-long">Pre-deployment</span><span class="label-short">Before</span>
+            Pre-Deployment
           </button>
           <button type="button" id="btn-during-training" class="tab-btn" aria-pressed="false" onclick="switchTab('during-training')">
-            <span class="label-long">During training</span><span class="label-short">During</span>
+            During Training
           </button>
           <button type="button" id="btn-post-training" class="tab-btn" aria-pressed="false" onclick="switchTab('post-training')">
-            <span class="label-long">Post-training</span><span class="label-short">After</span>
+            Post-Training
           </button>
         </div>
       </nav>
@@ -67,11 +67,8 @@
           <aside class="lg-span-4">
             <div class="card overview">
               <p class="micro">Phase 1 of 3</p>
-              <h1 id="title-pre" class="page-title mt-1">Pre-deployment</h1>
+              <h1 id="title-pre" class="page-title mt-1">Pre-Deployment</h1>
               <p class="text-secondary mt-3">Eight steps, from handing in your documents to signing the MOA. Do them in order.</p>
-              <div class="actions mt-5">
-                <button type="button" class="btn btn-primary" onclick="openHteModal()">View partner companies</button>
-              </div>
               <ol class="toc" aria-label="Steps">
                 <li><a href="#pre-1">Document Submission &amp; Checklist</a></li>
                 <li><a href="#pre-2">Verification &amp; Return</a></li>
@@ -141,9 +138,12 @@
                 <h2 class="card-title">HTE Selection &amp; Validation</h2>
                 <p>Select a Host Training Establishment (HTE) through one of two methods:</p>
                 <div class="grid-12" style="gap: 12px">
-                  <div class="well span-6">
+                  <div class="well span-6 flex flex-col">
                     <h3 class="well-title">Option A: Partner HTE</h3>
-                    <p class="text-secondary" style="font-size: 14px">Choose from companies with an existing MOA. Open the list with <strong>View partner companies</strong> at the top of this phase.</p>
+                    <p class="text-secondary" style="font-size: 14px">Choose from companies with an existing MOA.</p>
+                    <div class="mt-auto pt-3">
+                      <button type="button" class="btn btn-primary w-full" onclick="openHteModal()">View partner companies</button>
+                    </div>
                   </div>
                   <div class="well span-6">
                     <h3 class="well-title">Option B: Personal Choice</h3>
@@ -249,7 +249,7 @@
           <aside class="lg-span-4">
             <div class="card overview">
               <p class="micro">Phase 2 of 3</p>
-              <h1 id="title-during" class="page-title mt-1">During training</h1>
+              <h1 id="title-during" class="page-title mt-1">During Training</h1>
               <p class="text-secondary mt-3">What to keep up with while you render your hours at the company.</p>
               <ol class="toc" aria-label="Steps">
                 <li><a href="#during-1">Training Hours Requirement</a></li>
@@ -321,7 +321,7 @@
           <aside class="lg-span-4">
             <div class="card overview">
               <p class="micro">Phase 3 of 3</p>
-              <h1 id="title-post" class="page-title mt-1">Post-training</h1>
+              <h1 id="title-post" class="page-title mt-1">Post-Training</h1>
               <p class="text-secondary mt-3">What to hand in when you finish your hours.</p>
             </div>
           </aside>

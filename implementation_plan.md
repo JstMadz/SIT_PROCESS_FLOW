@@ -17,6 +17,9 @@ Security (audit 2026-11-07):
 - [x] (2026-11-24) Pin lucide to an exact version: done by removing lucide; the seven icons left are inline SVG.
 - [x] (2026-11-24) Let Enter submit the admin login (now a `<form>`).
 
+### Data
+- [ ] Owner/admin: about 30 partner addresses have their parts joined with no space (street, barangay and city run together, e.g. "Building1184 Quezon AvenueBarangay PaligsahanQuezon City"; also some "N/A" in the middle). Fix with Edit in the admin list, or re-upload a cleaned CSV. Find them by searching for words stuck together.
+
 ### Design
 - [x] (2026-11-24) Calm-luxury redesign of the whole site and a new partner companies list (see walkthrough).
 - [ ] Owner: decide whether this redesign needs the research brief (`docs/RESEARCH.md`, layouts-and-research §3); skipped as a restyle with no new features.
