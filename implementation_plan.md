@@ -33,3 +33,5 @@ Security (audit 2026-11-07):
 ## Privacy
 
 - [ ] **Data Privacy Act check (owner rule 2026-11-18), under the Data Privacy Act of 2012 (Republic Act No. 10173), a Philippine law:** run P1–P9 from `~/.claude/skills/dev-playbook/references/data-privacy.md`; start with P1, P2, P4. Cross-repo plan and register: vault `02_Areas/Data Privacy.md`.
+- [x] Students no longer see or search HTE contact numbers; only admins do (owner, 2026-11-25).
+- [ ] Contact numbers are hidden on screen only. Move them to storage only admins can read, so they never reach a student's browser. Details and plan: vault `02_Areas/Data Privacy.md` (SIT_PROCESS_FLOW row). Needs a Firestore rules change in the console.

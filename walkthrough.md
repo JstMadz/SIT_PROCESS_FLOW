@@ -1,5 +1,16 @@
 # SIT_PROCESS_FLOW: walkthrough
 
+## 2026-11-25 (later) — Contact numbers for admins only
+
+Owner: students should not see the HTE contact numbers (Data Privacy Act of 2012, Republic Act No. 10173); only admins.
+
+- Partner table for students: the Phone column is gone (No., Company, City / address, Contact person, Email); the freed width went to the other columns.
+- Student filter no longer matches contact numbers (`PARTNER_SEARCH_FIELDS` in `js/modules/partner-list.js`); the admin search keeps them (`ADMIN_SEARCH_FIELDS` in `js/modules/hte.js`).
+- Admin list rows now show the contact number after the address and contact person, so admins see it without opening Edit.
+- Still open (backlog, Privacy): the numbers are hidden on screen but still sent to every browser with the rest of the list.
+
+Verified: 84/84 browser checks (new: no Phone heading or cells, a known number never appears in the student table, filtering by a number finds nothing); admin list shows and finds the number; screenshots at 1440 light/dark, 390, 344 px, no sideways scroll, no errors.
+
 ## 2026-11-25 (later) — Post-Training buttons hover like the others (pushed: develop and main)
 
 Pre-merge check over `origin/main..develop`: one-caller abstractions none found; duplicate logic none found; special cases none found; oversized files: `index.html` 561 lines (markup only, already in the backlog). Dead code: an unused chevron icon, removed in a `Refactor` commit.

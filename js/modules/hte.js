@@ -16,12 +16,15 @@ function escapeHteHtml(value) {
   );
 }
 
-function getVisibleHtes(searchTerm, sortField, direction = "asc") {
+const ADMIN_SEARCH_FIELDS = ["name", "address", "contact", "email", "person"];
+
+function getVisibleHtes(searchTerm, sortField, direction = "asc", fields = ADMIN_SEARCH_FIELDS) {
   const search = searchTerm.trim().toLowerCase();
   return hteList
     .filter((hte) => {
       if (!search) return true;
-      return [hte.name, hte.address, hte.contact, hte.email, hte.person]
+      return fields
+        .map((field) => hte[field])
         .join(" ")
         .toLowerCase()
         .includes(search);
@@ -52,7 +55,7 @@ function updateHteSort(field) {
 function adminRowHTML(hte) {
   const id = escapeHteHtml(hte.id);
   const name = escapeHteHtml(hte.name);
-  const subtitle = [hte.address, hte.person].filter(Boolean).map(escapeHteHtml).join(" · ");
+  const subtitle = [hte.address, hte.person, hte.contact].filter(Boolean).map(escapeHteHtml).join(" · ");
   return `
     <li>
       <div class="row">

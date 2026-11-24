@@ -1,11 +1,13 @@
 // Partner companies table for students: numbered rows (No. follows the current
 // sort and filter), filter, sort by company or city (click the heading again to
-// reverse), "show more", email and copy.
+// reverse), "show more", email and copy. Contact numbers are for admins only
+// (Data Privacy Act of 2012), so students never see or search them.
 
 const PARTNER_BATCH = 20;
 let partnerSearch = "";
 let partnerSort = { field: "name", direction: "asc" };
 let partnersShown = PARTNER_BATCH;
+const PARTNER_SEARCH_FIELDS = ["name", "address", "email", "person"];
 
 function openHteModal() {
   const search = document.getElementById("partner-search");
@@ -69,7 +71,6 @@ function partnerRowHTML(hte, index) {
       <td class="company">${escapeHteHtml(hte.name)}</td>
       ${partnerCellHTML("City / address", escapeHteHtml(hte.address))}
       ${partnerCellHTML("Contact person", escapeHteHtml(hte.person))}
-      ${partnerCellHTML("Phone", escapeHteHtml(hte.contact))}
       ${partnerCellHTML("Email", partnerEmailHTML(hte.email))}
     </tr>`;
 }
@@ -100,7 +101,7 @@ function partnerStateHTML(visibleCount) {
 }
 
 function renderPartnerList() {
-  const visible = getVisibleHtes(partnerSearch, partnerSort.field, partnerSort.direction);
+  const visible = getVisibleHtes(partnerSearch, partnerSort.field, partnerSort.direction, PARTNER_SEARCH_FIELDS);
   const shown = visible.slice(0, partnersShown);
   const state = document.getElementById("partner-state");
   const more = document.getElementById("partner-more");
