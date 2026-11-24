@@ -1,6 +1,8 @@
 # SIT_PROCESS_FLOW: walkthrough
 
-## 2026-11-25 (later) — Post-Training buttons hover like the others
+## 2026-11-25 (later) — Post-Training buttons hover like the others (pushed: develop and main)
+
+Pre-merge check over `origin/main..develop`: one-caller abstractions none found; duplicate logic none found; special cases none found; oversized files: `index.html` 561 lines (markup only, already in the backlog). Dead code: an unused chevron icon, removed in a `Refactor` commit.
 
 Owner: the Post-Training buttons did not react on hover like the buttons in Pre-Deployment and During Training. Root cause: the five template and GForm links still carried `style="background: var(--surface)"` from the earlier design, and an inline style beats the shared `.btn-secondary:hover` tint. Removed the inline styles; the buttons now use the shared style only (full width inside their grey boxes, like Step 4's Request Form).
 
