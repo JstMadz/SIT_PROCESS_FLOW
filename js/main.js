@@ -1,7 +1,5 @@
-// Main Application Initialization
-// DOM cache and initialization logic
+// Application entry point: DOM cache and start-up
 
-// --- DOM ELEMENT CACHE ---
 const DOM = {
   modals: [
     document.getElementById("login-modal"),
@@ -12,33 +10,25 @@ const DOM = {
   loginPass: document.getElementById("login-pass"),
   loginError: document.getElementById("login-error"),
   adminForms: document.getElementById("admin-forms"),
-  viewTbody: document.getElementById("hte-view-tbody"),
-  emptyState: document.getElementById("hte-view-empty"),
-  adminTbody: document.getElementById("admin-hte-tbody"),
+  adminList: document.getElementById("admin-hte-list"),
   csvUpload: document.getElementById("hte-csv-upload"),
   manualForm: document.getElementById("form-hte-manual"),
   editForm: document.getElementById("form-hte-edit"),
 };
 
-// Initialize the application
 function initializeApp() {
-  console.log("Initializing application...");
-
-  // Initialize Firebase
   initializeFirebase();
+  renderIcons();
+  setupTheme();
+  setupModalDismissal();
+  syncAllSegPills();
+  window.addEventListener("resize", syncAllSegPills);
 
-  // Initialize Lucide icons
-  lucide.createIcons();
-
-  // Fetch public data ONLY ONCE when the website starts loading
+  // Public data is fetched once, when the page opens.
   loadCloudLinks();
   loadHteData();
 
-  // Setup auth state listener
   setupAuthStateListener();
-
-  console.log("Application initialized successfully!");
 }
 
-// Run initialization when DOM is ready
 document.addEventListener("DOMContentLoaded", initializeApp);

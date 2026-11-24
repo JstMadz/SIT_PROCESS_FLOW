@@ -2,12 +2,11 @@
 
 // HTE Pagination and Data Management
 let hteList = [];
-let currentPageStudent = 1;
+let hteLoadState = "loading"; // loading | ready | error
 let currentPageAdmin = 1;
 const itemsPerPage = 10;
 let hteSearchTerm = "";
 let hteSortField = "name";
-let hteSortDirection = "asc";
 const selectedHteIds = new Set();
 
 // Default links to forms and resources

@@ -14,8 +14,13 @@ Security (audit 2026-11-07):
 
 ### P2: Found while adding login protection (2026-11-01)
 - [ ] Check (and copy into the repo, e.g. `firestore.rules`) the Firestore security rules in the Firebase console: writes to `htes` and `settings/app_links` must require a signed-in admin. The app only hides the admin screens; the rules are the real protection.
-- [ ] Pin lucide to an exact version: `index.html` loads `https://unpkg.com/lucide@latest`, so a new lucide release can change or break every icon without a code change.
-- [ ] Let Enter submit the admin login (it's a `div` with an `onclick` button, not a `<form>`).
+- [x] (2026-11-24) Pin lucide to an exact version: done by removing lucide; the seven icons left are inline SVG.
+- [x] (2026-11-24) Let Enter submit the admin login (now a `<form>`).
+
+### Design
+- [x] (2026-11-24) Calm-luxury redesign of the whole site and a new partner companies list (see walkthrough).
+- [ ] Owner: decide whether this redesign needs the research brief (`docs/RESEARCH.md`, layouts-and-research §3); skipped as a restyle with no new features.
+- [ ] Tailwind loads from its CDN play script, which Tailwind says is not for production. Swap for a small built CSS file or plain CSS (layout utilities only are left).
 
 ## Privacy
 

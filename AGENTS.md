@@ -7,7 +7,7 @@
 A guide for TUP Manila College of Science students doing their **Supervised Industrial Training (SIT)**: the step-by-step process flow, links to the forms and apps they need, and a searchable list of **Host Training Establishments (HTEs)**. Staff sign in as admin to add, edit and delete HTEs and to change the app links; students only read.
 
 ## 2. Stack & commands
-- Stack A + Firebase: plain HTML/CSS/JS (Tailwind and lucide from CDNs), Firebase Auth (admin sign-in) and Cloud Firestore (compat SDK). No build, no tests.
+- Stack A + Firebase: plain HTML/CSS/JS (Tailwind from its CDN for layout; colours and components in `css/styles.css`, calm-luxury design, light/dark theme; the few icons are inline SVG in `js/modules/ui.js`), Firebase Auth (admin sign-in) and Cloud Firestore (compat SDK). No build, no tests.
 - Run: `npx serve .` (Firebase Auth needs http://, not `file://`).
 - Verify: as a student, browse the process flow, search and page through HTEs; as admin, sign in, add/edit/delete an HTE, bulk delete, change a link, sign out; phone width.
 - Deploy: static hosting of the repo root; Firebase project `tup-sit-app`.
@@ -25,12 +25,11 @@ A guide for TUP Manila College of Science students doing their **Supervised Indu
 ## 5. Key files
 - `config/firebase-config.js`: Firebase project settings (the web API key is public by design; access is controlled by Auth + Firestore rules).
 - `js/firebase/auth.js` (sign-in/out), `js/firebase/database.js` (Firestore: `htes` collection, `settings/app_links` document).
-- `js/modules/`: `session.js` (inactivity sign-out), `hte.js` (HTE list, search, pagination, admin table), `tabs.js`, `ui.js`; `js/main.js` wires them; `js/constants.js`.
+- `js/modules/`: `session.js` (inactivity sign-out), `partner-list.js` (students' partner companies: search, sort, show more, rows that open in place), `hte.js` (shared search/sort, admin list, CSV upload), `theme.js` (light/dark), `tabs.js`, `ui.js` (icons, toasts, modals, segmented controls); `js/main.js` wires them; `js/constants.js`.
 - `oldVersions/`: earlier pages kept for reference; not served from the main page.
 
 ## 6. Gotchas specific to this repo
 - The Firestore rules aren't in the repo. Before changing who can write, check (and record) the rules in the Firebase console; a client-only check is no protection.
-- No `.gitignore`: `.DS_Store` has been committed. Add one before committing other changes.
 - The README is two lines; replace it with a real one (what it is, how to run, structure) when you next touch docs.
 
 ## 7. Before you finish

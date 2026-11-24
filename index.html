@@ -2,1620 +2,576 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>SIT Process Flow - TUP</title>
-
-    <!-- Tab Logo / Favicon -->
     <link rel="icon" type="image/png" href="assets/tup_logo.png" />
 
-    <!-- Tailwind CSS -->
+    <!-- Theme before first paint, so dark mode doesn't flash white (js/modules/theme.js) -->
+    <script>
+      (function () {
+        var stored = null;
+        try { stored = localStorage.getItem("sit-process-flow:theme"); } catch (e) {}
+        var dark = stored ? stored === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.dataset.theme = dark ? "dark" : "light";
+      })();
+    </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-
-    <!-- Firebase Compat Libraries (App, Auth, and Firestore) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
-    <!-- Fonts -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-
-    <!-- Custom Styles -->
     <link rel="stylesheet" href="css/styles.css" />
   </head>
-  <body
-    class="text-gray-800 min-h-screen relative flex flex-col overflow-x-hidden max-[484px]:pb-16 min-[485px]:pb-0"
-  >
-    <!-- TOAST NOTIFICATION CONTAINER -->
-    <div
-      id="toast-container"
-      class="fixed top-4 right-4 sm:top-6 sm:right-6 z-[100] flex flex-col gap-3 pointer-events-none"
-    ></div>
+  <body class="flex flex-col">
+    <div id="toast-container" class="fixed top-4 right-4 z-[130] flex flex-col gap-3 pointer-events-none" aria-live="polite"></div>
 
-    <!-- CUSTOM CONFIRMATION MODAL -->
-    <div
-      id="confirm-modal"
-      class="modal-overlay fixed inset-0 z-[110] hidden flex items-center justify-center p-4"
-    >
-      <div
-        class="bg-white rounded-xl shadow-2xl p-6 sm:p-7 w-full max-w-sm relative border border-gray-200 text-center transform scale-100 transition-transform"
-      >
-        <div
-          class="w-12 h-12 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-100"
-        >
-          <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+    <!-- ============ TOP BAR ============ -->
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="logos">
+          <img src="assets/tup_logo.png" alt="TUP logo" />
+          <img src="assets/ched_logo.png" alt="CHED logo" class="logo-extra" />
+          <img src="assets/cos_logo.png" alt="College of Science logo" class="round logo-extra" />
         </div>
-        <h3 id="confirm-title" class="text-lg font-bold text-gray-900 mb-2">
-          Are you sure?
-        </h3>
-        <p id="confirm-message" class="text-sm text-gray-500 mb-6">
-          This action cannot be undone.
-        </p>
-        <div class="flex gap-3 justify-center">
-          <button
-            onclick="closeConfirm()"
-            class="px-4 py-2 rounded font-medium text-sm text-gray-600 bg-white border border-gray-300 hover:bg-gray-50 transition-colors w-full"
-          >
-            Cancel
+        <div class="brand">
+          <p class="brand-title"><span class="label-long">Supervised Industrial Training</span><span class="label-short">SIT Process Flow</span></p>
+          <p class="brand-sub">College of Science · Computer Studies Department</p>
+        </div>
+        <a href="#" data-link="downloadForms" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm">
+          <span class="label-long">Forms repository</span><span class="label-short">Forms</span>
+        </a>
+        <button type="button" id="btn-theme" class="icon-btn" onclick="toggleTheme(event)" aria-label="Switch to dark mode" title="Switch to dark mode"></button>
+      </div>
+      <nav class="phase-bar" aria-label="Training phase">
+        <div class="seg seg-wide" id="phase-seg">
+          <span class="seg-pill" aria-hidden="true"></span>
+          <button type="button" id="btn-pre-deployment" class="tab-btn" aria-pressed="true" onclick="switchTab('pre-deployment')">
+            <span class="label-long">Pre-deployment</span><span class="label-short">Before</span>
           </button>
-          <button
-            onclick="executeConfirm()"
-            class="px-4 py-2 rounded font-medium text-sm text-white bg-red-600 hover:bg-red-700 transition-colors w-full flex items-center justify-center gap-2"
-          >
-            <span id="confirm-btn-text">Delete</span>
+          <button type="button" id="btn-during-training" class="tab-btn" aria-pressed="false" onclick="switchTab('during-training')">
+            <span class="label-long">During training</span><span class="label-short">During</span>
+          </button>
+          <button type="button" id="btn-post-training" class="tab-btn" aria-pressed="false" onclick="switchTab('post-training')">
+            <span class="label-long">Post-training</span><span class="label-short">After</span>
           </button>
         </div>
-      </div>
-    </div>
+      </nav>
+    </header>
 
-    <!-- ============================================== -->
-    <!-- HEADER / NAVBAR SECTION (STICKY TOP) -->
-    <!-- ============================================== -->
-    <nav
-      class="bg-white/90 backdrop-blur-md shadow-sm border-b border-gray-200/50 w-full z-[50] sticky top-0"
-    >
-      <div class="max-w-5xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-4">
-        <div class="flex flex-row items-center gap-2 sm:gap-5 w-full">
-          <!-- Logos (Left) -->
-          <div class="flex flex-row items-center gap-1 sm:gap-2 shrink-0">
-            <img
-              src="assets/tup_logo.png"
-              alt="TUP Logo"
-              class="w-8 h-8 min-[400px]:w-10 min-[400px]:h-10 sm:w-14 sm:h-14 object-contain drop-shadow-sm"
-              onerror="this.src='https://via.placeholder.com/150?text=TUP'"
-            />
-            <img
-              src="assets/ched_logo.png"
-              alt="CHED Logo"
-              class="w-8 h-8 min-[400px]:w-10 min-[400px]:h-10 sm:w-14 sm:h-14 object-contain drop-shadow-sm"
-              onerror="this.src='https://via.placeholder.com/150?text=CHED'"
-            />
-            <img
-              src="assets/cos_logo.png"
-              alt="COS Logo"
-              class="w-8 h-8 min-[400px]:w-10 min-[400px]:h-10 sm:w-14 sm:h-14 object-cover rounded-full border border-gray-100 drop-shadow-sm"
-            />
-          </div>
-          <!-- Text Details (Right of Logos) -->
-          <div
-            class="border-l border-gray-300 pl-2.5 sm:pl-4 md:pl-5 flex flex-col justify-center flex-1 min-w-0"
-          >
-            <h1
-              class="text-[12px] min-[400px]:text-[14px] sm:text-lg md:text-xl font-bold text-gray-900 tracking-tight leading-tight"
-            >
-              College of Science
-            </h1>
-            <p
-              class="text-[9px] min-[400px]:text-[10px] sm:text-xs md:text-sm text-gray-500 font-medium leading-tight mt-0.5"
-            >
-              Computer Studies Department
-            </p>
-            <p
-              class="text-[8px] min-[400px]:text-[9px] sm:text-xs md:text-sm text-red-800/80 font-bold leading-tight tracking-wide mt-0.5 sm:mt-1"
-            >
-              SUPERVISED INDUSTRIAL TRAINING (SIT)
-            </p>
-          </div>
-        </div>
-      </div>
-    </nav>
-
-    <!-- ============================================== -->
-    <!-- DYNAMIC TABS NAVIGATION (BOTTOM ON MOBILE, STICKY ON DESKTOP) -->
-    <!-- ============================================== -->
-    <div
-      class="z-[45] w-full transition-all max-[484px]:fixed max-[484px]:bottom-0 max-[484px]:left-0 max-[484px]:right-0 max-[484px]:bg-white max-[484px]:border-t max-[484px]:border-gray-200 max-[484px]:shadow-[0_-4px_15px_rgba(0,0,0,0.06)] pb-safe min-[485px]:sticky min-[485px]:top-[65px] sm:top-[89px] min-[485px]:bg-[#f8f9fa]/95 min-[485px]:backdrop-blur-md min-[485px]:border-t-0 min-[485px]:border-b min-[485px]:border-gray-200/50 min-[485px]:shadow-sm min-[485px]:pt-3"
-    >
-      <div
-        class="max-w-4xl mx-auto px-0 min-[485px]:px-6 h-14 min-[485px]:h-auto"
-      >
-        <div class="flex flex-row items-center justify-between w-full h-full">
-          <!-- Navigation Items -->
-          <div
-            class="flex flex-row justify-around min-[485px]:justify-start items-center w-full h-full min-[485px]:gap-6"
-          >
-            <button
-              onclick="switchTab('pre-deployment')"
-              id="btn-pre-deployment"
-              class="tab-btn flex flex-col items-center justify-center w-full min-[485px]:w-auto h-full min-[485px]:py-3 max-[484px]:border-t-2 min-[485px]:border-t-0 min-[485px]:border-b-2 text-red-800 border-red-800 transition-colors"
-            >
-              <i
-                data-lucide="clipboard-list"
-                class="w-6 h-6 min-[485px]:hidden"
-              ></i>
-              <span
-                class="max-[484px]:hidden font-semibold text-sm whitespace-nowrap"
-                >Pre-Deployment</span
-              >
-            </button>
-
-            <button
-              onclick="switchTab('during-training')"
-              id="btn-during-training"
-              class="tab-btn flex flex-col items-center justify-center w-full min-[485px]:w-auto h-full min-[485px]:py-3 max-[484px]:border-t-2 min-[485px]:border-t-0 min-[485px]:border-b-2 text-gray-500 border-transparent hover:text-gray-800 transition-colors"
-            >
-              <i data-lucide="clock" class="w-6 h-6 min-[485px]:hidden"></i>
-              <span
-                class="max-[484px]:hidden font-semibold text-sm whitespace-nowrap"
-                >During Training</span
-              >
-            </button>
-
-            <button
-              onclick="switchTab('post-training')"
-              id="btn-post-training"
-              class="tab-btn flex flex-col items-center justify-center w-full min-[485px]:w-auto h-full min-[485px]:py-3 max-[484px]:border-t-2 min-[485px]:border-t-0 min-[485px]:border-b-2 text-gray-500 border-transparent hover:text-gray-800 transition-colors"
-            >
-              <i
-                data-lucide="graduation-cap"
-                class="w-6 h-6 min-[485px]:hidden"
-              ></i>
-              <span
-                class="max-[484px]:hidden font-semibold text-sm whitespace-nowrap"
-                >Post-Training</span
-              >
-            </button>
-
-            <!-- Mobile-Only Forms Repository Button -->
-            <a
-              href="#"
-              data-link="downloadForms"
-              target="_blank"
-              class="min-[485px]:hidden flex flex-col items-center justify-center w-full h-full text-red-800 hover:text-red-900 transition-colors border-t-2 border-transparent"
-            >
-              <svg
-                viewBox="0 0 87.3 58.7"
-                class="w-6 h-6 fill-current"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M29.3 8L14.6 33.3l14.7 25.4L58 8H29.3z"
-                  opacity="0.6"
-                />
-                <path d="M58 58.7l14.6-25.4h-58L0 58.7h58" opacity="0.8" />
-                <path d="M58 0l14.7 25.4L87.3 33.3 58 0" opacity="1.0" />
-              </svg>
-            </a>
-          </div>
-
-          <!-- Desktop-Only Forms Repository Button -->
-          <div class="hidden min-[485px]:flex shrink-0 mb-1 sm:mb-0">
-            <a
-              href="#"
-              data-link="downloadForms"
-              target="_blank"
-              class="inline-flex items-center justify-center gap-1.5 bg-red-800/10 hover:bg-red-800/20 text-red-800 font-semibold py-1.5 px-3 md:py-2 md:px-4 rounded-md transition-all text-xs border border-red-800/10 whitespace-nowrap"
-            >
-              <svg
-                viewBox="0 0 87.3 58.7"
-                class="w-4 h-4 fill-current"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M29.3 8L14.6 33.3l14.7 25.4L58 8H29.3z"
-                  opacity="0.6"
-                />
-                <path d="M58 58.7l14.6-25.4h-58L0 58.7h58" opacity="0.8" />
-                <path d="M58 0l14.7 25.4L87.3 33.3 58 0" opacity="1.0" />
-              </svg>
-              Forms Repository
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ============================================== -->
-    <!-- MAIN CONTENT AREA -->
-    <!-- ============================================== -->
-    <main class="w-full flex-grow flex flex-col items-center pt-6 md:pt-8 pb-8">
-      <div class="max-w-4xl w-full px-4 sm:px-6">
-        <!-- ============================================== -->
-        <!-- TAB 1: PRE-DEPLOYMENT -->
-        <!-- ============================================== -->
-        <section
-          id="tab-pre-deployment"
-          class="tab-content active space-y-3 sm:space-y-2"
-        >
-          <!-- Step 1 -->
-          <div class="flex gap-3 sm:gap-4 relative">
-            <div
-              class="absolute left-[15px] sm:left-[17px] top-10 bottom-[-16px] w-[1px] bg-gray-200/50"
-            ></div>
-            <div class="flex-shrink-0 relative z-10 mt-1">
-              <div
-                class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 shadow-sm"
-              >
-                <i
-                  data-lucide="file-text"
-                  class="w-3.5 h-3.5 sm:w-4 sm:h-4"
-                ></i>
+    <main class="flex-grow" style="padding: 8px var(--page-pad) 24px">
+      <!-- ============ PRE-DEPLOYMENT ============ -->
+      <section id="tab-pre-deployment" class="tab-content active" aria-labelledby="title-pre">
+        <div class="grid-12">
+          <aside class="lg-span-4">
+            <div class="card overview">
+              <p class="micro">Phase 1 of 3</p>
+              <h1 id="title-pre" class="page-title mt-1">Pre-deployment</h1>
+              <p class="text-secondary mt-3">Eight steps, from handing in your documents to signing the MOA. Do them in order.</p>
+              <div class="actions mt-5">
+                <button type="button" class="btn btn-primary" onclick="openHteModal()">View partner companies</button>
               </div>
+              <ol class="toc" aria-label="Steps">
+                <li><a href="#pre-1">Document Submission &amp; Checklist</a></li>
+                <li><a href="#pre-2">Verification &amp; Return</a></li>
+                <li><a href="#pre-3">HTE Selection &amp; Validation</a></li>
+                <li><a href="#pre-4">Application Process</a></li>
+                <li><a href="#pre-5">Company Acceptance</a></li>
+                <li><a href="#pre-6">University Endorsement</a></li>
+                <li><a href="#pre-7">Acceptance Monitoring</a></li>
+                <li><a href="#pre-8">MOA &amp; Training Agreement</a></li>
+              </ol>
             </div>
-            <div class="flex-grow pb-8 w-full min-w-0">
-              <div
-                class="bg-white/80 rounded-lg p-4 sm:p-5 border border-gray-100 shadow-sm transition-shadow"
-              >
-                <span
-                  class="text-[10px] font-bold text-red-800/70 tracking-widest mb-1 block uppercase"
-                  >Step 1</span
-                >
-                <h3 class="text-sm md:text-base font-bold text-gray-800 mb-2">
-                  Document Submission & Checklist
-                </h3>
-                <div class="text-xs md:text-sm text-gray-600 space-y-4">
-                  <p>
-                    Accomplish and submit the following documents in two (2)
-                    long brown envelopes.
-                  </p>
+          </aside>
 
-                  <div class="grid md:grid-cols-2 gap-3 sm:gap-4">
-                    <div
-                      class="p-3 sm:p-4 rounded-md border border-gray-100 bg-white shadow-sm"
-                    >
-                      <h4
-                        class="font-semibold text-gray-700 border-b border-gray-100 pb-2 mb-3 flex items-center gap-2"
-                      >
-                        <i
-                          data-lucide="folder"
-                          class="w-3.5 h-3.5 text-red-800/80 shrink-0"
-                        ></i>
-                        Original Envelope
-                      </h4>
-                      <ul class="space-y-2 text-xs text-gray-500">
-                        <li class="flex items-start gap-2">
-                          <i
-                            data-lucide="check"
-                            class="w-3 h-3 text-gray-300 mt-0.5 shrink-0"
-                          ></i>
-                          Originally signed Application Form
-                        </li>
-                        <li class="flex items-start gap-2">
-                          <i
-                            data-lucide="check"
-                            class="w-3 h-3 text-gray-300 mt-0.5 shrink-0"
-                          ></i>
-                          Originally signed Waiver Form
-                        </li>
-                        <li class="flex items-start gap-2">
-                          <i
-                            data-lucide="check"
-                            class="w-3 h-3 text-gray-300 mt-0.5 shrink-0"
-                          ></i>
-                          Copy of Govt ID (Parent) w/ 3 signatures
-                        </li>
-                        <li class="flex items-start gap-2">
-                          <i
-                            data-lucide="check"
-                            class="w-3 h-3 text-gray-300 mt-0.5 shrink-0"
-                          ></i>
-                          Original Medical Clearance Slip
-                        </li>
-                        <li class="flex items-start gap-2">
-                          <i
-                            data-lucide="check"
-                            class="w-3 h-3 text-gray-300 mt-0.5 shrink-0"
-                          ></i>
-                          Original NBI Clearance
-                        </li>
-                      </ul>
-                    </div>
-                    <div
-                      class="p-3 sm:p-4 rounded-md border border-gray-100 bg-white shadow-sm"
-                    >
-                      <h4
-                        class="font-semibold text-gray-700 border-b border-gray-100 pb-2 mb-3 flex items-center gap-2"
-                      >
-                        <i
-                          data-lucide="copy"
-                          class="w-3.5 h-3.5 text-gray-500 shrink-0"
-                        ></i>
-                        Duplicate Envelope
-                      </h4>
-                      <ul class="space-y-2 text-xs text-gray-500">
-                        <li class="flex items-start gap-2">
-                          <i
-                            data-lucide="check"
-                            class="w-3 h-3 text-gray-300 mt-0.5 shrink-0"
-                          ></i>
-                          Originally signed Application Form
-                        </li>
-                        <li class="flex items-start gap-2">
-                          <i
-                            data-lucide="check"
-                            class="w-3 h-3 text-gray-300 mt-0.5 shrink-0"
-                          ></i>
-                          Originally signed Waiver Form
-                        </li>
-                        <li class="flex items-start gap-2">
-                          <i
-                            data-lucide="check"
-                            class="w-3 h-3 text-gray-300 mt-0.5 shrink-0"
-                          ></i>
-                          Copy of Govt ID (Parent) w/ 3 signatures
-                        </li>
-                        <li class="flex items-start gap-2">
-                          <i
-                            data-lucide="check"
-                            class="w-3 h-3 text-gray-300 mt-0.5 shrink-0"
-                          ></i>
-                          Photocopy of Medical Clearance Slip
-                        </li>
-                        <li class="flex items-start gap-2">
-                          <i
-                            data-lucide="check"
-                            class="w-3 h-3 text-gray-300 mt-0.5 shrink-0"
-                          ></i>
-                          Photocopy of NBI Clearance
-                        </li>
-                      </ul>
-                    </div>
+          <ol class="steps lg-span-8">
+            <li class="step">
+              <span class="step-num">1</span>
+              <article id="pre-1" class="card step-card prose">
+                <span class="micro step-kicker">Step 1</span>
+                <h2 class="card-title">Document Submission &amp; Checklist</h2>
+                <p>Accomplish and submit the following documents in two (2) long brown envelopes.</p>
+                <div class="grid-12" style="gap: 12px">
+                  <div class="well span-6">
+                    <h3 class="well-title">Original Envelope</h3>
+                    <ul class="checklist">
+                      <li>Originally signed Application Form</li>
+                      <li>Originally signed Waiver Form</li>
+                      <li>Copy of Govt ID (Parent) w/ 3 signatures</li>
+                      <li>Original Medical Clearance Slip</li>
+                      <li>Original NBI Clearance</li>
+                    </ul>
                   </div>
-
-                  <div class="flex flex-col sm:flex-row gap-2 pt-2">
-                    <a
-                      href="#"
-                      data-link="appForm"
-                      target="_blank"
-                      class="w-full sm:w-auto inline-flex justify-center items-center gap-1.5 px-3 py-2 sm:py-1.5 bg-white border border-gray-200 rounded text-xs font-medium text-gray-600 hover:text-red-800 hover:border-red-200 transition-colors shadow-sm"
-                    >
-                      <i data-lucide="download" class="w-3.5 h-3.5"></i>
-                      Application Form
-                    </a>
-                    <a
-                      href="#"
-                      data-link="waiverForm"
-                      target="_blank"
-                      class="w-full sm:w-auto inline-flex justify-center items-center gap-1.5 px-3 py-2 sm:py-1.5 bg-white border border-gray-200 rounded text-xs font-medium text-gray-600 hover:text-red-800 hover:border-red-200 transition-colors shadow-sm"
-                    >
-                      <i data-lucide="download" class="w-3.5 h-3.5"></i> Waiver
-                      Form
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Step 2 -->
-          <div class="flex gap-3 sm:gap-4 relative">
-            <div
-              class="absolute left-[15px] sm:left-[17px] top-10 bottom-[-16px] w-[1px] bg-gray-200/50"
-            ></div>
-            <div class="flex-shrink-0 relative z-10 mt-1">
-              <div
-                class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 shadow-sm"
-              >
-                <i
-                  data-lucide="check-circle"
-                  class="w-3.5 h-3.5 sm:w-4 sm:h-4"
-                ></i>
-              </div>
-            </div>
-            <div class="flex-grow pb-8 w-full min-w-0">
-              <div
-                class="bg-white/80 rounded-lg p-4 sm:p-5 border border-gray-100 shadow-sm transition-shadow"
-              >
-                <span
-                  class="text-[10px] font-bold text-red-800/70 tracking-widest mb-1 block uppercase"
-                  >Step 2</span
-                >
-                <h3 class="text-sm md:text-base font-bold text-gray-800 mb-2">
-                  Verification & Return
-                </h3>
-                <div class="text-xs md:text-sm text-gray-600 space-y-3">
-                  <p>
-                    Once signed by your SIT Coordinator, Department Head, and
-                    Director of the IRJP:
-                  </p>
-                  <ul class="space-y-2 text-xs text-gray-500">
-                    <li class="flex items-center gap-2">
-                      <i
-                        data-lucide="arrow-right"
-                        class="w-3 h-3 text-red-800/80 shrink-0"
-                      ></i>
-                      <strong>Original Envelope:</strong> Returned to the
-                      student.
-                    </li>
-                    <li class="flex items-center gap-2">
-                      <i
-                        data-lucide="arrow-right"
-                        class="w-3 h-3 text-gray-400 shrink-0"
-                      ></i>
-                      <strong>Duplicate Envelope:</strong> Kept by the
-                      coordinator.
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Step 3 -->
-          <div class="flex gap-3 sm:gap-4 relative">
-            <div
-              class="absolute left-[15px] sm:left-[17px] top-10 bottom-[-16px] w-[1px] bg-gray-200/50"
-            ></div>
-            <div class="flex-shrink-0 relative z-10 mt-1">
-              <div
-                class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 shadow-sm"
-              >
-                <i data-lucide="building" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
-              </div>
-            </div>
-            <div class="flex-grow pb-8 w-full min-w-0">
-              <div
-                class="bg-white/80 rounded-lg p-4 sm:p-5 border border-gray-100 shadow-sm transition-shadow"
-              >
-                <span
-                  class="text-[10px] font-bold text-red-800/70 tracking-widest mb-1 block uppercase"
-                  >Step 3</span
-                >
-                <h3 class="text-sm md:text-base font-bold text-gray-800 mb-2">
-                  HTE Selection & Validation
-                </h3>
-                <div class="text-xs md:text-sm text-gray-600 space-y-4">
-                  <p>
-                    Select a Host Training Establishment (HTE) through one of
-                    two methods:
-                  </p>
-
-                  <div class="grid sm:grid-cols-2 gap-3 sm:gap-4">
-                    <div
-                      class="p-3 border border-gray-100 rounded-md bg-white shadow-sm flex flex-col"
-                    >
-                      <div class="font-semibold text-gray-700 text-xs mb-1">
-                        Option A: Partner HTE
-                      </div>
-                      <div class="text-xs text-gray-500 mb-3">
-                        Choose from companies with an existing MOA.
-                      </div>
-                      <button
-                        onclick="openHteModal()"
-                        class="mt-auto w-full inline-flex justify-center items-center gap-1.5 bg-white border border-gray-200 text-gray-600 hover:text-red-800 hover:border-red-200/80 py-2 sm:py-1.5 rounded text-xs font-medium transition-colors shadow-sm"
-                      >
-                        <i data-lucide="list" class="w-3 h-3"></i> View Partner
-                        List
-                      </button>
-                    </div>
-                    <div
-                      class="p-3 border border-gray-100 rounded-md bg-white shadow-sm"
-                    >
-                      <div class="font-semibold text-gray-700 text-xs mb-1">
-                        Option B: Personal Choice
-                      </div>
-                      <div class="text-[11px] md:text-xs text-gray-500">
-                        Apply elsewhere. <br /><span
-                          class="text-gray-400 italic"
-                          >Coordinator must validate legitimacy first.</span
-                        >
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Step 4 -->
-          <div class="flex gap-3 sm:gap-4 relative">
-            <div
-              class="absolute left-[15px] sm:left-[17px] top-10 bottom-[-16px] w-[1px] bg-gray-200/50"
-            ></div>
-            <div class="flex-shrink-0 relative z-10 mt-1">
-              <div
-                class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 shadow-sm"
-              >
-                <i
-                  data-lucide="briefcase"
-                  class="w-3.5 h-3.5 sm:w-4 sm:h-4"
-                ></i>
-              </div>
-            </div>
-            <div class="flex-grow pb-8 w-full min-w-0">
-              <div
-                class="bg-white/80 rounded-lg p-4 sm:p-5 border border-gray-100 shadow-sm transition-shadow"
-              >
-                <span
-                  class="text-[10px] font-bold text-red-800/70 tracking-widest mb-1 block uppercase"
-                  >Step 4</span
-                >
-                <h3 class="text-sm md:text-base font-bold text-gray-800 mb-2">
-                  Application Process
-                </h3>
-                <div class="text-xs md:text-sm text-gray-600 space-y-3">
-                  <p>If a suitable company is found:</p>
-                  <div
-                    class="bg-white shadow-sm p-3 sm:p-4 rounded-md border border-gray-100"
-                  >
-                    <p class="text-xs font-semibold text-gray-700 mb-2">
-                      1. Request Recommendation
-                    </p>
-                    <a
-                      href="#"
-                      data-link="recLetterForm"
-                      target="_blank"
-                      class="w-full sm:w-auto inline-flex justify-center items-center gap-1.5 px-3 py-2 sm:py-1.5 bg-white border border-gray-200 rounded text-xs font-medium text-gray-600 hover:text-red-800 hover:border-red-200 transition-colors shadow-sm mb-4"
-                    >
-                      <i data-lucide="file-input" class="w-3.5 h-3.5"></i>
-                      Request Form (GForm)
-                    </a>
-
-                    <p
-                      class="text-xs font-semibold text-gray-700 mb-1 border-t border-gray-100 pt-3"
-                    >
-                      2. Submit to Company
-                    </p>
-                    <ul class="list-none space-y-1 text-xs text-gray-500 pl-1">
-                      <li>• Signed Recommendation Letter</li>
-                      <li>• Curriculum Vitae (CV) / Resume</li>
-                      <li>• Letter of Intent</li>
+                  <div class="well span-6">
+                    <h3 class="well-title">Duplicate Envelope</h3>
+                    <ul class="checklist">
+                      <li>Originally signed Application Form</li>
+                      <li>Originally signed Waiver Form</li>
+                      <li>Copy of Govt ID (Parent) w/ 3 signatures</li>
+                      <li>Photocopy of Medical Clearance Slip</li>
+                      <li>Photocopy of NBI Clearance</li>
                     </ul>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Step 5 -->
-          <div class="flex gap-3 sm:gap-4 relative">
-            <div
-              class="absolute left-[15px] sm:left-[17px] top-10 bottom-[-16px] w-[1px] bg-gray-200/50"
-            ></div>
-            <div class="flex-shrink-0 relative z-10 mt-1">
-              <div
-                class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 shadow-sm"
-              >
-                <i data-lucide="award" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
-              </div>
-            </div>
-            <div class="flex-grow pb-8 w-full min-w-0">
-              <div
-                class="bg-white/80 rounded-lg p-4 sm:p-5 border border-gray-100 shadow-sm transition-shadow"
-              >
-                <span
-                  class="text-[10px] font-bold text-red-800/70 tracking-widest mb-1 block uppercase"
-                  >Step 5</span
-                >
-                <h3 class="text-sm md:text-base font-bold text-gray-800 mb-2">
-                  Company Acceptance
-                </h3>
-                <div class="text-xs md:text-sm text-gray-600 space-y-3">
-                  <p>Upon acceptance, secure the following:</p>
-                  <ul class="space-y-2 text-xs text-gray-500">
-                    <li class="flex items-center gap-2">
-                      <i
-                        data-lucide="check"
-                        class="w-3.5 h-3.5 text-gray-300 shrink-0"
-                      ></i>
-                      Acceptance Letter
-                    </li>
-                    <li class="flex items-center gap-2">
-                      <i
-                        data-lucide="check"
-                        class="w-3.5 h-3.5 text-gray-300 shrink-0"
-                      ></i>
-                      Training Plan (Company or Univ Format)
-                    </li>
-                  </ul>
-                  <a
-                    href="#"
-                    data-link="trainingPlan"
-                    target="_blank"
-                    class="mt-2 w-full sm:w-auto inline-flex justify-center items-center gap-1.5 px-3 py-2 sm:py-1.5 bg-white border border-gray-200 rounded text-xs font-medium text-gray-600 hover:text-red-800 hover:border-red-200 transition-colors shadow-sm"
-                  >
-                    <i data-lucide="download" class="w-3.5 h-3.5"></i> Training
-                    Plan Template
-                  </a>
+                <div class="actions">
+                  <a href="#" data-link="appForm" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Application Form</a>
+                  <a href="#" data-link="waiverForm" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Waiver Form</a>
                 </div>
-              </div>
-            </div>
-          </div>
+              </article>
+            </li>
 
-          <!-- Step 6 -->
-          <div class="flex gap-3 sm:gap-4 relative">
-            <div
-              class="absolute left-[15px] sm:left-[17px] top-10 bottom-[-16px] w-[1px] bg-gray-200/50"
-            ></div>
-            <div class="flex-shrink-0 relative z-10 mt-1">
-              <div
-                class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 shadow-sm"
-              >
-                <i data-lucide="pen-tool" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
-              </div>
-            </div>
-            <div class="flex-grow pb-8 w-full min-w-0">
-              <div
-                class="bg-white/80 rounded-lg p-4 sm:p-5 border border-gray-100 shadow-sm transition-shadow"
-              >
-                <span
-                  class="text-[10px] font-bold text-red-800/70 tracking-widest mb-1 block uppercase"
-                  >Step 6</span
-                >
-                <h3 class="text-sm md:text-base font-bold text-gray-800 mb-2">
-                  University Endorsement
-                </h3>
-                <div class="text-xs md:text-sm text-gray-600 space-y-3">
-                  <ol class="list-decimal pl-4 space-y-2 text-xs text-gray-500">
-                    <li>Fill out Request for Endorsement.</li>
-                    <li>Coordinator issues signed Endorsement Letter.</li>
-                    <li>
-                      Submit a copy of received letter back to Coordinator.
-                    </li>
-                  </ol>
-                  <a
-                    href="#"
-                    data-link="endorsementForm"
-                    target="_blank"
-                    class="mt-2 w-full sm:w-auto inline-flex justify-center items-center gap-1.5 px-3 py-2 sm:py-1.5 bg-white border border-gray-200 rounded text-xs font-medium text-gray-600 hover:text-red-800 hover:border-red-200 transition-colors shadow-sm"
-                  >
-                    <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                    Endorsement Form (GForm)
-                  </a>
+            <li class="step">
+              <span class="step-num">2</span>
+              <article id="pre-2" class="card step-card prose">
+                <span class="micro step-kicker">Step 2</span>
+                <h2 class="card-title">Verification &amp; Return</h2>
+                <p>Once signed by your SIT Coordinator, Department Head, and Director of the IRJP:</p>
+                <ul class="checklist">
+                  <li><strong>Original Envelope:</strong> Returned to the student.</li>
+                  <li><strong>Duplicate Envelope:</strong> Kept by the coordinator.</li>
+                </ul>
+              </article>
+            </li>
+
+            <li class="step">
+              <span class="step-num">3</span>
+              <article id="pre-3" class="card step-card prose">
+                <span class="micro step-kicker">Step 3</span>
+                <h2 class="card-title">HTE Selection &amp; Validation</h2>
+                <p>Select a Host Training Establishment (HTE) through one of two methods:</p>
+                <div class="grid-12" style="gap: 12px">
+                  <div class="well span-6 flex flex-col">
+                    <h3 class="well-title">Option A: Partner HTE</h3>
+                    <p class="text-secondary" style="font-size: 14px">Choose from companies with an existing MOA.</p>
+                    <div class="mt-auto pt-3">
+                      <button type="button" class="btn btn-secondary w-full" onclick="openHteModal()">View partner companies</button>
+                    </div>
+                  </div>
+                  <div class="well span-6">
+                    <h3 class="well-title">Option B: Personal Choice</h3>
+                    <p class="text-secondary" style="font-size: 14px">Apply elsewhere. Coordinator must validate legitimacy first.</p>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </div>
+              </article>
+            </li>
 
-          <!-- Step 7 -->
-          <div class="flex gap-3 sm:gap-4 relative">
-            <div
-              class="absolute left-[15px] sm:left-[17px] top-10 bottom-[-16px] w-[1px] bg-gray-200/50"
-            ></div>
-            <div class="flex-shrink-0 relative z-10 mt-1">
-              <div
-                class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 shadow-sm"
-              >
-                <i data-lucide="eye" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
-              </div>
-            </div>
-            <div class="flex-grow pb-8 w-full min-w-0">
-              <div
-                class="bg-white/80 rounded-lg p-4 sm:p-5 border border-gray-100 shadow-sm transition-shadow"
-              >
-                <span
-                  class="text-[10px] font-bold text-red-800/70 tracking-widest mb-1 block uppercase"
-                  >Step 7</span
-                >
-                <h3 class="text-sm md:text-base font-bold text-gray-800 mb-2">
-                  Acceptance Monitoring
-                </h3>
-                <div class="text-xs md:text-sm text-gray-600 space-y-3">
-                  <p>
-                    Fill out this form strictly for tracking purposes once
-                    accepted.
-                  </p>
-                  <a
-                    href="#"
-                    data-link="monitoringForm"
-                    target="_blank"
-                    class="w-full sm:w-auto inline-flex justify-center items-center gap-1.5 px-3 py-2 sm:py-1.5 bg-white border border-gray-200 rounded text-xs font-medium text-gray-600 hover:text-red-800 hover:border-red-200 transition-colors shadow-sm"
-                  >
-                    <i data-lucide="clipboard-check" class="w-3.5 h-3.5"></i>
-                    Monitoring Form
-                  </a>
+            <li class="step">
+              <span class="step-num">4</span>
+              <article id="pre-4" class="card step-card prose">
+                <span class="micro step-kicker">Step 4</span>
+                <h2 class="card-title">Application Process</h2>
+                <p>If a suitable company is found:</p>
+                <div class="grid-12" style="gap: 12px">
+                  <div class="well span-6 flex flex-col">
+                    <h3 class="well-title">1. Request Recommendation</h3>
+                    <div class="mt-auto pt-3">
+                      <a href="#" data-link="recLetterForm" target="_blank" rel="noopener noreferrer" class="btn btn-secondary w-full">Request Form (GForm)</a>
+                    </div>
+                  </div>
+                  <div class="well span-6">
+                    <h3 class="well-title">2. Submit to Company</h3>
+                    <ul class="checklist">
+                      <li>Signed Recommendation Letter</li>
+                      <li>Curriculum Vitae (CV) / Resume</li>
+                      <li>Letter of Intent</li>
+                    </ul>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </div>
+              </article>
+            </li>
 
-          <!-- Step 8 -->
-          <div class="flex gap-3 sm:gap-4 relative">
-            <!-- No line on the last item -->
-            <div class="flex-shrink-0 relative z-10 mt-1">
-              <div
-                class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 shadow-sm"
-              >
-                <i
-                  data-lucide="file-signature"
-                  class="w-3.5 h-3.5 sm:w-4 sm:h-4"
-                ></i>
-              </div>
+            <li class="step">
+              <span class="step-num">5</span>
+              <article id="pre-5" class="card step-card prose">
+                <span class="micro step-kicker">Step 5</span>
+                <h2 class="card-title">Company Acceptance</h2>
+                <p>Upon acceptance, secure the following:</p>
+                <ul class="checklist">
+                  <li>Acceptance Letter</li>
+                  <li>Training Plan (Company or Univ Format)</li>
+                </ul>
+                <div class="actions">
+                  <a href="#" data-link="trainingPlan" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Training Plan Template</a>
+                </div>
+              </article>
+            </li>
+
+            <li class="step">
+              <span class="step-num">6</span>
+              <article id="pre-6" class="card step-card prose">
+                <span class="micro step-kicker">Step 6</span>
+                <h2 class="card-title">University Endorsement</h2>
+                <ul class="checklist">
+                  <li>Fill out Request for Endorsement.</li>
+                  <li>Coordinator issues signed Endorsement Letter.</li>
+                  <li>Submit a copy of received letter back to Coordinator.</li>
+                </ul>
+                <div class="actions">
+                  <a href="#" data-link="endorsementForm" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Endorsement Form (GForm)</a>
+                </div>
+              </article>
+            </li>
+
+            <li class="step">
+              <span class="step-num">7</span>
+              <article id="pre-7" class="card step-card prose">
+                <span class="micro step-kicker">Step 7</span>
+                <h2 class="card-title">Acceptance Monitoring</h2>
+                <p>Fill out this form strictly for tracking purposes once accepted.</p>
+                <div class="actions">
+                  <a href="#" data-link="monitoringForm" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Monitoring Form</a>
+                </div>
+              </article>
+            </li>
+
+            <li class="step">
+              <span class="step-num">8</span>
+              <article id="pre-8" class="card step-card prose">
+                <span class="micro step-kicker">Step 8</span>
+                <h2 class="card-title">MOA &amp; Training Agreement</h2>
+                <p><span class="pill">Required for new partners, companies without MOA, or expired MOAs</span></p>
+                <ul class="checklist">
+                  <li>Print 5 copies on Long/Legal Bond Paper.</li>
+                  <li>Submit to Coordinator for Univ Signing.</li>
+                  <li>Student/Coordinator facilitates Company Signing &amp; Notarization.</li>
+                </ul>
+                <div class="actions">
+                  <a href="#" data-link="moaForm" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">MOA Template</a>
+                  <a href="#" data-link="trainingAgreementForm" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Training Agreement Template</a>
+                </div>
+              </article>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- ============ DURING TRAINING ============ -->
+      <section id="tab-during-training" class="tab-content" aria-labelledby="title-during">
+        <div class="grid-12">
+          <aside class="lg-span-4">
+            <div class="card overview">
+              <p class="micro">Phase 2 of 3</p>
+              <h1 id="title-during" class="page-title mt-1">During training</h1>
+              <p class="text-secondary mt-3">What to keep up with while you render your hours at the company.</p>
+              <ol class="toc" aria-label="Steps">
+                <li><a href="#during-1">Training Hours Requirement</a></li>
+                <li><a href="#during-2">Daily Work Activity</a></li>
+                <li><a href="#during-3">Overtime (OT) Guidelines</a></li>
+                <li><a href="#during-4">Evaluation Grade Request</a></li>
+                <li><a href="#during-5">Certificate of Completion</a></li>
+              </ol>
             </div>
-            <div class="flex-grow pb-2 w-full min-w-0">
-              <div
-                class="bg-white/80 rounded-lg p-4 sm:p-5 border border-gray-100 shadow-sm transition-shadow"
-              >
-                <span
-                  class="text-[10px] font-bold text-red-800/70 tracking-widest mb-1 block uppercase"
-                  >Step 8</span
-                >
-                <h3 class="text-sm md:text-base font-bold text-gray-800 mb-2">
-                  MOA & Training Agreement
-                </h3>
-                <div class="text-xs md:text-sm text-gray-600 space-y-3">
-                  <p class="text-[11px] text-gray-400 italic">
-                    Required for new partners, companies without MOA, or expired
-                    MOAs.
-                  </p>
-                  <ul class="space-y-1 text-xs text-gray-500 list-disc pl-4">
-                    <li>Print 5 copies on Long/Legal Bond Paper.</li>
-                    <li>Submit to Coordinator for Univ Signing.</li>
-                    <li>
-                      Student/Coordinator facilitates Company Signing &
-                      Notarization.
-                    </li>
-                  </ul>
-                  <div class="pt-2 flex flex-col sm:flex-row flex-wrap gap-2">
-                    <a
-                      href="#"
-                      data-link="moaForm"
-                      target="_blank"
-                      class="w-full sm:w-auto inline-flex justify-center items-center gap-1.5 px-3 py-2 sm:py-1.5 bg-white border border-gray-200 rounded text-xs font-medium text-gray-600 hover:text-red-800 hover:border-red-200 transition-colors shadow-sm"
-                    >
-                      <i data-lucide="download" class="w-3.5 h-3.5"></i> MOA
-                      Template
-                    </a>
-                    <a
-                      href="#"
-                      data-link="trainingAgreementForm"
-                      target="_blank"
-                      class="w-full sm:w-auto inline-flex justify-center items-center gap-1.5 px-3 py-2 sm:py-1.5 bg-white border border-gray-200 rounded text-xs font-medium text-gray-600 hover:text-red-800 hover:border-red-200 transition-colors shadow-sm"
-                    >
-                      <i data-lucide="download" class="w-3.5 h-3.5"></i>
-                      Training Agreement Template
-                    </a>
+          </aside>
+
+          <ol class="steps lg-span-8">
+            <li class="step">
+              <span class="step-num">1</span>
+              <article id="during-1" class="card step-card prose">
+                <span class="micro step-kicker">Step 1</span>
+                <h2 class="card-title">Training Hours Requirement</h2>
+                <p>BSCS, BSIS, and BSIT students must render a total of <strong>486 hours</strong>.</p>
+              </article>
+            </li>
+            <li class="step">
+              <span class="step-num">2</span>
+              <article id="during-2" class="card step-card prose">
+                <span class="micro step-kicker">Step 2</span>
+                <h2 class="card-title">Daily Work Activity</h2>
+                <p>Accomplish form daily. Taking pictures of tasks is encouraged if allowed.</p>
+                <div class="actions">
+                  <a href="#" data-link="dailyActivity" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Daily Form</a>
+                </div>
+              </article>
+            </li>
+            <li class="step">
+              <span class="step-num">3</span>
+              <article id="during-3" class="card step-card prose">
+                <span class="micro step-kicker">Step 3</span>
+                <h2 class="card-title">Overtime (OT) Guidelines</h2>
+                <p>Must file and sign a request using the form <strong>before</strong> actual OT rendering.</p>
+                <div class="actions">
+                  <a href="#" data-link="overtimeForm" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">OT Form</a>
+                </div>
+              </article>
+            </li>
+            <li class="step">
+              <span class="step-num">4</span>
+              <article id="during-4" class="card step-card prose">
+                <span class="micro step-kicker">Step 4</span>
+                <h2 class="card-title">Evaluation Grade Request</h2>
+                <p>Request from HTE upon rendering 75% (<strong>364.5 hours</strong>) to submit to coordinator.</p>
+                <div class="actions">
+                  <a href="#" data-link="traineeEvalForm" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Trainee Evaluation Form</a>
+                </div>
+              </article>
+            </li>
+            <li class="step">
+              <span class="step-num">5</span>
+              <article id="during-5" class="card step-card prose">
+                <span class="micro step-kicker">Step 5</span>
+                <h2 class="card-title">Certificate of Completion</h2>
+                <p>The student/trainee shall request a Certificate of Completion signed by the supervisor or authorized signatories upon or after rendering the total required 486 hours.</p>
+              </article>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- ============ POST-TRAINING ============ -->
+      <section id="tab-post-training" class="tab-content" aria-labelledby="title-post">
+        <div class="grid-12">
+          <aside class="lg-span-4">
+            <div class="card overview">
+              <p class="micro">Phase 3 of 3</p>
+              <h1 id="title-post" class="page-title mt-1">Post-training</h1>
+              <p class="text-secondary mt-3">What to hand in when you finish your hours.</p>
+            </div>
+          </aside>
+
+          <div class="lg-span-8">
+            <article class="card prose">
+              <h2 class="card-title">Final Output Submission</h2>
+              <p>Compile all final documents in a <strong>Long/Legal Yellow Clear Book</strong>.</p>
+              <div class="grid-12" style="gap: 0 20px">
+                <ul class="checklist span-6">
+                  <li>Narrative Report</li>
+                  <li>Copy of DTR / Attendance</li>
+                  <li>Pictures during training</li>
+                  <li>Trainee Evaluation (w/ rating)</li>
+                </ul>
+                <ul class="checklist span-6">
+                  <li>Daily Work Activities</li>
+                  <li>HTE Evaluation (w/ rating)</li>
+                  <li>Certificate of Completion</li>
+                </ul>
+              </div>
+              <div class="grid-12" style="gap: 12px">
+                <div class="well span-6">
+                  <h3 class="well-title">Download Templates</h3>
+                  <div class="flex flex-col gap-2 mt-3">
+                    <a href="#" data-link="narrativeReportForm" target="_blank" rel="noopener noreferrer" class="btn btn-secondary w-full" style="background: var(--surface)">Narrative Report Form</a>
+                    <a href="#" data-link="traineeEvalForm" target="_blank" rel="noopener noreferrer" class="btn btn-secondary w-full" style="background: var(--surface)">Student/Trainee Eval Form</a>
+                    <a href="#" data-link="hteEvalForm" target="_blank" rel="noopener noreferrer" class="btn btn-secondary w-full" style="background: var(--surface)">HTE Evaluation Form</a>
+                  </div>
+                </div>
+                <div class="well span-6">
+                  <h3 class="well-title">Evaluation GForms</h3>
+                  <div class="flex flex-col gap-2 mt-3">
+                    <a href="#" data-link="hteEvalGformCollege" target="_blank" rel="noopener noreferrer" class="btn btn-secondary w-full" style="background: var(--surface)">HTE Eval (College)</a>
+                    <a href="#" data-link="hteEvalGformIrjp" target="_blank" rel="noopener noreferrer" class="btn btn-secondary w-full" style="background: var(--surface)">HTE Eval (IRJP)</a>
                   </div>
                 </div>
               </div>
-            </div>
+            </article>
           </div>
-        </section>
-
-        <!-- ============================================== -->
-        <!-- TAB 2: DURING TRAINING -->
-        <!-- ============================================== -->
-        <section id="tab-during-training" class="tab-content space-y-3">
-          <div
-            class="bg-white/80 rounded-lg p-4 sm:p-5 shadow-sm border border-gray-200/50 flex flex-col sm:flex-row gap-3 sm:gap-4 items-start sm:items-center hover:border-blue-200 transition-colors"
-          >
-            <div
-              class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shrink-0 shadow-sm"
-            >
-              <i data-lucide="clock" class="w-4 h-4 sm:w-5 sm:h-5"></i>
-            </div>
-            <div>
-              <h3 class="text-sm font-bold text-gray-800 mb-1">
-                1. Training Hours Requirement
-              </h3>
-              <p class="text-xs text-gray-500">
-                BSCS, BSIS, and BSIT students must render a total of
-                <strong class="text-red-800/80">486 hours</strong>.
-              </p>
-            </div>
-          </div>
-
-          <div
-            class="bg-white/80 rounded-lg p-4 sm:p-5 shadow-sm border border-gray-200/50 flex flex-col sm:flex-row gap-3 sm:gap-4 items-start sm:items-center hover:border-emerald-200 transition-colors"
-          >
-            <div
-              class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0 shadow-sm"
-            >
-              <i data-lucide="calendar" class="w-4 h-4 sm:w-5 sm:h-5"></i>
-            </div>
-            <div class="flex-grow w-full">
-              <h3 class="text-sm font-bold text-gray-800 mb-1">
-                2. Daily Work Activity
-              </h3>
-              <p class="text-xs text-gray-500 mb-3">
-                Accomplish form daily. Taking pictures of tasks is encouraged if
-                allowed.
-              </p>
-              <a
-                href="#"
-                data-link="dailyActivity"
-                target="_blank"
-                class="w-full sm:w-auto inline-flex justify-center items-center gap-1.5 px-3 py-2 sm:py-1.5 bg-white border border-gray-200/80 rounded text-xs font-medium text-gray-600 hover:text-emerald-700 hover:border-emerald-200/80 transition-colors shadow-sm"
-              >
-                <i data-lucide="download" class="w-3.5 h-3.5"></i> Daily Form
-              </a>
-            </div>
-          </div>
-
-          <div
-            class="bg-white/80 rounded-lg p-4 sm:p-5 shadow-sm border border-gray-200/50 flex flex-col sm:flex-row gap-3 sm:gap-4 items-start sm:items-center hover:border-indigo-200 transition-colors"
-          >
-            <div
-              class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shrink-0 shadow-sm"
-            >
-              <i data-lucide="moon" class="w-4 h-4 sm:w-5 sm:h-5"></i>
-            </div>
-            <div class="flex-grow w-full">
-              <h3 class="text-sm font-bold text-gray-800 mb-1">
-                3. Overtime (OT) Guidelines
-              </h3>
-              <p class="text-xs text-gray-500 mb-3">
-                Must file and sign a request using the form
-                <em>before</em> actual OT rendering.
-              </p>
-              <a
-                href="#"
-                data-link="overtimeForm"
-                target="_blank"
-                class="w-full sm:w-auto inline-flex justify-center items-center gap-1.5 px-3 py-2 sm:py-1.5 bg-white border border-gray-200/80 rounded text-xs font-medium text-gray-600 hover:text-indigo-700 hover:border-indigo-200/80 transition-colors shadow-sm"
-              >
-                <i data-lucide="file-signature" class="w-3.5 h-3.5"></i> OT Form
-              </a>
-            </div>
-          </div>
-
-          <div
-            class="bg-white/80 rounded-lg p-4 sm:p-5 shadow-sm border border-gray-200/50 flex flex-col sm:flex-row gap-3 sm:gap-4 items-start sm:items-center hover:border-amber-200 transition-colors"
-          >
-            <div
-              class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 shrink-0 shadow-sm"
-            >
-              <i data-lucide="percent" class="w-4 h-4 sm:w-5 sm:h-5"></i>
-            </div>
-            <div class="flex-grow w-full">
-              <h3 class="text-sm font-bold text-gray-800 mb-1">
-                4. Evaluation Grade Request
-              </h3>
-              <p class="text-xs text-gray-500 mb-3">
-                Request from HTE upon rendering 75% (<strong
-                  class="text-gray-700"
-                  >364.5 hours</strong
-                >) to submit to coordinator.
-              </p>
-              <a
-                href="#"
-                data-link="traineeEvalForm"
-                target="_blank"
-                class="w-full sm:w-auto inline-flex justify-center items-center gap-1.5 px-3 py-2 sm:py-1.5 bg-white border border-gray-200/80 rounded text-xs font-medium text-gray-600 hover:text-amber-700 hover:border-amber-200/80 transition-colors shadow-sm"
-              >
-                <i data-lucide="download" class="w-3.5 h-3.5"></i> Trainee
-                Evaluation Form
-              </a>
-            </div>
-          </div>
-
-          <div
-            class="bg-white/80 rounded-lg p-4 sm:p-5 shadow-sm border border-gray-200/50 flex flex-col sm:flex-row gap-3 sm:gap-4 items-start sm:items-center hover:border-rose-200 transition-colors"
-          >
-            <div
-              class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600 shrink-0 shadow-sm"
-            >
-              <i data-lucide="file-badge" class="w-4 h-4 sm:w-5 sm:h-5"></i>
-            </div>
-            <div>
-              <h3 class="text-sm font-bold text-gray-800 mb-1">
-                5. Certificate of Completion
-              </h3>
-              <p class="text-xs text-gray-500">
-                The student/trainee shall request a Certificate of Completion
-                signed by the supervisor or authorized signatories upon or after
-                rendering the total required 486 hours.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <!-- ============================================== -->
-        <!-- TAB 3: POST-TRAINING -->
-        <!-- ============================================== -->
-        <section id="tab-post-training" class="tab-content">
-          <div
-            class="bg-white/90 rounded-lg p-5 sm:p-6 shadow-sm border border-gray-200/80 border-t-2 border-t-gray-400"
-          >
-            <div
-              class="flex items-center gap-2 sm:gap-3 mb-4 border-b border-gray-100 pb-3"
-            >
-              <i
-                data-lucide="book-check"
-                class="w-4 h-4 sm:w-5 sm:h-5 text-gray-600"
-              ></i>
-              <h3 class="text-sm sm:text-base font-bold text-gray-800">
-                Final Output Submission
-              </h3>
-            </div>
-
-            <p class="text-xs sm:text-sm text-gray-600 mb-4">
-              Compile all final documents in a
-              <strong>Long/Legal Yellow Clear Book</strong>.
-            </p>
-
-            <div
-              class="grid sm:grid-cols-2 gap-x-4 gap-y-2.5 text-xs text-gray-600"
-            >
-              <div class="flex items-start gap-2">
-                <i
-                  data-lucide="check"
-                  class="w-3.5 h-3.5 text-gray-300 mt-0.5 shrink-0"
-                ></i>
-                Narrative Report
-              </div>
-              <div class="flex items-start gap-2">
-                <i
-                  data-lucide="check"
-                  class="w-3.5 h-3.5 text-gray-300 mt-0.5 shrink-0"
-                ></i>
-                Copy of DTR / Attendance
-              </div>
-              <div class="flex items-start gap-2">
-                <i
-                  data-lucide="check"
-                  class="w-3.5 h-3.5 text-gray-300 mt-0.5 shrink-0"
-                ></i>
-                Pictures during training
-              </div>
-              <div class="flex items-start gap-2">
-                <i
-                  data-lucide="check"
-                  class="w-3.5 h-3.5 text-gray-300 mt-0.5 shrink-0"
-                ></i>
-                Trainee Evaluation (w/ rating)
-              </div>
-              <div class="flex items-start gap-2">
-                <i
-                  data-lucide="check"
-                  class="w-3.5 h-3.5 text-gray-300 mt-0.5 shrink-0"
-                ></i>
-                Daily Work Activities
-              </div>
-              <div class="flex items-start gap-2">
-                <i
-                  data-lucide="check"
-                  class="w-3.5 h-3.5 text-gray-300 mt-0.5 shrink-0"
-                ></i>
-                HTE Evaluation (w/ rating)
-              </div>
-              <div class="flex items-start gap-2">
-                <i
-                  data-lucide="check"
-                  class="w-3.5 h-3.5 text-gray-300 mt-0.5 shrink-0"
-                ></i>
-                Certificate of Completion
-              </div>
-            </div>
-
-            <!-- Post-Training Document Links -->
-            <div class="mt-6 grid sm:grid-cols-2 gap-4">
-              <!-- Downloadables -->
-              <div
-                class="bg-gray-50/50 p-4 rounded-md border border-gray-100 flex flex-col gap-2.5"
-              >
-                <h4
-                  class="text-[11px] sm:text-xs font-bold text-gray-700 mb-1 border-b border-gray-200 pb-1.5 uppercase tracking-wide"
-                >
-                  Download Templates
-                </h4>
-                <a
-                  href="#"
-                  data-link="narrativeReportForm"
-                  target="_blank"
-                  class="w-full inline-flex justify-center sm:justify-start items-center gap-1.5 px-3 py-2 sm:py-1.5 bg-white border border-gray-200 rounded text-xs font-medium text-gray-600 hover:text-red-800 hover:border-red-200 shadow-sm transition-colors"
-                >
-                  <i data-lucide="download" class="w-3.5 h-3.5 shrink-0"></i>
-                  Narrative Report Form
-                </a>
-                <a
-                  href="#"
-                  data-link="traineeEvalForm"
-                  target="_blank"
-                  class="w-full inline-flex justify-center sm:justify-start items-center gap-1.5 px-3 py-2 sm:py-1.5 bg-white border border-gray-200 rounded text-xs font-medium text-gray-600 hover:text-red-800 hover:border-red-200 shadow-sm transition-colors"
-                >
-                  <i data-lucide="download" class="w-3.5 h-3.5 shrink-0"></i>
-                  Student/Trainee Eval Form
-                </a>
-                <a
-                  href="#"
-                  data-link="hteEvalForm"
-                  target="_blank"
-                  class="w-full inline-flex justify-center sm:justify-start items-center gap-1.5 px-3 py-2 sm:py-1.5 bg-white border border-gray-200 rounded text-xs font-medium text-gray-600 hover:text-red-800 hover:border-red-200 shadow-sm transition-colors"
-                >
-                  <i data-lucide="download" class="w-3.5 h-3.5 shrink-0"></i>
-                  HTE Evaluation Form
-                </a>
-              </div>
-
-              <!-- GForms -->
-              <div
-                class="bg-red-50/30 p-4 rounded-md border border-red-100/50 flex flex-col gap-2.5"
-              >
-                <h4
-                  class="text-[11px] sm:text-xs font-bold text-red-800/80 mb-1 border-b border-red-100 pb-1.5 uppercase tracking-wide"
-                >
-                  Evaluation GForms
-                </h4>
-                <a
-                  href="#"
-                  data-link="hteEvalGformCollege"
-                  target="_blank"
-                  class="w-full inline-flex justify-center sm:justify-start items-center gap-1.5 px-3 py-2 sm:py-1.5 bg-white border border-gray-200 rounded text-xs font-medium text-gray-600 hover:text-red-800 hover:border-red-200 shadow-sm transition-colors"
-                >
-                  <i
-                    data-lucide="external-link"
-                    class="w-3.5 h-3.5 shrink-0"
-                  ></i>
-                  HTE Eval (College)
-                </a>
-                <a
-                  href="#"
-                  data-link="hteEvalGformIrjp"
-                  target="_blank"
-                  class="w-full inline-flex justify-center sm:justify-start items-center gap-1.5 px-3 py-2 sm:py-1.5 bg-white border border-gray-200 rounded text-xs font-medium text-gray-600 hover:text-red-800 hover:border-red-200 shadow-sm transition-colors"
-                >
-                  <i
-                    data-lucide="external-link"
-                    class="w-3.5 h-3.5 shrink-0"
-                  ></i>
-                  HTE Eval (IRJP)
-                </a>
-              </div>
-            </div>
-          </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </main>
 
-<!-- ============================================== -->
-    <!-- FOOTER -->
-    <!-- ============================================== -->
-    <footer
-      class="mt-auto border-t border-gray-200 bg-white/50 backdrop-blur-sm relative z-40"
-    >
-      <div
-        class="max-w-4xl mx-auto px-4 sm:px-6 py-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500"
-      >
-        <div class="text-center md:text-left w-full">
-          <p class="font-medium text-gray-600 mb-0.5">
-            © TUP Industrial Relations and Job Placement Office
-          </p>
-          <p>
-            Created by
-            <span 
-              id="secret-admin-trigger" 
-              class="font-semibold text-gray-700 cursor-default select-none transition-colors duration-300"
-              onclick="handleSecretClick()"
-            >
-              "Ino Amador"
-            </span>
-          </p>
-        </div>
-      </div>
+    <footer class="footer">
+      <p>© TUP Industrial Relations and Job Placement Office</p>
+      <p>Created by <span id="secret-admin-trigger" class="select-none" onclick="handleSecretClick()">"Ino Amador"</span></p>
     </footer>
 
-    <!-- ============================================== -->
-    <!-- MODALS SECTION -->
-    <!-- ============================================== -->
-
-    <!-- STUDENT HTE MODAL (VIEW PARTNERS) -->
-    <div
-      id="hte-view-modal"
-      class="modal-overlay fixed inset-0 z-[60] hidden flex items-center justify-center p-3 sm:p-4"
-    >
-      <div
-        class="bg-white rounded-xl shadow-2xl w-full max-w-4xl relative max-h-[85vh] flex flex-col border border-gray-200"
-      >
-        <div
-          class="p-3 sm:p-5 border-b border-gray-100 flex justify-between items-center shrink-0"
-        >
-          <h3
-            class="text-sm sm:text-base font-bold text-gray-900 flex items-center gap-2"
-          >
-            <i data-lucide="building" class="text-gray-600 w-4 h-4"></i> Partner
-            Establishments
-          </h3>
-          <button
-            onclick="closeModals()"
-            class="text-gray-400 hover:text-gray-800 p-1"
-          >
-            <i data-lucide="x" class="w-4 h-4 sm:w-5 sm:h-5"></i>
-          </button>
-        </div>
-        <div class="p-3 sm:p-5 overflow-y-auto table-container flex-grow">
-          <table
-            class="w-full table-fixed text-left text-[11px] sm:text-xs text-gray-600 border-collapse min-w-[680px]"
-          >
-            <thead class="text-gray-800 uppercase bg-gray-50 sticky top-0 z-10">
-              <tr>
-                <th
-                  class="w-[22%] px-2 sm:px-4 py-2 border-b border-gray-200 font-semibold whitespace-nowrap"
-                >
-                  Name of HTE
-                </th>
-                <th
-                  class="w-[24%] px-2 sm:px-4 py-2 border-b border-gray-200 font-semibold whitespace-nowrap"
-                >
-                  Address
-                </th>
-                <th
-                  class="w-[16%] px-2 sm:px-4 py-2 border-b border-gray-200 font-semibold whitespace-nowrap"
-                >
-                  Contact #
-                </th>
-                <th
-                  class="w-[22%] px-2 sm:px-4 py-2 border-b border-gray-200 font-semibold whitespace-nowrap"
-                >
-                  Email
-                </th>
-                <th
-                  class="w-[16%] px-2 sm:px-4 py-2 border-b border-gray-200 font-semibold whitespace-nowrap"
-                >
-                  Contact Person
-                </th>
-              </tr>
-            </thead>
-            <tbody id="hte-view-tbody" class="divide-y divide-gray-100">
-              <!-- Populated via JS -->
-            </tbody>
-          </table>
-          <div
-            id="hte-view-empty"
-            class="hidden text-center py-8 text-gray-400 text-xs"
-          >
-            No partner HTEs available at the moment.
-          </div>
-        </div>
-        <!-- Pagination Controls for Student Modal -->
-        <div
-          id="student-pagination"
-          class="hidden flex justify-between items-center p-3 sm:p-4 border-t border-gray-200 bg-gray-50 rounded-b-xl shrink-0"
-        >
-          <span class="text-xs font-medium text-gray-600" id="student-page-info"
-            >Page 1 of 1</span
-          >
-          <div class="flex gap-2">
-            <button
-              onclick="changeStudentPage(-1)"
-              id="btn-student-prev"
-              class="px-3 py-1.5 text-xs font-medium border border-gray-300 rounded-md bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              Previous
-            </button>
-            <button
-              onclick="changeStudentPage(1)"
-              id="btn-student-next"
-              class="px-3 py-1.5 text-xs font-medium border border-gray-300 rounded-md bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              Next
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- LOGIN MODAL -->
-    <div
-      id="login-modal"
-      class="modal-overlay fixed inset-0 z-[60] hidden flex items-center justify-center p-4"
-    >
-      <div
-        class="bg-white rounded-xl shadow-2xl p-6 sm:p-8 w-full max-w-sm relative border border-gray-200"
-      >
-        <button
-          onclick="closeModals()"
-          class="absolute top-3 right-3 sm:top-4 sm:right-4 text-gray-400 hover:text-gray-800 p-1"
-        >
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
-        <div class="text-center mb-5">
-          <div
-            class="w-10 h-10 bg-gray-50 border border-gray-200 text-gray-600 rounded-full flex items-center justify-center mx-auto mb-2"
-          >
-            <i data-lucide="lock" class="w-4 h-4"></i>
-          </div>
-          <h3 class="text-sm sm:text-base font-bold text-gray-900">
-            Admin Authentication
-          </h3>
-        </div>
-        <div class="space-y-3">
+    <!-- ============ PARTNER COMPANIES (students) — js/modules/partner-list.js ============ -->
+    <div id="hte-view-modal" class="modal-overlay modal-full z-[60] hidden" role="dialog" aria-modal="true" aria-labelledby="partner-title">
+      <div class="sheet sheet-lg">
+        <div class="sheet-head">
           <div>
-            <input
-              type="email"
-              id="login-user"
-              name="email"
-              autocomplete="username"
-              class="w-full px-3 py-2 border border-gray-300 rounded text-xs sm:text-sm focus:outline-none focus:border-gray-500"
-              placeholder="Admin Email"
-            />
+            <h2 id="partner-title" class="sheet-title">Partner companies</h2>
+            <p class="text-secondary mt-1" style="font-size: 14px">Host Training Establishments (HTEs) with an existing MOA with TUP. Tap a company to see who to contact.</p>
           </div>
-          <div class="relative">
-            <input
-              type="password"
-              id="login-pass"
-              name="password"
-              autocomplete="current-password"
-              class="w-full pl-3 pr-11 py-2 border border-gray-300 rounded text-xs sm:text-sm focus:outline-none focus:border-gray-500"
-              placeholder="Password"
-            />
-            <button
-              type="button"
-              id="btn-toggle-password"
-              onclick="toggleLoginPassword()"
-              class="absolute inset-y-0 right-0 w-11 flex items-center justify-center text-gray-500 hover:text-gray-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 rounded"
-              aria-label="Show password"
-              aria-pressed="false"
-              title="Show password"
-            >
-              <i data-lucide="eye" class="w-4 h-4"></i>
-            </button>
+          <button type="button" class="icon-btn" onclick="closeModals()" aria-label="Close partner list"><i data-icon="x"></i></button>
+        </div>
+        <div class="sheet-tools">
+          <label class="search-box">
+            <span class="sr-only">Search partner companies</span>
+            <i data-icon="search"></i>
+            <input id="partner-search" type="search" class="field" placeholder="Search name, city or contact" autocomplete="off" oninput="setPartnerSearch(this.value)" />
+          </label>
+          <div class="seg" id="partner-sort" role="group" aria-label="Sort companies">
+            <span class="seg-pill" aria-hidden="true"></span>
+            <button type="button" aria-pressed="true" data-sort="name" onclick="setPartnerSort('name')">A to Z</button>
+            <button type="button" aria-pressed="false" data-sort="address" onclick="setPartnerSort('address')">By city</button>
           </div>
-          <p id="login-error" class="text-red-600 text-xs hidden text-center">
-            Invalid email or password.
-          </p>
-          <button
-            onclick="attemptLogin()"
-            id="btn-login-submit"
-            class="w-full bg-gray-900 hover:bg-black text-white font-medium py-2 sm:py-2.5 rounded transition-colors mt-2 text-xs sm:text-sm flex justify-center items-center gap-2"
-          >
-            Login
-          </button>
+        </div>
+        <div class="sheet-body">
+          <p id="partner-count" class="micro mb-3" aria-live="polite"></p>
+          <ul id="partner-list" class="group-list"></ul>
+          <div id="partner-state" class="list-state hidden"></div>
+          <div class="flex justify-center mt-4">
+            <button type="button" id="partner-more" class="btn btn-secondary hidden" onclick="showMorePartners()"></button>
+          </div>
+        </div>
+        <p class="sheet-foot">Not on the list? You may apply to a company of your own choice; your SIT coordinator checks it first (Step 3, Option B).</p>
+      </div>
+    </div>
+
+    <!-- ============ LOGIN ============ -->
+    <div id="login-modal" class="modal-overlay z-[60] hidden" role="dialog" aria-modal="true" aria-labelledby="login-title">
+      <form class="sheet sheet-pad" onsubmit="event.preventDefault(); attemptLogin();">
+        <div class="flex items-start gap-3 mb-5">
+          <div class="flex-1">
+            <h2 id="login-title" class="sheet-title">Admin sign-in</h2>
+            <p class="text-secondary mt-1" style="font-size: 14px">For SIT staff who update the forms and partner list.</p>
+          </div>
+          <button type="button" class="icon-btn" onclick="closeModals()" aria-label="Close sign-in"><i data-icon="x"></i></button>
+        </div>
+        <label class="field-label" for="login-user">Email</label>
+        <input type="email" id="login-user" name="email" autocomplete="username" class="field" />
+        <label class="field-label mt-4" for="login-pass">Password</label>
+        <div class="relative">
+          <input type="password" id="login-pass" name="password" autocomplete="current-password" class="field" style="padding-right: 48px" />
+          <button type="button" id="btn-toggle-password" onclick="toggleLoginPassword()" class="icon-btn absolute right-0 top-1/2 -translate-y-1/2" aria-label="Show password" aria-pressed="false" title="Show password"></button>
+        </div>
+        <p id="login-error" class="hidden mt-3" style="color: var(--bad); font-size: 14px" role="alert">Wrong email or password.</p>
+        <button type="submit" id="btn-login-submit" class="btn btn-primary w-full mt-5">Sign in</button>
+      </form>
+    </div>
+
+    <!-- ============ IDLE LOG-OUT WARNING (js/modules/session.js) ============ -->
+    <div id="idle-modal" class="modal-overlay z-[120] hidden" role="alertdialog" aria-modal="true" aria-labelledby="idle-title" aria-describedby="idle-message">
+      <div class="sheet sheet-pad text-center">
+        <h2 id="idle-title" class="sheet-title">Are you still there?</h2>
+        <p id="idle-message" class="text-secondary mt-2">You've been inactive for a while. For security, you'll be logged out in</p>
+        <p id="idle-countdown" class="page-title my-4" style="font-size: 44px; color: var(--accent-text)" aria-live="polite">30</p>
+        <div class="grid grid-cols-2 gap-3">
+          <button type="button" class="btn btn-secondary" onclick="logoutAfterInactivity()">Log out now</button>
+          <button type="button" id="btn-idle-stay" class="btn btn-primary" onclick="stayLoggedIn()">Stay signed in</button>
         </div>
       </div>
     </div>
 
-    <!-- IDLE LOG-OUT WARNING (js/modules/session.js) -->
-    <div
-      id="idle-modal"
-      class="modal-overlay fixed inset-0 z-[120] hidden flex items-center justify-center p-4"
-      role="alertdialog"
-      aria-modal="true"
-      aria-labelledby="idle-title"
-      aria-describedby="idle-message"
-    >
-      <div
-        class="bg-white rounded-xl shadow-2xl p-6 sm:p-7 w-full max-w-sm relative border border-gray-200 text-center"
-      >
-        <h3 id="idle-title" class="text-lg font-bold text-gray-900 mb-2">
-          Are you still there?
-        </h3>
-        <p id="idle-message" class="text-sm text-gray-500 mb-3">
-          You've been inactive for a while. For security, you'll be logged out in
-        </p>
-        <p
-          id="idle-countdown"
-          class="text-4xl font-bold text-red-600 mb-5"
-          aria-live="polite"
-        >
-          30
-        </p>
-        <div class="flex gap-3 justify-center">
-          <button
-            onclick="logoutAfterInactivity()"
-            class="px-4 py-2 rounded font-medium text-sm text-gray-600 bg-white border border-gray-300 hover:bg-gray-50 transition-colors w-full"
-          >
-            Log out now
-          </button>
-          <button
-            id="btn-idle-stay"
-            onclick="stayLoggedIn()"
-            class="px-4 py-2 rounded font-medium text-sm text-white bg-gray-900 hover:bg-black transition-colors w-full"
-          >
-            Stay signed in
-          </button>
+    <!-- ============ ADMIN ============ -->
+    <div id="admin-modal" class="modal-overlay modal-full z-[60] hidden" role="dialog" aria-modal="true" aria-labelledby="admin-title">
+      <div class="sheet sheet-xl">
+        <div class="sheet-head">
+          <div>
+            <h2 id="admin-title" class="sheet-title">Admin</h2>
+            <p class="text-secondary mt-1" style="font-size: 14px">Changes show to students as soon as they are saved.</p>
+          </div>
+          <button type="button" class="icon-btn" onclick="closeModals()" aria-label="Close admin"><i data-icon="x"></i></button>
         </div>
-      </div>
-    </div>
-
-    <!-- ADMIN DASHBOARD MODAL -->
-    <div
-      id="admin-modal"
-      class="modal-overlay fixed inset-0 z-[60] hidden flex items-center justify-center p-2 sm:p-4"
-    >
-      <div
-        class="bg-white rounded-xl shadow-2xl w-full max-w-5xl relative max-h-[95vh] flex flex-col border border-gray-200"
-      >
-        <div
-          class="p-3 sm:p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50 rounded-t-xl shrink-0"
-        >
-          <h3
-            class="text-sm sm:text-base font-bold text-gray-900 flex items-center gap-2"
-          >
-            <i data-lucide="settings" class="text-gray-600 w-4 h-4"></i> System
-            Configuration
-          </h3>
-
-          <div class="flex items-center gap-2 sm:gap-4">
-            <a
-              href="https://sitsummarizer.netlify.app/"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="inline-flex items-center gap-1.5 text-[10px] sm:text-xs text-gray-600 hover:text-gray-900 border border-gray-300 hover:bg-gray-100 font-semibold px-2.5 py-1 sm:px-3 sm:py-1.5 rounded transition-colors shadow-sm"
-              title="Open SIT Summarizer"
-            >
-              <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-              <span>Open Summarizer</span>
-            </a>
-            <button
-              onclick="logoutAdmin()"
-              class="text-[10px] sm:text-xs text-red-600 hover:text-white border border-red-200 hover:bg-red-700 font-semibold px-2.5 py-1 sm:px-3 sm:py-1.5 rounded transition-colors shadow-sm"
-            >
-              Sign Out
-            </button>
-            <button
-              onclick="closeModals()"
-              class="text-gray-400 hover:text-gray-800 p-1"
-            >
-              <i data-lucide="x" class="w-4 h-4 sm:w-5 sm:h-5"></i>
-            </button>
+        <div class="sheet-tools items-center">
+          <div class="seg" id="admin-seg" role="group" aria-label="Admin section">
+            <span class="seg-pill" aria-hidden="true"></span>
+            <button type="button" aria-pressed="true" data-panel="links" onclick="switchAdminPanel('links')">Form links</button>
+            <button type="button" aria-pressed="false" data-panel="partners" onclick="switchAdminPanel('partners')">Partner companies</button>
+          </div>
+          <div class="flex gap-2 ml-auto">
+            <a href="https://sitsummarizer.netlify.app/" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-sm">Open Summarizer</a>
+            <button type="button" class="btn btn-ghost btn-sm" onclick="logoutAdmin()">Sign out</button>
           </div>
         </div>
-
-        <div class="p-3 sm:p-6 overflow-y-auto flex-grow bg-white">
-          <!-- Links Management Section -->
-          <div class="p-4 sm:p-5 rounded-lg border border-gray-200 mb-6">
-            <h4
-              class="text-xs sm:text-sm font-bold text-gray-800 mb-3 flex items-center gap-1.5"
-            >
-              <i data-lucide="link" class="w-4 h-4 text-gray-500"></i> URL
-              Management
-            </h4>
-            <div
-              class="grid md:grid-cols-2 gap-x-4 sm:gap-x-6 gap-y-3"
-              id="admin-forms"
-            >
-              <!-- Inputs generated by JS -->
+        <div class="sheet-body">
+          <!-- Form links -->
+          <section id="admin-panel-links">
+            <p class="text-secondary mb-4" style="font-size: 14px">Paste the full address (https://…) of each form. Leave a box empty to show students “link not available yet”.</p>
+            <div id="admin-forms" class="grid-12"></div>
+            <div class="flex justify-end mt-6">
+              <button type="button" id="btn-save-links" class="btn btn-primary" onclick="saveLinks()">Save links</button>
             </div>
-            <div class="mt-5 flex justify-end">
-              <button
-                id="btn-save-links"
-                onclick="saveLinks()"
-                class="w-full sm:w-auto px-4 py-2 bg-gray-900 hover:bg-black text-white font-medium rounded flex justify-center items-center gap-1.5 transition-colors text-xs"
-              >
-                <i data-lucide="save" class="w-3.5 h-3.5"></i> Save Links
-              </button>
-            </div>
-          </div>
+          </section>
 
-          <!-- HTE Management Section -->
-          <div class="p-4 sm:p-5 rounded-lg border border-gray-200">
-            <h4
-              class="text-xs sm:text-sm font-bold text-gray-800 mb-3 flex items-center gap-1.5"
-            >
-              <i data-lucide="building" class="w-4 h-4 text-gray-500"></i>
-              Partner HTE Database
-            </h4>
-
-            <div class="grid lg:grid-cols-3 gap-4 mb-5">
-              <!-- Manual Entry -->
-              <div
-                class="lg:col-span-2 bg-gray-50 p-3 sm:p-4 rounded border border-gray-200"
-              >
-                <h5
-                  class="text-[11px] sm:text-xs font-semibold text-gray-700 mb-2"
-                >
-                  Add Single Establishment
-                </h5>
-                <form
-                  id="form-hte-manual"
-                  onsubmit="event.preventDefault(); addHteManual();"
-                >
-                  <div class="grid sm:grid-cols-2 gap-2 mb-3">
-                    <input
-                      type="text"
-                      id="hte-name"
-                      placeholder="Name of HTE"
-                      required
-                      class="text-[11px] sm:text-xs px-2.5 py-1.5 border border-gray-300 rounded focus:outline-none focus:border-gray-500"
-                    />
-                    <input
-                      type="text"
-                      id="hte-address"
-                      placeholder="Address"
-                      class="text-[11px] sm:text-xs px-2.5 py-1.5 border border-gray-300 rounded focus:outline-none focus:border-gray-500"
-                    />
-                    <input
-                      type="text"
-                      id="hte-contact"
-                      placeholder="Contact #"
-                      class="text-[11px] sm:text-xs px-2.5 py-1.5 border border-gray-300 rounded focus:outline-none focus:border-gray-500"
-                    />
-                    <input
-                      type="email"
-                      id="hte-email"
-                      placeholder="Email"
-                      class="text-[11px] sm:text-xs px-2.5 py-1.5 border border-gray-300 rounded focus:outline-none focus:border-gray-500"
-                    />
-                    <input
-                      type="text"
-                      id="hte-person"
-                      placeholder="Contact Person"
-                      class="text-[11px] sm:text-xs px-2.5 py-1.5 border border-gray-300 rounded focus:outline-none focus:border-gray-500 sm:col-span-2"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    class="w-full bg-white hover:bg-gray-100 text-gray-800 border border-gray-300 py-1.5 rounded text-[11px] sm:text-xs font-medium transition-colors"
-                  >
-                    Add to Database
-                  </button>
-                </form>
+          <!-- Partner companies -->
+          <section id="admin-panel-partners" class="hidden">
+            <div class="grid-12">
+              <form id="form-hte-manual" class="card lg-span-8" onsubmit="event.preventDefault(); addHteManual();">
+                <h3 class="card-title mb-4">Add a company</h3>
+                <div class="grid-12" style="gap: 14px">
+                  <div class="span-6"><label class="field-label" for="hte-name">Name of HTE</label><input type="text" id="hte-name" required class="field" /></div>
+                  <div class="span-6"><label class="field-label" for="hte-address">City / address</label><input type="text" id="hte-address" class="field" /></div>
+                  <div class="span-4"><label class="field-label" for="hte-contact">Contact number</label><input type="text" id="hte-contact" class="field" /></div>
+                  <div class="span-4"><label class="field-label" for="hte-email">Email</label><input type="email" id="hte-email" class="field" /></div>
+                  <div class="span-4"><label class="field-label" for="hte-person">Contact person</label><input type="text" id="hte-person" class="field" /></div>
+                </div>
+                <div class="flex justify-end mt-5"><button type="submit" class="btn btn-primary">Add company</button></div>
+              </form>
+              <div class="card lg-span-4 flex flex-col">
+                <h3 class="card-title">Upload many at once</h3>
+                <p class="text-secondary mt-1 mb-4" style="font-size: 14px">A CSV or TSV file with a header row and the columns Name, Address, Contact, Email, Person.</p>
+                <label class="sr-only" for="hte-csv-upload">CSV or TSV file</label>
+                <input type="file" id="hte-csv-upload" accept=".csv,.tsv,text/csv,text/tab-separated-values" class="field" />
+                <div class="mt-auto pt-5 flex justify-end"><button type="button" class="btn btn-secondary" onclick="processCsvUpload()">Upload file</button></div>
               </div>
 
-              <!-- CSV/TSV Upload -->
-              <div
-                class="bg-gray-50 p-3 sm:p-4 rounded border border-gray-200 flex flex-col justify-center"
-              >
-                <h5
-                  class="text-[11px] sm:text-xs font-semibold text-gray-700 mb-1"
-                >
-                  Batch Upload (CSV / TSV)
-                </h5>
-                <p class="text-[10px] text-gray-500 mb-2">
-                  Columns: Name, Address, Contact, Email, Person
-                </p>
-                <input
-                  type="file"
-                  id="hte-csv-upload"
-                  accept=".csv,.tsv,text/csv,text/tab-separated-values"
-                  class="block w-full text-[10px] text-gray-600 file:mr-2 file:py-1 file:px-2 file:rounded file:border file:border-gray-300 file:text-[10px] file:font-medium file:bg-white file:text-gray-700 hover:file:bg-gray-50 mb-2 cursor-pointer"
-                />
-                <button
-                  type="button"
-                  onclick="processCsvUpload()"
-                  class="w-full bg-white hover:bg-gray-100 text-gray-800 border border-gray-300 py-1.5 rounded text-[11px] sm:text-xs font-medium transition-colors"
-                >
-                  Process File
-                </button>
-              </div>
-            </div>
-
-            <!-- Admin HTE Table -->
-            <div class="border border-gray-200 rounded flex flex-col">
-              <div class="flex flex-col sm:flex-row gap-2 justify-between p-3 border-b border-gray-200 bg-white">
-                <label class="relative flex-1 max-w-md">
-                  <i data-lucide="search" class="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2"></i>
-                  <input id="hte-search" type="search" oninput="updateHteSearch(this.value)" placeholder="Search name, city, contact..." class="w-full pl-8 pr-2.5 py-1.5 text-[11px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:border-gray-500" />
-                </label>
-                <div class="flex gap-2 items-center">
-                  <select id="hte-sort" onchange="updateHteSort(this.value)" class="px-2 py-1.5 text-[11px] sm:text-xs border border-gray-300 rounded bg-white focus:outline-none focus:border-gray-500">
-                    <option value="name">Sort: Name</option>
-                    <option value="address">Sort: City</option>
+              <div>
+                <div class="flex flex-wrap gap-2 items-center mb-3">
+                  <label class="search-box">
+                    <span class="sr-only">Search companies</span>
+                    <i data-icon="search"></i>
+                    <input id="hte-search" type="search" class="field" placeholder="Search name, city, contact…" oninput="updateHteSearch(this.value)" />
+                  </label>
+                  <label class="sr-only" for="hte-sort">Sort</label>
+                  <select id="hte-sort" class="field" style="width: auto" onchange="updateHteSort(this.value)">
+                    <option value="name">Name A to Z</option>
+                    <option value="address">City A to Z</option>
                   </select>
-                  <button type="button" onclick="promptDeleteSelectedHtes()" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] sm:text-xs font-medium text-red-700 border border-red-200 rounded hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed" id="delete-selected-hte" disabled>
-                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Delete selected
-                  </button>
-                  <button type="button" onclick="promptDeleteAllHtes()" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] sm:text-xs font-medium text-gray-600 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" id="delete-all-hte" disabled>
-                    <i data-lucide="trash" class="w-3.5 h-3.5"></i> Delete all
-                  </button>
+                  <button type="button" id="delete-selected-hte" class="btn btn-danger" onclick="promptDeleteSelectedHtes()" disabled>Delete selected</button>
+                  <button type="button" id="delete-all-hte" class="btn btn-ghost" onclick="promptDeleteAllHtes()" disabled>Delete all</button>
                 </div>
-              </div>
-              <div
-                class="overflow-x-auto table-container max-h-48 sm:max-h-[300px]"
-              >
-                <table
-                  class="w-full text-left text-[10px] sm:text-[11px] text-gray-600 min-w-[760px] table-fixed"
-                >
-                  <thead
-                    class="text-gray-700 bg-gray-50 sticky top-0 z-10 uppercase"
-                  >
-                    <tr>
-                      <th class="w-8 px-2 py-2 border-b border-gray-200">
-                        <input type="checkbox" id="select-all-htes" onchange="toggleAllHtes(this.checked)" aria-label="Select all visible HTEs" />
-                      </th>
-                      <th class="w-[22%] px-2 sm:px-3 py-2 border-b border-gray-200">
-                        Name
-                      </th>
-                      <th class="w-[22%] px-2 sm:px-3 py-2 border-b border-gray-200">
-                        City / Address
-                      </th>
-                      <th class="w-[16%] px-2 sm:px-3 py-2 border-b border-gray-200">
-                        Contact
-                      </th>
-                      <th class="w-[22%] px-2 sm:px-3 py-2 border-b border-gray-200">
-                        Email
-                      </th>
-                      <th class="w-[16%] px-2 sm:px-3 py-2 border-b border-gray-200">
-                        Person
-                      </th>
-                      <th class="w-20 px-2 sm:px-3 py-2 border-b border-gray-200 text-center">
-                        Action
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody
-                    id="admin-hte-tbody"
-                    class="divide-y divide-gray-100 bg-white"
-                  >
-                    <!-- Populated via JS -->
-                  </tbody>
-                </table>
-              </div>
-              <!-- Pagination Controls for Admin Table -->
-              <div
-                id="admin-pagination"
-                class="hidden flex justify-between items-center p-2 border-t border-gray-200 bg-gray-50 rounded-b shrink-0"
-              >
-                <span
-                  class="text-[10px] sm:text-xs font-medium text-gray-600"
-                  id="admin-page-info"
-                  >Page 1 of 1</span
-                >
-                <div class="flex gap-1.5">
-                  <button
-                    onclick="changeAdminPage(-1)"
-                    id="btn-admin-prev"
-                    class="px-2 py-1 text-[10px] sm:text-xs font-medium border border-gray-300 rounded bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    Prev
-                  </button>
-                  <button
-                    onclick="changeAdminPage(1)"
-                    id="btn-admin-next"
-                    class="px-2 py-1 text-[10px] sm:text-xs font-medium border border-gray-300 rounded bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    Next
-                  </button>
+                <div class="flex items-center gap-3 px-[18px] mb-2">
+                  <input type="checkbox" id="select-all-htes" class="check" onchange="toggleAllHtes(this.checked)" />
+                  <label for="select-all-htes" class="micro">Select all that match the search</label>
+                </div>
+                <ul id="admin-hte-list" class="group-list has-check"></ul>
+                <div id="admin-pagination" class="hidden flex justify-between items-center mt-3">
+                  <span id="admin-page-info" class="text-secondary" style="font-size: 13px"></span>
+                  <div class="flex gap-2">
+                    <button type="button" id="btn-admin-prev" class="btn btn-secondary btn-sm" onclick="changeAdminPage(-1)">Previous</button>
+                    <button type="button" id="btn-admin-next" class="btn btn-secondary btn-sm" onclick="changeAdminPage(1)">Next</button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          </section>
         </div>
       </div>
     </div>
 
-    <!-- EDIT HTE MODAL -->
-    <div id="hte-edit-modal" class="modal-overlay fixed inset-0 z-[70] hidden flex items-center justify-center p-4">
-      <div class="bg-white rounded-xl shadow-2xl p-5 w-full max-w-lg border border-gray-200">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-base font-bold text-gray-900">Edit HTE Partner</h3>
-          <button type="button" onclick="closeHteEditModal()" class="text-gray-400 hover:text-gray-700 p-1" aria-label="Close edit form"><i data-lucide="x" class="w-4 h-4"></i></button>
+    <!-- ============ EDIT COMPANY ============ -->
+    <div id="hte-edit-modal" class="modal-overlay z-[70] hidden" role="dialog" aria-modal="true" aria-labelledby="edit-title">
+      <form id="form-hte-edit" class="sheet sheet-pad" style="max-width: 560px" onsubmit="event.preventDefault(); saveHteEdit();">
+        <div class="flex items-start gap-3 mb-5">
+          <h2 id="edit-title" class="sheet-title flex-1">Edit company</h2>
+          <button type="button" class="icon-btn" onclick="closeHteEditModal()" aria-label="Close edit form"><i data-icon="x"></i></button>
         </div>
-        <form id="form-hte-edit" onsubmit="event.preventDefault(); saveHteEdit();">
-          <input type="hidden" id="edit-hte-id" />
-          <div class="grid sm:grid-cols-2 gap-2 mb-4">
-            <input type="text" id="edit-hte-name" placeholder="Name of HTE" required class="text-xs px-2.5 py-2 border border-gray-300 rounded focus:outline-none focus:border-gray-500" />
-            <input type="text" id="edit-hte-address" placeholder="City / Address" class="text-xs px-2.5 py-2 border border-gray-300 rounded focus:outline-none focus:border-gray-500" />
-            <input type="text" id="edit-hte-contact" placeholder="Contact #" class="text-xs px-2.5 py-2 border border-gray-300 rounded focus:outline-none focus:border-gray-500" />
-            <input type="email" id="edit-hte-email" placeholder="Email" class="text-xs px-2.5 py-2 border border-gray-300 rounded focus:outline-none focus:border-gray-500" />
-            <input type="text" id="edit-hte-person" placeholder="Contact Person" class="text-xs px-2.5 py-2 border border-gray-300 rounded focus:outline-none focus:border-gray-500 sm:col-span-2" />
-          </div>
-          <div class="flex justify-end gap-2">
-            <button type="button" onclick="closeHteEditModal()" class="px-3 py-1.5 text-xs border border-gray-300 rounded hover:bg-gray-50">Cancel</button>
-            <button type="submit" class="px-3 py-1.5 text-xs text-white bg-gray-800 rounded hover:bg-gray-700">Save changes</button>
-          </div>
-        </form>
+        <input type="hidden" id="edit-hte-id" />
+        <div class="grid-12" style="gap: 14px">
+          <div class="span-6"><label class="field-label" for="edit-hte-name">Name of HTE</label><input type="text" id="edit-hte-name" required class="field" /></div>
+          <div class="span-6"><label class="field-label" for="edit-hte-address">City / address</label><input type="text" id="edit-hte-address" class="field" /></div>
+          <div class="span-6"><label class="field-label" for="edit-hte-contact">Contact number</label><input type="text" id="edit-hte-contact" class="field" /></div>
+          <div class="span-6"><label class="field-label" for="edit-hte-email">Email</label><input type="email" id="edit-hte-email" class="field" /></div>
+          <div><label class="field-label" for="edit-hte-person">Contact person</label><input type="text" id="edit-hte-person" class="field" /></div>
+        </div>
+        <div class="flex justify-end gap-2 mt-6">
+          <button type="button" class="btn btn-secondary" onclick="closeHteEditModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save changes</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ============ CONFIRM ============ -->
+    <div id="confirm-modal" class="modal-overlay z-[110] hidden" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title" aria-describedby="confirm-message">
+      <div class="sheet sheet-pad">
+        <h2 id="confirm-title" class="sheet-title">Are you sure?</h2>
+        <p id="confirm-message" class="text-secondary mt-2">This cannot be undone.</p>
+        <div class="grid grid-cols-2 gap-3 mt-6">
+          <button type="button" class="btn btn-secondary" onclick="closeConfirm()">Cancel</button>
+          <button type="button" class="btn btn-danger-solid" onclick="executeConfirm()"><span id="confirm-btn-text">Delete</span></button>
+        </div>
       </div>
     </div>
 
-    <!-- ============================================== -->
-    <!-- JAVASCRIPT LOGIC -->
-
-    <!-- ============================================== -->
-    <!-- EXTERNAL JAVASCRIPT MODULES (ORGANIZED) -->
-    <!-- ============================================== -->
-
-    <!-- 1. Configuration & Constants -->
     <script src="config/firebase-config.js"></script>
     <script src="js/constants.js"></script>
-
-    <!-- 2. Firebase Modules (Auth & Database) -->
     <script src="js/firebase/database.js"></script>
     <script src="js/firebase/auth.js"></script>
-
-    <!-- 3. UI & Feature Modules -->
     <script src="js/modules/ui.js"></script>
+    <script src="js/modules/theme.js"></script>
     <script src="js/modules/tabs.js"></script>
+    <script src="js/modules/partner-list.js"></script>
     <script src="js/modules/hte.js"></script>
     <script src="js/modules/session.js"></script>
-
-    <!-- 4. Application Entry Point (Initializer) -->
     <script src="js/main.js"></script>
   </body>
 </html>

@@ -42,11 +42,8 @@ async function loadCloudLinks() {
 async function saveLinks() {
   console.log("--- TRACE: saveLinks() ---");
   const btn = document.getElementById("btn-save-links");
-  const originalText = btn.innerHTML;
-  btn.innerHTML =
-    '<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i> Saving to Cloud...';
+  btn.textContent = "Saving…";
   btn.disabled = true;
-  lucide.createIcons();
 
   console.log("Step 1: Gathering input data from Admin panel...");
   Object.keys(defaultLinks).forEach((key) => {
@@ -74,58 +71,26 @@ async function saveLinks() {
     console.error("Cloud Save Error Trace:", error);
     showToast("Sync Failed", "Error: " + error.message, "error");
   } finally {
-    btn.innerHTML = originalText;
+    btn.textContent = "Save links";
     btn.disabled = false;
-    lucide.createIcons();
     console.log("--- TRACE END ---");
   }
 }
 
 // --- HTE DATABASE (FIRESTORE LOGIC & PAGINATION) ---
 async function loadHteData() {
+  hteLoadState = "loading";
+  renderHteTables();
   try {
-    console.log("--- TRACE: loadHteData() ---");
-    if (DOM.viewTbody)
-      DOM.viewTbody.innerHTML =
-        '<tr><td colspan="5" class="text-center py-6 text-gray-400 text-[11px] sm:text-xs">Loading database...</td></tr>';
-    if (DOM.adminTbody)
-      DOM.adminTbody.innerHTML =
-        '<tr><td colspan="6" class="text-center py-6 text-gray-400 text-[11px] sm:text-xs">Loading...</td></tr>';
-
-    console.log("Step 1: Fetching 'htes' collection from Firestore...");
-    // Fetch from Firestore collection 'htes', ordered by newest first
-    const snapshot = await db
-      .collection("htes")
-      .orderBy("createdAt", "desc")
-      .get();
-
-    console.log(`Step 2: Fetched ${snapshot.size} documents from Firestore.`);
-    hteList = [];
-    snapshot.forEach((doc) => {
-      hteList.push({ id: doc.id, ...doc.data() });
-    });
-
-    renderHteTables();
-    console.log("--- TRACE END ---");
+    const snapshot = await db.collection("htes").orderBy("createdAt", "desc").get();
+    hteList = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    hteLoadState = "ready";
   } catch (error) {
-    console.error("Database fetch failed Trace:", error);
-
-    if (
-      error.message &&
-      (error.message.includes("offline") || error.message.includes("not-found"))
-    ) {
-      if (DOM.emptyState) {
-        DOM.emptyState.innerHTML = `
-               <div class="text-red-500 mb-2"><i data-lucide="database" class="w-8 h-8 mx-auto"></i></div>
-               <p class="font-semibold text-red-600">Database Not Found</p>
-               <p class="mt-1">Please visit your Firebase Console and click <b>Create Database</b> for project <b>sit-process-app</b>.</p>
-           `;
-      }
-    }
-
+    console.error("Could not load the HTE list:", error);
     hteList = [];
-    renderHteTables();
+    hteLoadState = "error";
   }
+  renderHteTables();
 }
 
 async function addHteManual() {
@@ -160,7 +125,6 @@ async function addHteManual() {
     // Update UI
     hteList.unshift(newHte);
     currentPageAdmin = 1;
-    currentPageStudent = 1;
     renderHteTables();
     if (DOM.manualForm) DOM.manualForm.reset();
 
@@ -229,7 +193,6 @@ async function deleteHtes(ids) {
     hteList = hteList.filter((hte) => !deletedIds.has(hte.id));
     ids.forEach((id) => selectedHteIds.delete(id));
     currentPageAdmin = 1;
-    currentPageStudent = 1;
     renderHteTables();
     showToast(
       "Partners Removed",

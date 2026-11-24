@@ -1,5 +1,6 @@
-// HTE (Host Training Establishment) Data Operations
-// Handles data rendering, pagination, filtering, and CSV/TSV processing
+// HTE (Host Training Establishment) data: shared search and sort, the admin
+// list (selection, pagination, edit, delete) and CSV/TSV upload.
+// The students' list is in partner-list.js.
 
 function escapeHteHtml(value) {
   return String(value || "").replace(
@@ -15,8 +16,8 @@ function escapeHteHtml(value) {
   );
 }
 
-function getVisibleHtes() {
-  const search = hteSearchTerm.trim().toLowerCase();
+function getVisibleHtes(searchTerm, sortField) {
+  const search = searchTerm.trim().toLowerCase();
   return hteList
     .filter((hte) => {
       if (!search) return true;
@@ -25,186 +26,100 @@ function getVisibleHtes() {
         .toLowerCase()
         .includes(search);
     })
-    .sort((left, right) => {
-      const leftValue = String(left[hteSortField] || "").toLowerCase();
-      const rightValue = String(right[hteSortField] || "").toLowerCase();
-      return (
-        leftValue.localeCompare(rightValue) *
-        (hteSortDirection === "asc" ? 1 : -1)
-      );
-    });
+    .sort((left, right) =>
+      String(left[sortField] || "").toLowerCase().localeCompare(String(right[sortField] || "").toLowerCase()),
+    );
+}
+
+function getAdminHtes() {
+  return getVisibleHtes(hteSearchTerm, hteSortField);
 }
 
 function updateHteSearch(value) {
   hteSearchTerm = value;
-  currentPageStudent = 1;
   currentPageAdmin = 1;
-  renderHteTables();
+  renderAdminList();
 }
 
 function updateHteSort(field) {
-  if (hteSortField === field) {
-    hteSortDirection = hteSortDirection === "asc" ? "desc" : "asc";
-  } else {
-    hteSortField = field;
-    hteSortDirection = "asc";
-  }
-  currentPageStudent = 1;
+  hteSortField = field;
   currentPageAdmin = 1;
-  renderHteTables();
+  renderAdminList();
 }
 
-function generateHteRowHTML(hte, isAdmin = false) {
+function adminRowHTML(hte) {
+  const id = escapeHteHtml(hte.id);
   const name = escapeHteHtml(hte.name);
-  const address = escapeHteHtml(hte.address);
-  const contact = escapeHteHtml(hte.contact);
-  const email = escapeHteHtml(hte.email);
-  const person = escapeHteHtml(hte.person);
-  const emailHtml = hte.email
-    ? `
-            <a href="mailto:${encodeURIComponent(hte.email.trim())}" target="_top" class="flex min-w-0 items-center text-gray-600 hover:text-red-800 transition-colors group cursor-pointer w-full">
-              <span class="block min-w-0 whitespace-normal break-all group-hover:underline font-medium" title="Email ${email}">${email}</span>
-          </a>
-      `
-    : '<span class="text-gray-400 text-xs italic">No email provided</span>';
-
-  const actionHtml = isAdmin
-    ? `
-          <td class="px-2 sm:px-3 py-2 text-center">
-              <button onclick="openHteEditModal('${hte.id}')" class="text-gray-400 hover:text-gray-700 transition-colors p-1" title="Edit Partner"><i data-lucide="pencil" class="w-4 h-4"></i></button>
-              <button onclick="promptDeleteHte('${hte.id}')" class="text-gray-400 hover:text-red-600 transition-colors p-1" title="Delete Partner"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-          </td>
-      `
-    : "";
-
+  const subtitle = [hte.address, hte.person].filter(Boolean).map(escapeHteHtml).join(" · ");
   return `
-          <tr class="hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0">
-              ${isAdmin ? `<td class="px-2 py-2 align-top"><input type="checkbox" class="hte-select" value="${hte.id}" onchange="toggleHteSelection('${hte.id}', this.checked)" ${selectedHteIds.has(hte.id) ? "checked" : ""} aria-label="Select ${name}" /></td>` : ""}
-              <td class="px-2 sm:px-4 py-2 sm:py-3 font-semibold text-gray-800 break-words">${name}</td>
-              <td class="px-2 sm:px-4 py-2 sm:py-3 text-gray-600 break-words">${address}</td>
-              <td class="px-2 sm:px-4 py-2 sm:py-3 text-gray-600 break-words">${contact}</td>
-              <td class="min-w-0 align-top px-2 sm:px-4 py-2 sm:py-3">${emailHtml}</td>
-              <td class="min-w-0 align-top px-2 sm:px-4 py-2 sm:py-3 text-gray-600 whitespace-normal break-words">${person}</td>
-              ${actionHtml}
-          </tr>
-      `;
+    <li>
+      <div class="row">
+        <input type="checkbox" class="check" onchange="toggleHteSelection('${id}', this.checked)" ${selectedHteIds.has(hte.id) ? "checked" : ""} aria-label="Select ${name}" />
+        <span class="row-main">
+          <span class="row-title">${name}</span>
+          ${subtitle ? `<span class="row-sub">${subtitle}</span>` : ""}
+        </span>
+        <button type="button" class="btn btn-ghost btn-sm" onclick="openHteEditModal('${id}')" aria-label="Edit ${name}">Edit</button>
+        <button type="button" class="btn btn-danger btn-sm" onclick="promptDeleteHte('${id}')" aria-label="Delete ${name}">Delete</button>
+      </div>
+    </li>`;
 }
 
-function renderHteTables() {
-  const visibleHtes = getVisibleHtes();
-  const totalPages = Math.ceil(visibleHtes.length / itemsPerPage) || 1;
-  let paginatedAdminList = [];
+function adminStateHTML(visibleCount) {
+  if (hteLoadState === "loading") return "Loading…";
+  if (hteLoadState === "error") return "<strong>The list could not be loaded</strong>Check the internet connection, then reload the page.";
+  if (!hteList.length) return "<strong>No companies yet</strong>Add one above, or upload a CSV file.";
+  if (!visibleCount) return "<strong>No company matches the search</strong>";
+  return "";
+}
 
-  if (visibleHtes.length === 0) {
-    if (DOM.viewTbody) DOM.viewTbody.innerHTML = "";
-    if (DOM.emptyState) DOM.emptyState.classList.remove("hidden");
+function renderAdminList() {
+  const visible = getAdminHtes();
+  const totalPages = Math.ceil(visible.length / itemsPerPage) || 1;
+  if (currentPageAdmin > totalPages) currentPageAdmin = totalPages;
+  const start = (currentPageAdmin - 1) * itemsPerPage;
+  const stateHTML = adminStateHTML(visible.length);
 
-    const pStudent = document.getElementById("student-pagination");
-    if (pStudent) pStudent.classList.add("hidden");
+  DOM.adminList.innerHTML = stateHTML
+    ? `<li class="list-state">${stateHTML}</li>`
+    : visible.slice(start, start + itemsPerPage).map(adminRowHTML).join("");
 
-    const pAdmin = document.getElementById("admin-pagination");
-    if (pAdmin) pAdmin.classList.add("hidden");
-  } else {
-    // Check if we previously altered the empty state for the database missing error, and reset it
-    if (
-      DOM.emptyState &&
-      DOM.emptyState.innerHTML.includes("Database Not Found")
-    ) {
-      DOM.emptyState.innerHTML = "No partner HTEs available at the moment.";
-    }
-    if (DOM.emptyState) DOM.emptyState.classList.add("hidden");
+  document.getElementById("admin-pagination").classList.toggle("hidden", !visible.length);
+  document.getElementById("admin-page-info").textContent =
+    `Page ${currentPageAdmin} of ${totalPages} · ${visible.length} ${visible.length === 1 ? "company" : "companies"}`;
+  document.getElementById("btn-admin-prev").disabled = currentPageAdmin === 1;
+  document.getElementById("btn-admin-next").disabled = currentPageAdmin === totalPages;
 
-    if (currentPageStudent > totalPages) currentPageStudent = totalPages;
-    if (currentPageAdmin > totalPages) currentPageAdmin = totalPages;
-
-    const startStudent = (currentPageStudent - 1) * itemsPerPage;
-    const paginatedStudentList = visibleHtes.slice(
-      startStudent,
-      startStudent + itemsPerPage,
-    );
-
-    const startAdmin = (currentPageAdmin - 1) * itemsPerPage;
-    paginatedAdminList = visibleHtes.slice(
-      startAdmin,
-      startAdmin + itemsPerPage,
-    );
-
-    if (DOM.viewTbody) {
-      DOM.viewTbody.innerHTML = paginatedStudentList
-        .map((hte) => generateHteRowHTML(hte, false))
-        .join("");
-
-      const pStudent = document.getElementById("student-pagination");
-      if (pStudent) pStudent.classList.remove("hidden");
-
-      const infoStudent = document.getElementById("student-page-info");
-      if (infoStudent)
-        infoStudent.innerText = `Page ${currentPageStudent} of ${totalPages} (${visibleHtes.length} items)`;
-
-      const btnPrevS = document.getElementById("btn-student-prev");
-      if (btnPrevS) btnPrevS.disabled = currentPageStudent === 1;
-
-      const btnNextS = document.getElementById("btn-student-next");
-      if (btnNextS) btnNextS.disabled = currentPageStudent === totalPages;
-    }
-
-    if (DOM.adminTbody) {
-      DOM.adminTbody.innerHTML = paginatedAdminList
-        .map((hte) => generateHteRowHTML(hte, true))
-        .join("");
-
-      const pAdmin = document.getElementById("admin-pagination");
-      if (pAdmin) pAdmin.classList.remove("hidden");
-
-      const infoAdmin = document.getElementById("admin-page-info");
-      if (infoAdmin)
-        infoAdmin.innerText = `Page ${currentPageAdmin} of ${totalPages} (${visibleHtes.length} items)`;
-
-      const btnPrevA = document.getElementById("btn-admin-prev");
-      if (btnPrevA) btnPrevA.disabled = currentPageAdmin === 1;
-
-      const btnNextA = document.getElementById("btn-admin-next");
-      if (btnNextA) btnNextA.disabled = currentPageAdmin === totalPages;
-    }
-  }
   const selectAll = document.getElementById("select-all-htes");
-  if (selectAll) {
-    selectAll.checked =
-      visibleHtes.length > 0 &&
-      visibleHtes.every((hte) => selectedHteIds.has(hte.id));
-    selectAll.indeterminate =
-      !selectAll.checked &&
-      visibleHtes.some((hte) => selectedHteIds.has(hte.id));
-  }
-  const deleteSelected = document.getElementById("delete-selected-hte");
-  if (deleteSelected) deleteSelected.disabled = selectedHteIds.size === 0;
-  const deleteAll = document.getElementById("delete-all-hte");
-  if (deleteAll) deleteAll.disabled = hteList.length === 0;
-  lucide.createIcons();
+  selectAll.checked = visible.length > 0 && visible.every((hte) => selectedHteIds.has(hte.id));
+  selectAll.indeterminate = !selectAll.checked && visible.some((hte) => selectedHteIds.has(hte.id));
+  document.getElementById("delete-selected-hte").disabled = selectedHteIds.size === 0;
+  document.getElementById("delete-all-hte").disabled = hteList.length === 0;
+}
+
+// Called after every change to hteList, so both lists stay current.
+function renderHteTables() {
+  renderPartnerList();
+  renderAdminList();
 }
 
 function toggleHteSelection(id, checked) {
   if (checked) selectedHteIds.add(id);
   else selectedHteIds.delete(id);
-  renderHteTables();
+  renderAdminList();
 }
 
 function toggleAllHtes(checked) {
-  getVisibleHtes().forEach((hte) => {
+  getAdminHtes().forEach((hte) => {
     if (checked) selectedHteIds.add(hte.id);
     else selectedHteIds.delete(hte.id);
   });
-  renderHteTables();
-}
-
-function changeStudentPage(direction) {
-  currentPageStudent += direction;
-  renderHteTables();
+  renderAdminList();
 }
 
 function changeAdminPage(direction) {
   currentPageAdmin += direction;
-  renderHteTables();
+  renderAdminList();
 }
 
 function promptDeleteHte(id) {
@@ -245,12 +160,13 @@ function openHteEditModal(id) {
   document.getElementById("edit-hte-contact").value = hte.contact || "";
   document.getElementById("edit-hte-email").value = hte.email || "";
   document.getElementById("edit-hte-person").value = hte.person || "";
-  document.getElementById("hte-edit-modal").classList.remove("hidden");
-  lucide.createIcons();
+  const modal = document.getElementById("hte-edit-modal");
+  modal.classList.remove("hidden");
+  document.getElementById("edit-hte-name").focus();
 }
 
 function closeHteEditModal() {
-  document.getElementById("hte-edit-modal").classList.add("hidden");
+  hideModal(document.getElementById("hte-edit-modal"));
 }
 
 async function saveHteEdit() {
@@ -345,7 +261,6 @@ async function processCsvUpload() {
       // Update UI
       hteList = [...newEntries, ...hteList];
       currentPageAdmin = 1;
-      currentPageStudent = 1;
       renderHteTables();
       showToast(
         "Batch Upload Complete",

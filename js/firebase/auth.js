@@ -19,22 +19,20 @@ async function attemptLogin() {
   const loginBtn = document.getElementById("btn-login-submit");
 
   if (!email || !pass) {
-    DOM.loginError.innerText = "Please enter both email and password.";
+    DOM.loginError.innerText = "Enter both your email and password.";
     DOM.loginError.classList.remove("hidden");
     return;
   }
 
   try {
-    loginBtn.innerHTML =
-      '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Authenticating...';
-    lucide.createIcons();
+    loginBtn.textContent = "Signing in…";
+    loginBtn.disabled = true;
     DOM.loginError.classList.add("hidden");
 
     await auth.signInWithEmailAndPassword(email, pass);
 
     closeModals();
     openAdminDashboard();
-    loginBtn.innerHTML = "Login";
 
     showToast(
       "Authentication Successful",
@@ -45,7 +43,9 @@ async function attemptLogin() {
     console.error("Login Error:", error);
     DOM.loginError.innerText = LOGIN_ERROR_MESSAGES[error.code] || "Sign-in failed. Try again.";
     DOM.loginError.classList.remove("hidden");
-    loginBtn.innerHTML = "Login";
+  } finally {
+    loginBtn.textContent = "Sign in";
+    loginBtn.disabled = false;
   }
 }
 

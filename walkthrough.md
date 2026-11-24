@@ -1,5 +1,18 @@
 # SIT_PROCESS_FLOW: walkthrough
 
+## 2026-11-24 — Calm-luxury redesign and a new partner companies list
+
+Owner asked for the site in the latest house design and a friendlier list of partner companies.
+
+- **Look:** calm-luxury tokens in `css/styles.css` (canvas #F5F5F7, white cards with hairlines, cardinal #9E1B32 as the only accent, dark #D70015 / #FF7782), system fonts (Inter from Google Fonts dropped), tabular numbers, one primary button per view. Light/dark theme follows the device until the sun/moon button is used, then it is remembered (`js/modules/theme.js`, circle ripple from patterns §18, off under reduced motion; set in `<head>` before first paint).
+- **Layout:** whole window, one 12-column grid with container-query spans. Glass top bar with a segmented control for the three phases on every width (the phone bottom bar with icon-only buttons is gone; phones get short words). Each phase: an overview card on the left (sticky step list from 960 px) and numbered step cards on the right; phones show "Step N" instead of the timeline numbers.
+- **Few icons:** decorative step, list and button icons removed. lucide (`@latest` from unpkg) removed; seven inline SVGs remain (close, search, eye, eye-off, sun, moon, chevron).
+- **Partner companies (students), `js/modules/partner-list.js`:** full-screen sheet on phones; search by company, city, contact person, phone or email; A to Z / By city; 20 at a time with "Show 20 more"; each row shows name, address and contact person, and opens in place (grid-rows animation, `inert` while closed) to show phone, email (mail link + Copy) and address. Plain-words states for loading, load failure, empty list and no match (with Clear search). Footer reminds students of Option B. Escape and backdrop close every dialog except the idle warning; focus returns to the opener; the page behind stops scrolling.
+- **Admin:** split into Form links / Partner companies; add form on the grid; list rows with checkbox, name, address · person, Edit and Delete words; empty link fields instead of "#"; sign-in is a form, so Enter works; link values are now HTML-escaped in the form.
+- Also: `.gitignore` added and `.DS_Store` untracked (separate commit); `loadHteData` keeps a load state instead of writing table rows; `target=_blank` links get `rel="noopener noreferrer"`.
+
+Verified with Playwright (Chromium) and Firebase stubbed: 55/55 checks (tabs, missing-link toast, search by city and person, no-match and clear, show more to the end, sort, open/close row, copy email, Escape/backdrop, escaped names, theme switch and memory, sign-in wrong/locked/right with Enter and eye, admin add/search/edit/bulk delete/confirm/Escape, idle warning ignores Escape, save links, sign out, empty and failing database, 1,500 companies search in 29 ms, phone full-screen sheet with no keyboard pop). Screenshots at 1440 px light/dark, 390 px and 344 px: no sideways scroll, no page errors.
+
 ## 2026-11-08 — Full security audit added to the backlog
 
 - On hold at the owner's request; the backlog lists what this repo needs before it can run. Nothing else changed.
