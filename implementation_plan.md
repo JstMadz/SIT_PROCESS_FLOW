@@ -22,6 +22,7 @@ Security (audit 2026-11-07):
 - [ ] Owner: decide whether this redesign needs the research brief (`docs/RESEARCH.md`, layouts-and-research §3); skipped as a restyle with no new features.
 - [ ] House rule (SKILL.md §2 Code): no inline `onclick`; the page still wires every control with inline handlers (old pattern, kept in the redesign). Move to `addEventListener` in a `Refactor` commit.
 - [ ] Process owner: fill the PAWIM fields marked “to be set” in `docs/project-overview.html` (document code, effective date, record retention) and sign.
+- [ ] `index.html` is 584 lines (pre-merge check limit 500). It only holds the page markup; splitting it on a no-build static site would need the page to fetch HTML pieces at run time, so it was left as one file (KISS). Revisit if it grows.
 - [ ] Tailwind loads from its CDN play script, which Tailwind says is not for production. Swap for a small built CSS file or plain CSS (layout utilities only are left).
 
 ## Privacy

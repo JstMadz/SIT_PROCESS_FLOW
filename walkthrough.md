@@ -1,6 +1,6 @@
 # SIT_PROCESS_FLOW: walkthrough
 
-## 2026-11-24 (later) — Partner companies as a table; locked dialogs
+## 2026-11-24 (later) — Partner companies as a table; locked dialogs (pushed: develop and main at 8a0221d)
 
 Owner asked for a table of partners, no redundant buttons, a copy icon, sorting and filtering by company and city, emails that open the user's mail app, and dialogs that close only from their own buttons.
 
