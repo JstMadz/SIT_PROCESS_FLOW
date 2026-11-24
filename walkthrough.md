@@ -1,5 +1,13 @@
 # SIT_PROCESS_FLOW: walkthrough
 
+## 2026-11-25 — Floating sidebar
+
+Owner approved the sample (https://claude.ai/artifact/LZMA5BDV1NxhuZSLpxN2SC#artboard-Floating) and chose to keep the cardinal band, footer and buttons (their grey edits in the sample were a try-out). Transparent logos were tried in the sample and undone at the owner's request; the logos keep their white circles.
+
+- The desktop sidebar is now a floating white card: 1rem gap from the band, the footer bar and the window edge, 1rem rounded corners, a full hairline border and a soft shadow. Inside, rem-based corners: menu items 0.625rem, steps and search 0.5rem, Light/Dark 0.5rem / 0.375rem.
+
+Verified: 81/81 browser checks; measured at 900 and 700 px window heights, scrolled and not: sidebar 16 px from the band, the left edge and the footer. Screenshots in light and dark at 1440 px; phones unchanged (390 and 344 px, no sideways scroll, no errors).
+
 ## 2026-11-24 (final) — Fixed band and footer, one-line credit, icon-only capsule tabs, no sliding highlight
 
 - **Fixed frame on computers:** the cardinal band stays at the top and a new cardinal footer bar (© TUP Industrial Relations and Job Placement Office) stays at the bottom; the sidebar fills the space between, so its foot is always in view. On phones the band stays at the top and the tab bar holds the bottom, so the © line goes back into the page.
