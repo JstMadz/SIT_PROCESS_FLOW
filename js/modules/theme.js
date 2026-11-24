@@ -1,5 +1,6 @@
-// Light / dark theme. Follows the device until the user picks one with the
-// sun/moon button; the switch spreads from the button as a circle (patterns §18).
+// Light / dark theme. Follows the device until the user picks one (the sidebar's
+// Light / Dark words, or the phone's sun/moon button); the switch spreads from
+// the button as a circle (patterns §18).
 // The <head> script sets the theme before the first paint.
 
 const THEME_KEY = "sit-process-flow:theme";
@@ -29,10 +30,18 @@ function updateThemeButton() {
     button.setAttribute("aria-label", label);
     button.title = label;
   });
+  document.querySelectorAll("[data-theme-choice]").forEach((button) => {
+    button.setAttribute("aria-pressed", String((button.dataset.themeChoice === "dark") === isDarkTheme()));
+  });
 }
 
+// The phone's sun/moon button flips the theme; the sidebar's Light / Dark words pick one.
 function toggleTheme(event) {
-  const dark = !isDarkTheme();
+  chooseTheme(!isDarkTheme(), event);
+}
+
+function chooseTheme(dark, event) {
+  if (dark === isDarkTheme()) return;
   try {
     localStorage.setItem(THEME_KEY, dark ? "dark" : "light");
   } catch {

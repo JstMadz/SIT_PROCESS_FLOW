@@ -1,5 +1,17 @@
 # SIT_PROCESS_FLOW: walkthrough
 
+## 2026-11-24 (late night) — Corporate theme, words-only sidebar, numbered partner list
+
+Owner approved the mockup (https://claude.ai/artifact/LZMA5BDV1NxhuZSLpxN2SC, "It's perfect") and the suggested answers: no collapse on desktop, copy icon kept, charcoal dark mode.
+
+- **Theme** (`css/tokens.css`): plain cardinal #9E1B32, white and light gray #F0F1F3; charcoal (#1B1D20 / #25282C) in dark mode with the same cardinal. 8 px cards, 6 px controls, 10 px dialogs, flat shadows. Glass, the red wash and the soft rounded look are gone. Secondary buttons are cardinal outlines; step numbers are filled cardinal; phase and step labels cardinal.
+- **Frame** (`css/sidebar.css`): a cardinal band on top (logos, "Supervised Industrial Training", university · college · department), fixed while scrolling; on computers a white sidebar under it with words only (no icons, no rail, no handle): search, phases with numbered steps ("1. Document Submission…"), Forms Repository, and a foot with "Created by" and **Light | Dark** words that always stays in view (checked at 900 and 700 px window heights, scrolled and not). The current item is a cardinal pill with white text.
+- **Phones:** the band shows "SIT Process Flow" and the sun/moon button; the floating tab bar keeps its icons (now white with the current tab filled cardinal). Icons appear only there and on small controls (close, copy, password eye, sort arrow).
+- **Partner list:** a **No.** column (numbers follow the current sort and filter), cardinal title bar, cardinal line under the headings, striped rows; phone cards start with "No. N". Email column a little wider.
+- `theme.js`: `chooseTheme(dark)` for the Light / Dark words; `toggleTheme` for the phone button. `sidebar.js`: rail, icons and shortcut removed.
+
+Verified with Playwright and Firebase stubbed: 77/77 checks (new: No. column and numbering, numbers follow the sort, sidebar has no icons and no handle, numbered steps in the sidebar, Light/Dark words; the idle-warning check now uses real idle time instead of a hand-opened dialog, which the app's own idle check could close). Screenshots at 1440 px light/dark, 390 and 344 px; no sideways scroll, no page errors. Overview artifact republished.
+
 ## 2026-11-24 (night) — Glass sidebar like bidDocsBuilder; floating tab bar on phones
 
 Owner asked for bidDocsBuilder's left sidebar, with the creator's name and the theme switch at its foot unaffected by scrolling, and icons on phones.

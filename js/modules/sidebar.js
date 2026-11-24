@@ -1,15 +1,12 @@
-// The glass sidebar (bidDocsBuilder's design, dev-playbook calm-luxury-ui.md §6):
-// the three phases with their steps as submenus, a menu search, a pill that
-// slides to the current item, and a collapsed icon rail (edge handle or Ctrl+\,
-// remembered). Phones use the bottom tab bar instead.
+// The sidebar on computers (corporate theme, owner-approved 2026-11-24): the three
+// phases in words, each opening to its numbered steps, a menu search, and a
+// cardinal pill that slides to the current item. Phones use the bottom tab bar.
 
 const MENU = [
-  { id: "pre-deployment", label: "Pre-Deployment", icon: "clipboard" },
-  { id: "during-training", label: "During Training", icon: "clock" },
-  { id: "post-training", label: "Post-Training", icon: "graduation" },
+  { id: "pre-deployment", label: "Pre-Deployment" },
+  { id: "during-training", label: "During Training" },
+  { id: "post-training", label: "Post-Training" },
 ];
-const RAIL_KEY = "sit-process-flow:sidebar-rail";
-const RAIL_SHORTCUT = /Mac|iPhone|iPad/.test(navigator.platform) ? "⌘\\" : "Ctrl+\\";
 
 let activeTab = "pre-deployment";
 let activeStep = null;
@@ -18,14 +15,10 @@ const openGroups = new Set(["pre-deployment"]);
 
 // Each phase's steps come from the page itself, so the menu never drifts from the content.
 function menuSteps(tabId) {
-  return [...document.querySelectorAll(`#tab-${tabId} .step-card`)].map((card) => ({
+  return [...document.querySelectorAll(`#tab-${tabId} .step-card`)].map((card, index) => ({
     id: card.id,
-    label: card.querySelector("h2").textContent.trim(),
+    label: `${index + 1}. ${card.querySelector("h2").textContent.trim()}`,
   }));
-}
-
-function isRail() {
-  return document.documentElement.classList.contains("rail");
 }
 
 function menuMatch(item) {
@@ -42,7 +35,7 @@ function menuItemHTML(item) {
   const match = menuMatch(item);
   if (!match.shown) return "";
   const { hasSub } = match;
-  const open = hasSub && !isRail() && (openGroups.has(item.id) || match.stepHit);
+  const open = hasSub && (openGroups.has(item.id) || match.stepHit);
   const current = activeTab === item.id;
   const pillHere = current && !(open && match.steps.some((step) => step.id === activeStep));
   const sub = hasSub
@@ -57,29 +50,21 @@ function menuItemHTML(item) {
     : "";
   return `
     <li>
-      <button type="button" class="side-item" onclick="pickMenu('${item.id}')" aria-label="${item.label}"
+      <button type="button" class="side-item" onclick="pickMenu('${item.id}')"
         ${current ? 'aria-current="page"' : ""} ${pillHere ? "data-pill" : ""}
-        ${hasSub ? `aria-expanded="${open}" aria-controls="sub-${item.id}"` : ""}>
-        ${icon(item.icon, "side-icon")}<span class="side-label">${item.label}</span>
-        ${hasSub ? icon("chevron", "side-chev") : ""}<span class="side-tip" aria-hidden="true">${item.label}</span>
-      </button>
+        ${hasSub ? `aria-expanded="${open}" aria-controls="sub-${item.id}"` : ""}>${item.label}</button>
       ${sub}
     </li>`;
 }
 
 function renderSidebar() {
-  const list = document.getElementById("side-list");
-  list.innerHTML =
-    '<li class="side-pill" aria-hidden="true"></li>' +
-    MENU.map(menuItemHTML).join("") +
-    (menuMatch({ label: "Forms repository" }).shown ? formsMenuItemHTML() : "");
+  const forms = menuMatch({ label: "Forms Repository" }).shown
+    ? '<li><a href="#" data-link="downloadForms" target="_blank" rel="noopener noreferrer" class="side-item">Forms Repository</a></li>'
+    : "";
+  document.getElementById("side-list").innerHTML =
+    '<li class="side-pill" aria-hidden="true"></li>' + MENU.map(menuItemHTML).join("") + forms;
   placeSidePill();
   applyLinksToDOM();
-}
-
-function formsMenuItemHTML() {
-  return `<li><a href="#" data-link="downloadForms" target="_blank" rel="noopener noreferrer" class="side-item" aria-label="Forms repository">
-      ${icon("folder", "side-icon")}<span class="side-label">Forms repository</span><span class="side-tip" aria-hidden="true">Forms repository</span></a></li>`;
 }
 
 function placeSidePill() {
@@ -93,10 +78,7 @@ function placeSidePill() {
 }
 
 function pickMenu(tabId) {
-  if (isRail()) {
-    setRail(false);
-    openGroups.add(tabId);
-  } else if (activeTab === tabId && !activeStep) {
+  if (activeTab === tabId && !activeStep) {
     if (openGroups.has(tabId)) openGroups.delete(tabId);
     else openGroups.add(tabId);
   } else {
@@ -119,38 +101,8 @@ function filterMenu(value) {
   renderSidebar();
 }
 
-function setRail(rail) {
-  document.documentElement.classList.toggle("rail", rail);
-  try {
-    localStorage.setItem(RAIL_KEY, rail ? "1" : "0");
-  } catch {
-    // storage blocked: the choice lasts for this visit
-  }
-  const label = rail ? "Show the menu" : "Hide the menu";
-  const handle = document.getElementById("side-handle");
-  handle.setAttribute("aria-label", label);
-  handle.title = `${label} (${RAIL_SHORTCUT})`;
-  renderSidebar();
-}
-
-function toggleRail() {
-  setRail(!isRail());
-}
-
 function setupSidebar() {
-  let stored = false;
-  try {
-    stored = localStorage.getItem(RAIL_KEY) === "1";
-  } catch {
-    // storage blocked: start open
-  }
-  setRail(stored);
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "\\" && (event.metaKey || event.ctrlKey)) {
-      event.preventDefault();
-      toggleRail();
-    }
-  });
+  renderSidebar();
   // The pill follows its item while a submenu opens or closes.
   new ResizeObserver(placeSidePill).observe(document.getElementById("side-list"));
 }

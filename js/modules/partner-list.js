@@ -1,5 +1,6 @@
-// Partner companies table for students: filter, sort by company or city
-// (click the heading again to reverse), "show more", email and copy.
+// Partner companies table for students: numbered rows (No. follows the current
+// sort and filter), filter, sort by company or city (click the heading again to
+// reverse), "show more", email and copy.
 
 const PARTNER_BATCH = 20;
 let partnerSearch = "";
@@ -61,9 +62,10 @@ function partnerEmailHTML(rawEmail) {
     </div>`;
 }
 
-function partnerRowHTML(hte) {
+function partnerRowHTML(hte, index) {
   return `
     <tr>
+      <td class="no">${index + 1}</td>
       <td class="company">${escapeHteHtml(hte.name)}</td>
       ${partnerCellHTML("City / address", escapeHteHtml(hte.address))}
       ${partnerCellHTML("Contact person", escapeHteHtml(hte.person))}

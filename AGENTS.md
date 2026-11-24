@@ -7,7 +7,7 @@
 A guide for TUP Manila College of Science students doing their **Supervised Industrial Training (SIT)**: the step-by-step process flow, links to the forms and apps they need, and a searchable list of **Host Training Establishments (HTEs)**. Staff sign in as admin to add, edit and delete HTEs and to change the app links; students only read.
 
 ## 2. Stack & commands
-- Stack A + Firebase: plain HTML/CSS/JS (Tailwind from its CDN for layout; colours and components in `css/styles.css`, calm-luxury design, light/dark theme; the few icons are inline SVG in `js/modules/ui.js`), Firebase Auth (admin sign-in) and Cloud Firestore (compat SDK). No build, no tests.
+- Stack A + Firebase: plain HTML/CSS/JS (Tailwind from its CDN for layout; colours in `css/tokens.css` (corporate theme approved 2026-11-24: cardinal, white, light gray; charcoal dark mode), components in `css/styles.css`; the few icons are inline SVG in `js/modules/ui.js`), Firebase Auth (admin sign-in) and Cloud Firestore (compat SDK). No build, no tests.
 - Run: `npx serve .` (Firebase Auth needs http://, not `file://`).
 - Verify: as a student, browse the process flow, search and page through HTEs; as admin, sign in, add/edit/delete an HTE, bulk delete, change a link, sign out; phone width.
 - Deploy: static hosting of the repo root; Firebase project `tup-sit-app`.
@@ -25,7 +25,7 @@ A guide for TUP Manila College of Science students doing their **Supervised Indu
 ## 5. Key files
 - `config/firebase-config.js`: Firebase project settings (the web API key is public by design; access is controlled by Auth + Firestore rules).
 - `js/firebase/auth.js` (sign-in/out), `js/firebase/database.js` (Firestore: `htes` collection, `settings/app_links` document).
-- `js/modules/`: `session.js` (inactivity sign-out), `partner-list.js` (students' partner companies table: filter, sort by company/city, show more, mailto + copy; styles in `css/partner-table.css`), `hte.js` (shared search/sort, admin list, CSV upload), `sidebar.js` (glass sidebar: phases and steps, menu search, rail; styles in `css/sidebar.css` with the phone tab bar), `theme.js` (light/dark), `tabs.js` (phase switch for sidebar and tab bar), `ui.js` (icons, toasts, modals, segmented controls); `js/main.js` wires them; `js/constants.js`.
+- `js/modules/`: `session.js` (inactivity sign-out), `partner-list.js` (students' partner companies table: filter, sort by company/city, show more, mailto + copy; styles in `css/partner-table.css`), `hte.js` (shared search/sort, admin list, CSV upload), `sidebar.js` (words-only sidebar: phases and numbered steps, menu search; frame styles in `css/sidebar.css`: cardinal band, sidebar, phone tab bar — icons only in the tab bar), `theme.js` (light/dark), `tabs.js` (phase switch for sidebar and tab bar), `ui.js` (icons, toasts, modals, segmented controls); `js/main.js` wires them; `js/constants.js`.
 - `docs/project-overview.html`: the project's one overview page (process flow, PAWIM guide, architecture, data). Published at https://claude.ai/artifact/UtHgXkr5wctDeYeKzMZawt; republish to the same URL when a feature, process, stack or data shape changes.
 - `oldVersions/`: earlier pages kept for reference; not served from the main page.
 

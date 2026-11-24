@@ -6,14 +6,13 @@
     <title>SIT Process Flow - TUP</title>
     <link rel="icon" type="image/png" href="assets/tup_logo.png" />
 
-    <!-- Theme and collapsed sidebar before first paint, so nothing flashes (theme.js, sidebar.js) -->
+    <!-- Theme before first paint, so dark mode doesn't flash (js/modules/theme.js) -->
     <script>
       (function () {
         var stored = null;
         try { stored = localStorage.getItem("sit-process-flow:theme"); } catch (e) {}
         var dark = stored ? stored === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
         document.documentElement.dataset.theme = dark ? "dark" : "light";
-        try { if (localStorage.getItem("sit-process-flow:sidebar-rail") === "1") document.documentElement.classList.add("rail"); } catch (e) {}
       })();
     </script>
 
@@ -27,50 +26,50 @@
     <link rel="stylesheet" href="css/sidebar.css" />
   </head>
   <body>
-    <div class="wash" aria-hidden="true"></div>
     <div id="toast-container" class="fixed top-4 right-4 z-[130] flex flex-col gap-3 pointer-events-none" aria-live="polite"></div>
 
-    <!-- ============ SIDEBAR (desktop) — js/modules/sidebar.js ============ -->
-    <aside id="sidebar" class="sidebar" aria-label="Main menu">
-      <div class="side-brand">
-        <div class="side-logos">
-          <img src="assets/tup_logo.png" alt="TUP logo" />
-          <img src="assets/ched_logo.png" alt="CHED logo" class="side-extra" />
-          <img src="assets/cos_logo.png" alt="College of Science logo" class="round side-extra" />
-        </div>
-        <div class="side-brand-text">
-          <p class="side-title">SIT Process Flow</p>
-          <p class="side-subtitle">College of Science · Computer Studies Department</p>
-        </div>
+    <!-- ============ CARDINAL BAND ============ -->
+    <header class="band">
+      <div class="band-logos">
+        <img src="assets/tup_logo.png" alt="TUP logo" />
+        <img src="assets/ched_logo.png" alt="CHED logo" class="band-extra" />
+        <img src="assets/cos_logo.png" alt="College of Science logo" class="band-extra" />
       </div>
-      <input type="search" id="menu-search" class="field side-search" placeholder="Search the menu" aria-label="Search the menu" autocomplete="off" oninput="filterMenu(this.value)" />
-      <nav class="side-nav" aria-label="Main">
-        <ul id="side-list" class="side-list"></ul>
-      </nav>
-      <div class="side-foot">
-        <p class="side-credit">Created by <span class="select-none" onclick="handleSecretClick()">"Ino Amador"</span></p>
-        <button type="button" class="icon-btn" data-theme-toggle onclick="toggleTheme(event)"></button>
+      <div class="band-text">
+        <p class="band-title"><span class="band-long">Supervised Industrial Training</span><span class="band-short">SIT Process Flow</span></p>
+        <p class="band-sub">Technological University of the Philippines · College of Science · Computer Studies Department</p>
       </div>
-      <button type="button" id="side-handle" class="side-handle" onclick="toggleRail()"><span></span></button>
-    </aside>
-
-    <!-- ============ PHONE BARS ============ -->
-    <header class="mobile-bar">
-      <img src="assets/tup_logo.png" alt="TUP logo" />
-      <div class="min-w-0 flex-1">
-        <p class="side-title">SIT Process Flow</p>
-        <p class="side-subtitle">College of Science · Computer Studies Department</p>
-      </div>
-      <button type="button" class="icon-btn" data-theme-toggle onclick="toggleTheme(event)"></button>
+      <button type="button" class="icon-btn band-theme" data-theme-toggle onclick="toggleTheme(event)"></button>
     </header>
-    <nav class="tabbar" aria-label="Training phase">
-      <button type="button" data-tab="pre-deployment" aria-current="page" onclick="switchTab('pre-deployment')"><i data-icon="clipboard"></i><span>Pre-Deployment</span></button>
-      <button type="button" data-tab="during-training" onclick="switchTab('during-training')"><i data-icon="clock"></i><span>During Training</span></button>
-      <button type="button" data-tab="post-training" onclick="switchTab('post-training')"><i data-icon="graduation"></i><span>Post-Training</span></button>
-      <a href="#" data-link="downloadForms" target="_blank" rel="noopener noreferrer"><i data-icon="folder"></i><span>Forms Repository</span></a>
-    </nav>
 
-    <main class="page">
+    <div class="shell">
+      <!-- ============ SIDEBAR (desktop) — js/modules/sidebar.js ============ -->
+      <aside id="sidebar" class="sidebar" aria-label="Main menu">
+        <div class="side-top">
+          <label for="menu-search" class="side-label-small">Search the menu</label>
+          <input type="search" id="menu-search" class="field side-search" placeholder="Phase or step" autocomplete="off" oninput="filterMenu(this.value)" />
+        </div>
+        <nav class="side-nav" aria-label="Main">
+          <ul id="side-list" class="side-list"></ul>
+        </nav>
+        <div class="side-foot">
+          <p class="side-credit">Created by <span class="select-none" onclick="handleSecretClick()">"Ino Amador"</span></p>
+          <div class="theme-words" role="group" aria-label="Theme">
+            <button type="button" data-theme-choice="light" onclick="chooseTheme(false, event)">Light</button>
+            <button type="button" data-theme-choice="dark" onclick="chooseTheme(true, event)">Dark</button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ============ PHONE TAB BAR ============ -->
+      <nav class="tabbar" aria-label="Training phase">
+        <button type="button" data-tab="pre-deployment" aria-current="page" onclick="switchTab('pre-deployment')"><i data-icon="clipboard"></i><span>Pre-Deployment</span></button>
+        <button type="button" data-tab="during-training" onclick="switchTab('during-training')"><i data-icon="clock"></i><span>During Training</span></button>
+        <button type="button" data-tab="post-training" onclick="switchTab('post-training')"><i data-icon="graduation"></i><span>Post-Training</span></button>
+        <a href="#" data-link="downloadForms" target="_blank" rel="noopener noreferrer"><i data-icon="folder"></i><span>Forms Repository</span></a>
+      </nav>
+
+      <main class="page">
       <!-- ============ PRE-DEPLOYMENT ============ -->
       <section id="tab-pre-deployment" class="tab-content active" aria-labelledby="title-pre">
         <header class="phase-head">
@@ -344,15 +343,16 @@
         <p>© TUP Industrial Relations and Job Placement Office</p>
         <p class="footer-credit">Created by <span class="select-none" onclick="handleSecretClick()">"Ino Amador"</span></p>
       </footer>
-    </main>
+      </main>
+    </div>
 
     <!-- ============ PARTNER COMPANIES (students) — js/modules/partner-list.js ============ -->
     <div id="hte-view-modal" class="modal-overlay modal-full z-[60] hidden" role="dialog" aria-modal="true" aria-labelledby="partner-title">
       <div class="sheet sheet-lg">
-        <div class="sheet-head">
+        <div class="sheet-head sheet-band">
           <div>
-            <h2 id="partner-title" class="sheet-title">Partner companies</h2>
-            <p class="text-secondary mt-1" style="font-size: 14px">Host Training Establishments (HTEs) with an existing MOA with TUP. Tap an email address to write to the company from your email app.</p>
+            <h2 id="partner-title" class="sheet-title">Partner Companies</h2>
+            <p class="mt-1" style="font-size: 13px">Host Training Establishments (HTEs) with an existing MOA with TUP. Tap an email address to write to the company from your email app.</p>
           </div>
           <button type="button" class="icon-btn" onclick="closeModals()" aria-label="Close partner list"><i data-icon="x"></i></button>
         </div>
@@ -369,6 +369,7 @@
             <table id="partner-table" class="partner-table">
               <thead>
                 <tr>
+                  <th scope="col" class="no">No.</th>
                   <th scope="col" data-sort="name"><button type="button" class="sort-btn" onclick="setPartnerSort('name')">Company<span class="sort-mark"></span></button></th>
                   <th scope="col" data-sort="address"><button type="button" class="sort-btn" onclick="setPartnerSort('address')">City / address<span class="sort-mark"></span></button></th>
                   <th scope="col">Contact person</th>
