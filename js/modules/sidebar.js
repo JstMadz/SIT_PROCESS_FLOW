@@ -1,6 +1,7 @@
 // The sidebar on computers (corporate theme, owner-approved 2026-11-24): the three
-// phases in words, each opening to its numbered steps, a menu search, and a
-// cardinal pill that slides to the current item. Phones use the bottom tab bar.
+// phases in words, each opening to its numbered steps, and a menu search. The
+// current item is simply filled cardinal: no sliding highlight (owner, 2026-11-24:
+// the motion was dizzying). Phones use the bottom tab bar.
 
 const MENU = [
   { id: "pre-deployment", label: "Pre-Deployment" },
@@ -37,13 +38,13 @@ function menuItemHTML(item) {
   const { hasSub } = match;
   const open = hasSub && (openGroups.has(item.id) || match.stepHit);
   const current = activeTab === item.id;
-  const pillHere = current && !(open && match.steps.some((step) => step.id === activeStep));
+  const highlighted = current && !(open && match.steps.some((step) => step.id === activeStep));
   const sub = hasSub
     ? `<div class="side-sub${open ? " open" : ""}" id="sub-${item.id}" ${open ? "" : "inert"}><ul>${match.steps
         .map(
           (step) =>
             `<li><button type="button" class="side-step" onclick="goToStep('${item.id}', '${step.id}')" ${
-              step.id === activeStep ? 'aria-current="step" data-pill' : ""
+              step.id === activeStep ? 'aria-current="step" data-current' : ""
             }>${escapeHteHtml(step.label)}</button></li>`,
         )
         .join("")}</ul></div>`
@@ -51,7 +52,7 @@ function menuItemHTML(item) {
   return `
     <li>
       <button type="button" class="side-item" onclick="pickMenu('${item.id}')"
-        ${current ? 'aria-current="page"' : ""} ${pillHere ? "data-pill" : ""}
+        ${current ? 'aria-current="page"' : ""} ${highlighted ? "data-current" : ""}
         ${hasSub ? `aria-expanded="${open}" aria-controls="sub-${item.id}"` : ""}>${item.label}</button>
       ${sub}
     </li>`;
@@ -62,19 +63,8 @@ function renderSidebar() {
     ? '<li><a href="#" data-link="downloadForms" target="_blank" rel="noopener noreferrer" class="side-item">Forms Repository</a></li>'
     : "";
   document.getElementById("side-list").innerHTML =
-    '<li class="side-pill" aria-hidden="true"></li>' + MENU.map(menuItemHTML).join("") + forms;
-  placeSidePill();
+    MENU.map(menuItemHTML).join("") + forms;
   applyLinksToDOM();
-}
-
-function placeSidePill() {
-  const list = document.getElementById("side-list");
-  const pill = list.querySelector(".side-pill");
-  const target = list.querySelector("[data-pill]");
-  pill.hidden = !target;
-  if (!target) return;
-  pill.style.transform = `translateY(${target.offsetTop}px)`;
-  pill.style.height = `${target.offsetHeight}px`;
 }
 
 function pickMenu(tabId) {
@@ -92,7 +82,7 @@ function goToStep(tabId, stepId) {
   activeStep = stepId;
   renderSidebar();
   const card = document.getElementById(stepId);
-  card.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  card.scrollIntoView();
   card.focus({ preventScroll: true });
 }
 
@@ -103,6 +93,4 @@ function filterMenu(value) {
 
 function setupSidebar() {
   renderSidebar();
-  // The pill follows its item while a submenu opens or closes.
-  new ResizeObserver(placeSidePill).observe(document.getElementById("side-list"));
 }

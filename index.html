@@ -53,7 +53,7 @@
           <ul id="side-list" class="side-list"></ul>
         </nav>
         <div class="side-foot">
-          <p class="side-credit">Created by <span class="select-none" onclick="handleSecretClick()">"Ino Amador"</span></p>
+          <p class="side-credit">Created by: <span class="select-none" onclick="handleSecretClick()">Ino Amador</span></p>
           <div class="theme-words" role="group" aria-label="Theme">
             <button type="button" data-theme-choice="light" onclick="chooseTheme(false, event)">Light</button>
             <button type="button" data-theme-choice="dark" onclick="chooseTheme(true, event)">Dark</button>
@@ -63,10 +63,10 @@
 
       <!-- ============ PHONE TAB BAR ============ -->
       <nav class="tabbar" aria-label="Training phase">
-        <button type="button" data-tab="pre-deployment" aria-current="page" onclick="switchTab('pre-deployment')"><i data-icon="clipboard"></i><span>Pre-Deployment</span></button>
-        <button type="button" data-tab="during-training" onclick="switchTab('during-training')"><i data-icon="clock"></i><span>During Training</span></button>
-        <button type="button" data-tab="post-training" onclick="switchTab('post-training')"><i data-icon="graduation"></i><span>Post-Training</span></button>
-        <a href="#" data-link="downloadForms" target="_blank" rel="noopener noreferrer"><i data-icon="folder"></i><span>Forms Repository</span></a>
+        <button type="button" data-tab="pre-deployment" aria-current="page" onclick="switchTab('pre-deployment')" aria-label="Pre-Deployment" title="Pre-Deployment"><i data-icon="clipboard"></i></button>
+        <button type="button" data-tab="during-training" onclick="switchTab('during-training')" aria-label="During Training" title="During Training"><i data-icon="clock"></i></button>
+        <button type="button" data-tab="post-training" onclick="switchTab('post-training')" aria-label="Post-Training" title="Post-Training"><i data-icon="graduation"></i></button>
+        <a href="#" data-link="downloadForms" target="_blank" rel="noopener noreferrer" aria-label="Forms Repository" title="Forms Repository"><i data-icon="folder"></i></a>
       </nav>
 
       <main class="page">
@@ -341,7 +341,7 @@
       </section>
       <footer class="footer">
         <p>© TUP Industrial Relations and Job Placement Office</p>
-        <p class="footer-credit">Created by <span class="select-none" onclick="handleSecretClick()">"Ino Amador"</span></p>
+        <p class="footer-credit">Created by: <span class="select-none" onclick="handleSecretClick()">Ino Amador</span></p>
       </footer>
       </main>
     </div>

@@ -1,5 +1,14 @@
 # SIT_PROCESS_FLOW: walkthrough
 
+## 2026-11-24 (final) — Fixed band and footer, one-line credit, icon-only capsule tabs, no sliding highlight
+
+- **Fixed frame on computers:** the cardinal band stays at the top and a new cardinal footer bar (© TUP Industrial Relations and Job Placement Office) stays at the bottom; the sidebar fills the space between, so its foot is always in view. On phones the band stays at the top and the tab bar holds the bottom, so the © line goes back into the page.
+- **Credit:** "Created by: Ino Amador" on one line (no wrap), in the sidebar foot and the phone footer; still the 5-click admin door.
+- **Phone tab bar:** icons only in a rounded capsule (iPhone-style, centred, max 340 px, frosted white), the current tab a filled cardinal circle; each icon keeps its name as `aria-label` and `title` for screen readers and long-press hints.
+- **Animation removed** (owner: it made them dizzy). Root cause of the jump: every click rebuilt the menu, so the sliding highlight started again from the top before moving to the chosen item. The current item is now simply filled cardinal; submenus show and hide without animating; clicking a step jumps straight to it instead of a smooth scroll.
+
+Verified with Playwright and Firebase stubbed: 81/81 checks (new: no sliding highlight and the current step filled, creator on one line, footer bar fixed at the bottom and band at the top, icon-only tabs with spoken names, capsule shape, band and tab bar fixed while scrolling on phones). Screenshots at 1440 px light/dark, 390 and 344 px; no sideways scroll, no page errors. Overview artifact republished.
+
 ## 2026-11-24 (late night) — Corporate theme, words-only sidebar, numbered partner list
 
 Owner approved the mockup (https://claude.ai/artifact/LZMA5BDV1NxhuZSLpxN2SC, "It's perfect") and the suggested answers: no collapse on desktop, copy icon kept, charcoal dark mode.
