@@ -19,7 +19,12 @@
   --accent-text: #9e1b32;
   --accent-tint: rgba(158, 27, 50, 0.08);
   --on-accent: #ffffff;
-  --band: #9e1b32;
+  /* Top band and footer bar: white in light mode like the live site, cardinal in dark (owner, 2026-11-25) */
+  --band: #ffffff;
+  --band-ink: #1f2328;
+  --band-ink-2: #5b6068;
+  --band-edge: #dde0e4;
+  --band-button: #f0f1f3;
   --ok: #1f7a3d;
   --warn: #a15c00;
   --bad: #c4162a;
@@ -54,7 +59,11 @@
   --accent-text: #ff8a95;
   --accent-tint: rgba(255, 138, 149, 0.12);
   --on-accent: #ffffff;
-  --band: #7a1527;
+  --band: #9e1b32;
+  --band-ink: #ffffff;
+  --band-ink-2: rgba(255, 255, 255, 0.88);
+  --band-edge: transparent;
+  --band-button: rgba(255, 255, 255, 0.14);
   --ok: #4cd774;
   --warn: #ffb340;
   --bad: #ff6961;

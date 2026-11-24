@@ -1,5 +1,14 @@
 # SIT_PROCESS_FLOW: walkthrough
 
+## 2026-11-25 (later) — White header and footer in light mode, cardinal in dark
+
+Owner: in light mode the top band and the footer bar should be white like the live site; cardinal red in dark mode.
+
+- New band tokens in `css/tokens.css` (`--band`, `--band-ink`, `--band-ink-2`, `--band-edge`, `--band-button`): light = white with dark text, grey subtitle and a hairline edge; dark = cardinal #9E1B32 with white text. `css/sidebar.css` uses them for the band, its phone theme button and the desktop footer bar.
+- The partner list's title bar now uses the accent instead of the band colour, so it stays cardinal in both themes (it would otherwise have turned white with white text).
+
+Verified: 81/81 browser checks; computed colours checked per theme (light: band and footer white, partner title cardinal; dark: all cardinal); screenshots at 1440 px light/dark, 390 and 344 px; no sideways scroll, no errors.
+
 ## 2026-11-25 — Floating sidebar
 
 Owner approved the sample (https://claude.ai/artifact/LZMA5BDV1NxhuZSLpxN2SC#artboard-Floating) and chose to keep the cardinal band, footer and buttons (their grey edits in the sample were a try-out). Transparent logos were tried in the sample and undone at the owner's request; the logos keep their white circles.

@@ -283,7 +283,7 @@ input[type="file"].field::file-selector-button {
 .sheet-pad { padding: 28px; }
 .sheet-head { display: flex; align-items: flex-start; gap: 12px; padding: 24px 24px 16px; }
 .sheet-head > div { flex: 1; min-width: 0; }
-.sheet-band { padding-bottom: 18px; margin-bottom: 16px; border-radius: var(--radius-sheet) var(--radius-sheet) 0 0; background: var(--band); color: #ffffff; }
+.sheet-band { padding-bottom: 18px; margin-bottom: 16px; border-radius: var(--radius-sheet) var(--radius-sheet) 0 0; background: var(--accent); color: var(--on-accent); }
 .sheet-band .icon-btn { color: #ffffff; background: rgba(255, 255, 255, 0.14); }
 .sheet-title { margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -0.015em; line-height: 1.25; }
 .sheet-tools { display: flex; flex-wrap: wrap; gap: 10px; padding: 0 24px 16px; border-bottom: 1px solid var(--separator); }
