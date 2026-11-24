@@ -1,5 +1,11 @@
 # SIT_PROCESS_FLOW: walkthrough
 
+## 2026-11-25 (later) — Post-Training buttons hover like the others
+
+Owner: the Post-Training buttons did not react on hover like the buttons in Pre-Deployment and During Training. Root cause: the five template and GForm links still carried `style="background: var(--surface)"` from the earlier design, and an inline style beats the shared `.btn-secondary:hover` tint. Removed the inline styles; the buttons now use the shared style only (full width inside their grey boxes, like Step 4's Request Form).
+
+Verified: computed colours at rest and on hover are identical for a Pre-Deployment, a During Training and a Post-Training button in light and dark mode; 81/81 browser checks.
+
 ## 2026-11-25 (later) — White header and footer in light mode, cardinal in dark
 
 Owner: in light mode the top band and the footer bar should be white like the live site; cardinal red in dark mode.
